@@ -1,0 +1,165 @@
+# Backup & Disaster Recovery — Scheduled daily at 02:00 UTC.
+# Handles RDS snapshots, S3 cross-region replication verification,
+# and backup integrity checks. Can also be triggered manually.
+name: Backup & Disaster Recovery
+
+on:
+  schedule:
+    # Daily at 02:00 UTC
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "Backup action"
+        required: true
+        type: choice
+        options:
+          - snapshot
+          - verify
+          - replicate
+
+env:
+  AWS_REGION: eu-west-1
+  BACKUP_REGION: eu-west-2
+  PRODUCTION_DB_IDENTIFIER: korefield-academy-production
+  # Target: RTO 4 hours, RPO 30 minutes
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  database-snapshot:
+    name: RDS Database Snapshot
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_BACKUP_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Create RDS snapshot
+        id: snapshot
+        run: |
+          SNAPSHOT_ID="korefield-prod-$(date +%Y%m%d-%H%M%S)"
+          aws rds create-db-snapshot \
+            --db-instance-identifier ${{ env.PRODUCTION_DB_IDENTIFIER }} \
+            --db-snapshot-identifier "${SNAPSHOT_ID}" \
+            --tags Key=Environment,Value=production Key=Project,Value=korefield-academy Key=Type,Value=automated-backup
+          echo "snapshot_id=${SNAPSHOT_ID}" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for snapshot completion
+        run: |
+          aws rds wait db-snapshot-available \
+            --db-snapshot-identifier ${{ steps.snapshot.outputs.snapshot_id }}
+
+      - name: Copy snapshot to backup region
+        run: |
+          aws rds copy-db-snapshot \
+            --source-db-snapshot-identifier ${{ steps.snapshot.outputs.snapshot_id }} \
+            --target-db-snapshot-identifier "${{ steps.snapshot.outputs.snapshot_id }}-replica" \
+            --source-region ${{ env.AWS_REGION }} \
+            --region ${{ env.BACKUP_REGION }} \
+            --kms-key-id alias/korefield-backup-kms \
+            --copy-tags
+
+  s3-backup-sync:
+    name: S3 Cross-Region Replication Check
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_BACKUP_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Verify S3 replication status
+        run: |
+          for bucket in certificates uploads backups; do
+            echo "Checking replication for korefield-academy-production-${bucket}..."
+            aws s3api get-bucket-replication \
+              --bucket "korefield-academy-production-${bucket}" \
+              --query 'ReplicationConfiguration.Rules[].Status' || echo "No replication configured for ${bucket}"
+          done
+
+  backup-verification:
+    name: Automated Restore Test
+    runs-on: ubuntu-latest
+    environment: production
+    if: github.event.schedule == '0 2 * * *' || github.event.inputs.action == 'verify'
+    needs: database-snapshot
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_BACKUP_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Get latest snapshot
+        id: latest
+        run: |
+          SNAPSHOT_ID=$(aws rds describe-db-snapshots \
+            --db-instance-identifier ${{ env.PRODUCTION_DB_IDENTIFIER }} \
+            --query 'DBSnapshots | sort_by(@, &SnapshotCreateTime) | [-1].DBSnapshotIdentifier' \
+            --output text)
+          echo "snapshot_id=${SNAPSHOT_ID}" >> "$GITHUB_OUTPUT"
+
+      - name: Restore snapshot to test instance
+        run: |
+          aws rds restore-db-instance-from-db-snapshot \
+            --db-instance-identifier korefield-backup-verify-test \
+            --db-snapshot-identifier ${{ steps.latest.outputs.snapshot_id }} \
+            --db-instance-class db.t3.micro \
+            --no-multi-az \
+            --tags Key=Purpose,Value=backup-verification Key=AutoDelete,Value=true
+
+      - name: Wait for restore
+        run: |
+          aws rds wait db-instance-available \
+            --db-instance-identifier korefield-backup-verify-test
+
+      - name: Verify restored instance
+        run: |
+          STATUS=$(aws rds describe-db-instances \
+            --db-instance-identifier korefield-backup-verify-test \
+            --query 'DBInstances[0].DBInstanceStatus' \
+            --output text)
+          echo "Restored instance status: ${STATUS}"
+          if [ "${STATUS}" != "available" ]; then
+            echo "::error::Backup verification failed — instance not available"
+            exit 1
+          fi
+          echo "Backup verification successful"
+
+      - name: Cleanup test instance
+        if: always()
+        run: |
+          aws rds delete-db-instance \
+            --db-instance-identifier korefield-backup-verify-test \
+            --skip-final-snapshot \
+            --delete-automated-backups || true
+
+  cleanup-old-snapshots:
+    name: Cleanup Old Snapshots
+    runs-on: ubuntu-latest
+    environment: production
+    needs: database-snapshot
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_BACKUP_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Delete snapshots older than 30 days
+        run: |
+          CUTOFF=$(date -d '30 days ago' +%Y-%m-%dT%H:%M:%S 2>/dev/null || date -v-30d +%Y-%m-%dT%H:%M:%S)
+          aws rds describe-db-snapshots \
+            --db-instance-identifier ${{ env.PRODUCTION_DB_IDENTIFIER }} \
+            --snapshot-type manual \
+            --query "DBSnapshots[?SnapshotCreateTime<='${CUTOFF}'].DBSnapshotIdentifier" \
+            --output text | tr '\t' '\n' | while read -r snap; do
+              if [ -n "${snap}" ]; then
+                echo "Deleting old snapshot: ${snap}"
+                aws rds delete-db-snapshot --db-snapshot-identifier "${snap}" || true
+              fi
+            done

@@ -1,0 +1,46 @@
+# Dependencies
+node_modules/
+.venv/
+
+# Build outputs
+dist/
+.next/
+out/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Lockfiles (keep pnpm-lock.yaml and uv.lock)
+package-lock.json
+yarn.lock
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl
+
+# Test artifacts
+coverage/
+playwright-report/
+test-results/
+
+# Misc
+*.log

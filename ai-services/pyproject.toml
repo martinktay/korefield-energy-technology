@@ -1,0 +1,30 @@
+[project]
+name = "korefield-ai-services"
+version = "0.1.0"
+description = "KoreField Academy AI Agent Ecosystem — LangChain, LangGraph, LangSmith powered AI services"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.135.2",
+    "langchain>=1.2.13",
+    "langchain-community>=0.4.1",
+    "langchain-core>=1.2.22",
+    "langchain-openai>=1.1.12",
+    "langgraph>=1.1.3",
+    "langsmith>=0.7.22",
+    "pydantic>=2.12.5",
+    "pydantic-settings>=2.13.1",
+    "python-json-logger>=4.0.0",
+    "uvicorn[standard]>=0.42.0",
+]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=9.0.2",
+    "pytest-asyncio>=1.3.0",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

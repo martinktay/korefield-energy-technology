@@ -1,0 +1,648 @@
+// KoreField Academy — Prisma Schema
+// Each domain module contributes its models here.
+// All entities use domain-prefixed custom IDs (e.g., USR-8a2f4c).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Auth Domain ────────────────────────────────────────────────
+
+enum UserRole {
+  SuperAdmin
+  Admin
+  Instructor
+  Assessor
+  Learner
+  CorporatePartner
+  FinanceAdmin
+  DevOpsEngineer
+}
+
+enum UserStatus {
+  Active
+  Inactive
+  Suspended
+  PendingVerification
+}
+
+model User {
+  id             String     @id @default("")
+  email          String     @unique
+  password_hash  String
+  role           UserRole
+  mfa_enabled    Boolean    @default(false)
+  mfa_secret     String?
+  email_verified Boolean    @default(false)
+  status         UserStatus @default(PendingVerification)
+  created_at     DateTime   @default(now())
+  updated_at     DateTime   @updatedAt
+
+  sessions Session[]
+  learner  Learner?
+  pods     Pod[]
+  lab_sessions LabSession[]
+
+  @@map("users")
+}
+
+model Session {
+  id             String   @id @default("")
+  user_id        String
+  jwt_token_hash String
+  expires_at     DateTime
+  created_at     DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([expires_at])
+  @@map("sessions")
+}
+
+model Role {
+  id          String   @id @default("")
+  name        String   @unique
+  permissions String[]
+
+  @@map("roles")
+}
+
+// ─── Enrollment Domain ──────────────────────────────────────────
+
+enum LevelTier {
+  Beginner
+  Intermediate
+  Advanced
+}
+
+enum TrackStatus {
+  available
+  waitlisted
+}
+
+enum EnrollmentStatus {
+  active
+  completed
+  paused
+  cancelled
+}
+
+enum PodStatus {
+  pending
+  active
+  completed
+  disbanded
+}
+
+enum PodMemberRole {
+  ProductManager
+  DataScientist
+  AIEngineer
+  CybersecurityAISecurity
+  IndustrySpecialist
+  DataEngineer
+  DevOpsCloud
+  BusinessAnalyst
+  UXProductDesigner
+}
+
+model Learner {
+  id                      String   @id @default("")
+  user_id                 String   @unique
+  country                 String?
+  professional_background String?
+  learning_goals          String?
+  onboarding_complete     Boolean  @default(false)
+  created_at              DateTime @default(now())
+  updated_at              DateTime @updatedAt
+
+  user                User                @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  enrollments         Enrollment[]
+  foundation_progress FoundationProgress?
+  gate_attempts       GateAttempt[]
+  pod_members         PodMember[]
+  waitlist_entries    WaitlistEntry[]
+  scholarships        Scholarship[]
+  submissions         Submission[]
+  capstones           Capstone[]
+  certificates        Certificate[]
+  certification_eligibilities CertificationEligibility[]
+
+  @@index([user_id])
+  @@map("learners")
+}
+
+model Track {
+  id                 String      @id @default("")
+  name               String
+  description        String?
+  status             TrackStatus @default(available)
+  estimated_duration String?
+  created_at         DateTime    @default(now())
+  updated_at         DateTime    @updatedAt
+
+  levels           Level[]
+  enrollments      Enrollment[]
+  pods             Pod[]
+  waitlist_entries WaitlistEntry[]
+  pricing_configs  PricingConfig[]
+  capstones        Capstone[]
+  certificates     Certificate[]
+  certification_eligibilities CertificationEligibility[]
+
+  @@map("tracks")
+}
+
+model Level {
+  id       String    @id @default("")
+  track_id String
+  tier     LevelTier
+  sequence Int
+
+  track   Track    @relation(fields: [track_id], references: [id], onDelete: Cascade)
+  modules Module[]
+
+  @@index([track_id])
+  @@map("levels")
+}
+
+model Module {
+  id        String  @id @default("")
+  level_id  String
+  title     String
+  sequence  Int
+  version   Int     @default(1)
+  published Boolean @default(false)
+
+  level             Level             @relation(fields: [level_id], references: [id], onDelete: Cascade)
+  performance_gates PerformanceGate[]
+  lessons           Lesson[]
+  assessments       Assessment[]
+  lab_sessions      LabSession[]
+  content_versions  ContentVersion[]
+
+  @@index([level_id])
+  @@map("modules")
+}
+
+model Enrollment {
+  id          String           @id @default("")
+  learner_id  String
+  track_id    String
+  status      EnrollmentStatus @default(active)
+  enrolled_at DateTime         @default(now())
+
+  learner       Learner       @relation(fields: [learner_id], references: [id], onDelete: Cascade)
+  track         Track         @relation(fields: [track_id], references: [id], onDelete: Cascade)
+  payment_plans PaymentPlan[]
+
+  @@index([learner_id])
+  @@index([track_id])
+  @@map("enrollments")
+}
+
+model FoundationProgress {
+  id              String    @id @default("")
+  learner_id      String    @unique
+  module_statuses Json      @default("[]")
+  completed       Boolean   @default(false)
+  completed_at    DateTime?
+
+  learner Learner @relation(fields: [learner_id], references: [id], onDelete: Cascade)
+
+  @@index([learner_id])
+  @@map("foundation_progress")
+}
+
+model PerformanceGate {
+  id              String @id @default("")
+  module_id       String
+  threshold_score Float
+  max_attempts    Int    @default(2)
+
+  module   Module        @relation(fields: [module_id], references: [id], onDelete: Cascade)
+  attempts GateAttempt[]
+
+  @@index([module_id])
+  @@map("performance_gates")
+}
+
+model GateAttempt {
+  id             String   @id @default("")
+  gate_id        String
+  learner_id     String
+  score          Float
+  passed         Boolean
+  attempt_number Int
+  attempted_at   DateTime @default(now())
+
+  gate    PerformanceGate @relation(fields: [gate_id], references: [id], onDelete: Cascade)
+  learner Learner         @relation(fields: [learner_id], references: [id], onDelete: Cascade)
+
+  @@index([gate_id])
+  @@index([learner_id])
+  @@map("gate_attempts")
+}
+
+model Pod {
+  id           String    @id @default("")
+  track_id     String
+  assessor_id  String?
+  status       PodStatus @default(pending)
+  activated_at DateTime?
+  created_at   DateTime  @default(now())
+
+  track    Track       @relation(fields: [track_id], references: [id], onDelete: Cascade)
+  assessor User?       @relation(fields: [assessor_id], references: [id], onDelete: Cascade)
+  members  PodMember[]
+
+  @@index([track_id])
+  @@index([assessor_id])
+  @@map("pods")
+}
+
+model PodMember {
+  id          String        @id @default("")
+  pod_id      String
+  learner_id  String
+  role        PodMemberRole
+  assigned_at DateTime      @default(now())
+
+  pod     Pod     @relation(fields: [pod_id], references: [id], onDelete: Cascade)
+  learner Learner @relation(fields: [learner_id], references: [id], onDelete: Cascade)
+
+  @@index([pod_id])
+  @@index([learner_id])
+  @@map("pod_members")
+}
+
+model WaitlistEntry {
+  id                  String    @id @default("")
+  learner_id          String
+  track_id            String
+  position            Int
+  joined_at           DateTime  @default(now())
+  notified_at         DateTime?
+  enrollment_deadline DateTime?
+
+  learner Learner @relation(fields: [learner_id], references: [id], onDelete: Cascade)
+  track   Track   @relation(fields: [track_id], references: [id], onDelete: Cascade)
+
+  @@index([learner_id])
+  @@index([track_id])
+  @@map("waitlist_entries")
+}
+
+// ─── Payment Domain ─────────────────────────────────────────────
+
+enum PaymentPlanType {
+  full
+  two_pay
+  three_pay
+}
+
+enum PaymentPlanStatus {
+  active
+  completed
+  paused
+  cancelled
+}
+
+enum InstallmentStatus {
+  pending
+  paid
+  overdue
+  paused
+}
+
+model PricingConfig {
+  id             String   @id @default("")
+  track_id       String
+  base_price     Float
+  floor_price    Float
+  ceiling_price  Float
+  effective_from DateTime
+
+  track Track @relation(fields: [track_id], references: [id], onDelete: Cascade)
+
+  @@index([track_id])
+  @@map("pricing_configs")
+}
+
+model CountryBand {
+  id                   String @id @default("")
+  country_code         String @unique
+  purchasing_power_band String
+  multiplier           Float
+
+  @@map("country_bands")
+}
+
+model PaymentPlan {
+  id            String            @id @default("")
+  enrollment_id String
+  plan_type     PaymentPlanType
+  total_amount  Float
+  currency      String
+  status        PaymentPlanStatus @default(active)
+  created_at    DateTime          @default(now())
+  updated_at    DateTime          @updatedAt
+
+  enrollment   Enrollment    @relation(fields: [enrollment_id], references: [id], onDelete: Cascade)
+  installments Installment[]
+
+  @@index([enrollment_id])
+  @@map("payment_plans")
+}
+
+model Installment {
+  id               String            @id @default("")
+  plan_id          String
+  sequence         Int
+  amount           Float
+  due_date         DateTime
+  paid_at          DateTime?
+  status           InstallmentStatus @default(pending)
+  grace_period_end DateTime?
+
+  plan PaymentPlan @relation(fields: [plan_id], references: [id], onDelete: Cascade)
+
+  @@index([plan_id])
+  @@map("installments")
+}
+
+model Campaign {
+  id             String   @id @default("")
+  name           String
+  discount_type  String
+  discount_value Float
+  active_from    DateTime
+  active_to      DateTime
+  created_at     DateTime @default(now())
+
+  @@map("campaigns")
+}
+
+model Scholarship {
+  id                String   @id @default("")
+  learner_id        String
+  adjustment_amount Float
+  approved_by       String
+  approved_at       DateTime
+
+  learner Learner @relation(fields: [learner_id], references: [id], onDelete: Cascade)
+
+  @@index([learner_id])
+  @@map("scholarships")
+}
+
+// ─── Content Domain ─────────────────────────────────────────────
+
+enum ContentType {
+  text
+  video
+  interactive_code
+  quiz
+  downloadable
+}
+
+enum LabSessionStatus {
+  scheduled
+  in_progress
+  completed
+  cancelled
+}
+
+enum AssessmentType {
+  quiz
+  code_exercise
+  lab_submission
+  pod_deliverable
+  peer_review
+  capstone_defense
+  performance_gate
+}
+
+enum SubmissionStatus {
+  draft
+  submitted
+  under_review
+  graded
+  resubmission_requested
+  resubmitted
+}
+
+model Lesson {
+  id           String      @id @default("")
+  module_id    String
+  title        String
+  content_type ContentType
+  sequence     Int
+  version      Int         @default(1)
+  created_at   DateTime    @default(now())
+  updated_at   DateTime    @updatedAt
+
+  module            Module           @relation(fields: [module_id], references: [id], onDelete: Cascade)
+  coding_exercises  CodingExercise[]
+
+  @@index([module_id])
+  @@map("lessons")
+}
+
+model Assessment {
+  id         String         @id @default("")
+  module_id  String
+  title      String
+  rubric     Json           @default("{}")
+  max_score  Float
+  type       AssessmentType
+  created_at DateTime       @default(now())
+  updated_at DateTime       @updatedAt
+
+  module            Module           @relation(fields: [module_id], references: [id], onDelete: Cascade)
+  coding_exercises  CodingExercise[]
+  submissions       Submission[]
+
+  @@index([module_id])
+  @@map("assessments")
+}
+
+model LabSession {
+  id            String           @id @default("")
+  module_id     String
+  instructor_id String
+  scheduled_at  DateTime
+  recording_url String?
+  status        LabSessionStatus @default(scheduled)
+  created_at    DateTime         @default(now())
+  updated_at    DateTime         @updatedAt
+
+  module      Module       @relation(fields: [module_id], references: [id], onDelete: Cascade)
+  instructor  User         @relation(fields: [instructor_id], references: [id], onDelete: Cascade)
+  submissions Submission[]
+
+  @@index([module_id])
+  @@index([instructor_id])
+  @@map("lab_sessions")
+}
+
+model CodingExercise {
+  id            String  @id @default("")
+  lesson_id     String?
+  assessment_id String?
+  starter_code  String  @default("")
+  test_cases    Json    @default("[]")
+  language      String  @default("python")
+  time_limit    Int     @default(10)
+  memory_limit  Int     @default(256)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  lesson      Lesson?     @relation(fields: [lesson_id], references: [id], onDelete: Cascade)
+  assessment  Assessment? @relation(fields: [assessment_id], references: [id], onDelete: Cascade)
+  submissions Submission[]
+
+  @@index([lesson_id])
+  @@index([assessment_id])
+  @@map("coding_exercises")
+}
+
+model Submission {
+  id             String           @id @default("")
+  learner_id     String
+  assessment_id  String?
+  exercise_id    String?
+  lab_session_id String?
+  content        String           @default("")
+  score          Float?
+  feedback       String?
+  feedback_at    DateTime?
+  status         SubmissionStatus @default(draft)
+  submitted_at   DateTime?
+  created_at     DateTime         @default(now())
+  updated_at     DateTime         @updatedAt
+
+  learner    Learner         @relation(fields: [learner_id], references: [id], onDelete: Cascade)
+  assessment Assessment?     @relation(fields: [assessment_id], references: [id], onDelete: Cascade)
+  exercise   CodingExercise? @relation(fields: [exercise_id], references: [id], onDelete: Cascade)
+  labSession LabSession?     @relation(fields: [lab_session_id], references: [id], onDelete: Cascade)
+
+  @@index([learner_id])
+  @@index([assessment_id])
+  @@index([exercise_id])
+  @@index([lab_session_id])
+  @@map("submissions")
+}
+
+model ContentVersion {
+  id               String   @id @default("")
+  module_id        String
+  version_number   Int
+  published_at     DateTime?
+  content_snapshot Json     @default("{}")
+  created_at       DateTime @default(now())
+
+  module Module @relation(fields: [module_id], references: [id], onDelete: Cascade)
+
+  @@index([module_id])
+  @@map("content_versions")
+}
+
+// ─── Certification Domain ───────────────────────────────────────
+
+enum CapstoneStatus {
+  locked
+  unlocked
+  submitted
+  evaluated
+}
+
+enum CertificateStatus {
+  active
+  revoked
+}
+
+model Capstone {
+  id           String         @id @default("")
+  learner_id   String
+  track_id     String
+  status       CapstoneStatus @default(locked)
+  submitted_at DateTime?
+  result       String?
+  feedback     String?
+  created_at   DateTime       @default(now())
+  updated_at   DateTime       @updatedAt
+
+  learner  Learner          @relation(fields: [learner_id], references: [id], onDelete: Cascade)
+  track    Track            @relation(fields: [track_id], references: [id], onDelete: Cascade)
+  defenses CapstoneDefense[]
+
+  @@index([learner_id])
+  @@index([track_id])
+  @@map("capstones")
+}
+
+model CapstoneDefense {
+  id                 String   @id @default("")
+  capstone_id        String
+  panel_assessor_ids String[]
+  scheduled_at       DateTime
+  result             String?
+  feedback           String?
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+
+  capstone Capstone @relation(fields: [capstone_id], references: [id], onDelete: Cascade)
+
+  @@index([capstone_id])
+  @@map("capstone_defenses")
+}
+
+model Certificate {
+  id                String            @id @default("")
+  learner_id        String
+  track_id          String
+  verification_code String            @unique
+  issued_at         DateTime          @default(now())
+  status            CertificateStatus @default(active)
+  revocation_reason String?
+  pdf_url           String?
+  created_at        DateTime          @default(now())
+  updated_at        DateTime          @updatedAt
+
+  learner Learner @relation(fields: [learner_id], references: [id], onDelete: Cascade)
+  track   Track   @relation(fields: [track_id], references: [id], onDelete: Cascade)
+
+  @@index([learner_id])
+  @@index([track_id])
+  @@index([verification_code])
+  @@map("certificates")
+}
+
+model CertificationEligibility {
+  id                       String  @id @default("")
+  learner_id               String
+  track_id                 String
+  foundation_complete      Boolean @default(false)
+  levels_complete          Boolean @default(false)
+  pod_deliverables_complete Boolean @default(false)
+  capstone_passed          Boolean @default(false)
+  assessor_approved        Boolean @default(false)
+  payment_cleared          Boolean @default(false)
+  eligible                 Boolean @default(false)
+  created_at               DateTime @default(now())
+  updated_at               DateTime @updatedAt
+
+  learner Learner @relation(fields: [learner_id], references: [id], onDelete: Cascade)
+  track   Track   @relation(fields: [track_id], references: [id], onDelete: Cascade)
+
+  @@index([learner_id])
+  @@index([track_id])
+  @@map("certification_eligibilities")
+}
