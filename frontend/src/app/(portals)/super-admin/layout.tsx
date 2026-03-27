@@ -1,17 +1,8 @@
 "use client";
 
 import { NavigationShell, type NavItem } from "@/components/layout";
-import {
-  LayoutDashboard,
-  DollarSign,
-  UserPlus,
-  GraduationCap,
-  Activity,
-  Bot,
-  Globe,
-  MessageSquare,
-  Calculator,
-} from "lucide-react";
+import { useAuthStore } from "@/stores/auth-store";
+import { LayoutDashboard, DollarSign, UserPlus, GraduationCap, Activity, Bot, Globe, MessageSquare, Calculator } from "lucide-react";
 
 const navItems: NavItem[] = [
   { label: "Dashboard", href: "/super-admin", Icon: LayoutDashboard },
@@ -25,13 +16,10 @@ const navItems: NavItem[] = [
   { label: "Messages", href: "/super-admin/messages", Icon: MessageSquare },
 ];
 
-export default function SuperAdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function SuperAdminLayout({ children }: { children: React.ReactNode }) {
+  const { user } = useAuthStore();
   return (
-    <NavigationShell portalName="Super Admin Portal" navItems={navItems} userName="Esi Owusu" userRole="super-admin">
+    <NavigationShell portalName="Super Admin Portal" navItems={navItems} userName={user?.name || "Esi Owusu"} userRole={user?.role || "super-admin"} avatarUrl={user?.avatarUrl}>
       {children}
     </NavigationShell>
   );

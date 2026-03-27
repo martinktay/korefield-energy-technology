@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { GraduationCap, ArrowRight } from "lucide-react";
+import { useAuthStore } from "@/stores/auth-store";
 
 interface FormErrors {
   email?: string;
@@ -13,6 +14,7 @@ interface FormErrors {
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login } = useAuthStore();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<FormErrors>({});
@@ -38,11 +40,14 @@ export default function LoginPage() {
     setLoading(true);
     await new Promise((r) => setTimeout(r, 800));
     setLoading(false);
-    if (email.includes("admin") || email.includes("instructor") || email.includes("assessor")) {
-      setMfaRequired(true);
-      return;
-    }
-    router.push("/learner");
+    // Simulate: determine role from email for demo routing
+    const role = email.includes("admin") ? "Admin" : email.includes("instructor") ? "Instructor" : email.includes("super") ? "SuperAdmin" : "Learner";
+    const portalMap: Record<string, string> = { Admin: "/admin", Instructor: "/instructor", SuperAdmin: "/super-admin", Learner: "/learner" };
+
+    // Create a demo JWT (in production, this comes from POST /auth/login)
+    const payload = btoa(JSON.stringify({ sub: "USR-demo", email, name: email.split("@")[0].replace(/\./g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase()), role }));
+    login(`header.${payload}.signature`);
+    router.push(portalMap[role] || "/learner");
   }
 
   async function handleMfaVerify(e: React.FormEvent) {

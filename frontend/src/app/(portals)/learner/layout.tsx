@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { NavigationShell, type NavItem } from "@/components/layout";
+import { useAuthStore } from "@/stores/auth-store";
 import {
   LayoutDashboard,
   BookOpen,
@@ -26,20 +27,15 @@ const navItems: NavItem[] = [
 
 const authRoutes = ["/learner/register", "/learner/onboarding", "/learner/login"];
 
-export default function LearnerLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function LearnerLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { user } = useAuthStore();
   const isAuthRoute = authRoutes.some((r) => pathname.startsWith(r));
 
-  if (isAuthRoute) {
-    return <>{children}</>;
-  }
+  if (isAuthRoute) return <>{children}</>;
 
   return (
-    <NavigationShell portalName="Learner Dashboard" navItems={navItems} userName="Kofi Mensah" userRole="learner">
+    <NavigationShell portalName="Learner Dashboard" navItems={navItems} userName={user?.name || "Kofi Mensah"} userRole={user?.role || "learner"} avatarUrl={user?.avatarUrl}>
       {children}
     </NavigationShell>
   );

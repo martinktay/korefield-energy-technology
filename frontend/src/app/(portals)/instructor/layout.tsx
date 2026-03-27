@@ -1,6 +1,7 @@
 "use client";
 
 import { NavigationShell, type NavItem } from "@/components/layout";
+import { useAuthStore } from "@/stores/auth-store";
 import {
   LayoutDashboard,
   Users,
@@ -21,13 +22,10 @@ const navItems: NavItem[] = [
   { label: "Messages", href: "/instructor/messages", Icon: MessageSquare },
 ];
 
-export default function InstructorLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function InstructorLayout({ children }: { children: React.ReactNode }) {
+  const { user } = useAuthStore();
   return (
-    <NavigationShell portalName="Instructor Portal" navItems={navItems} userName="Dr. Amina Osei" userRole="instructor">
+    <NavigationShell portalName="Instructor Portal" navItems={navItems} userName={user?.name || "Dr. Amina Osei"} userRole={user?.role || "instructor"} avatarUrl={user?.avatarUrl}>
       {children}
     </NavigationShell>
   );
