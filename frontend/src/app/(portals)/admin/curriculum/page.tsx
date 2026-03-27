@@ -3,7 +3,6 @@
 
 import { useState } from "react";
 import { X } from "lucide-react";
-import { toast } from "sonner";
 
 interface TrackRow {
   id: string; name: string; modules: number; available: boolean; gateThreshold: number;
@@ -62,7 +61,6 @@ export default function CurriculumPage() {
     };
     setTracks((prev) => [newTrack, ...prev]);
     setDialogOpen(false);
-    toast.success(`Module "${newTrack.name}" created`, { description: `Gate threshold set to ${newTrack.gateThreshold}%.` });
   }
   return (
     <div className="space-y-6">

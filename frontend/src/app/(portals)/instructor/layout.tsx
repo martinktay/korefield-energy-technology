@@ -1,16 +1,24 @@
-/** @file instructor/layout.tsx — Layout wrapper for the Instructor portal with cohort/grading/content/schedule navigation. */
 "use client";
 
 import { NavigationShell, type NavItem } from "@/components/layout";
+import {
+  LayoutDashboard,
+  Users,
+  ClipboardCheck,
+  FileText,
+  Calendar,
+  ShieldCheck,
+  MessageSquare,
+} from "lucide-react";
 
 const navItems: NavItem[] = [
-  { label: "Dashboard", href: "/instructor" },
-  { label: "Cohorts", href: "/instructor/cohorts" },
-  { label: "Grading Queue", href: "/instructor/grading" },
-  { label: "Content", href: "/instructor/content" },
-  { label: "Schedule", href: "/instructor/schedule" },
-  { label: "Assessor", href: "/instructor/assessor" },
-  { label: "Messages", href: "/instructor/messages" },
+  { label: "Dashboard", href: "/instructor", Icon: LayoutDashboard },
+  { label: "Cohorts", href: "/instructor/cohorts", Icon: Users },
+  { label: "Grading Queue", href: "/instructor/grading", Icon: ClipboardCheck },
+  { label: "Content", href: "/instructor/content", Icon: FileText },
+  { label: "Schedule", href: "/instructor/schedule", Icon: Calendar },
+  { label: "Assessor", href: "/instructor/assessor", Icon: ShieldCheck },
+  { label: "Messages", href: "/instructor/messages", Icon: MessageSquare },
 ];
 
 export default function InstructorLayout({

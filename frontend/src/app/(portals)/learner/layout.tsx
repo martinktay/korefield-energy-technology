@@ -1,24 +1,29 @@
-/**
- * @file learner/layout.tsx
- * Layout wrapper for the Learner portal.
- * Renders the NavigationShell with learner-specific nav items for authenticated pages.
- * Auth routes (register, onboarding) bypass the shell and render without sidebar.
- */
 "use client";
 
 import { usePathname } from "next/navigation";
-import { NavigationShell, type NavItem } from "@/components/layout";const navItems: NavItem[] = [
-  { label: "Dashboard", href: "/learner" },
-  { label: "Foundation", href: "/learner/foundation" },
-  { label: "Tracks", href: "/learner/tracks" },
-  { label: "Lessons", href: "/learner/lessons" },
-  { label: "Progress", href: "/learner/progress" },
-  { label: "Pod Workspace", href: "/learner/pods" },
-  { label: "Payments", href: "/learner/payments" },
-  { label: "Certificates", href: "/learner/certificates" },
+import { NavigationShell, type NavItem } from "@/components/layout";
+import {
+  LayoutDashboard,
+  BookOpen,
+  Route,
+  GraduationCap,
+  TrendingUp,
+  Users,
+  CreditCard,
+  Award,
+} from "lucide-react";
+
+const navItems: NavItem[] = [
+  { label: "Dashboard", href: "/learner", Icon: LayoutDashboard },
+  { label: "Foundation", href: "/learner/foundation", Icon: BookOpen },
+  { label: "Tracks", href: "/learner/tracks", Icon: Route },
+  { label: "Lessons", href: "/learner/lessons", Icon: GraduationCap },
+  { label: "Progress", href: "/learner/progress", Icon: TrendingUp },
+  { label: "Pod Workspace", href: "/learner/pods", Icon: Users },
+  { label: "Payments", href: "/learner/payments", Icon: CreditCard },
+  { label: "Certificates", href: "/learner/certificates", Icon: Award },
 ];
 
-/** Routes that should render without the sidebar navigation shell */
 const authRoutes = ["/learner/register", "/learner/onboarding", "/learner/login"];
 
 export default function LearnerLayout({

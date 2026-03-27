@@ -57,6 +57,13 @@ export class DashboardController {
   // ── Super Admin Endpoints ─────────────────────────────────────
 
   @UseGuards(AuthGuard('jwt'), RbacGuard)
+  @Roles('Admin', 'SuperAdmin')
+  @Get('admin/recruitment')
+  async getAdminRecruitment() {
+    return this.dashboardService.getRecruitmentPipeline();
+  }
+
+  @UseGuards(AuthGuard('jwt'), RbacGuard)
   @Roles('SuperAdmin')
   @Get('super-admin')
   async getSuperAdminKPIs() {

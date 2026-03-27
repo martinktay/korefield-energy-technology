@@ -1,9 +1,8 @@
 /** @file learner/lessons/[lessonId]/page.tsx — Full Lab Layout with AI Avatar, Code Editor, and Assessment panels. */
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { runPython, runShellCommand } from "@/lib/pyodide-runner";
 import {
@@ -23,6 +22,7 @@ import {
   Lightbulb,
   Upload,
   CheckCircle2,
+  Check,
   BookOpen,
   FolderOpen,
   ChevronDown,
@@ -181,6 +181,7 @@ function LeftSidebar({
 
 function LearnPanel({ lesson }: { lesson: LessonData }) {
   const [tutorInput, setTutorInput] = useState("");
+  const [tutorMessages, setTutorMessages] = useState<{ role: "user" | "ai"; text: string }[]>([]);
   const [isPlaying, setIsPlaying] = useState(false);
 
   return (
@@ -340,6 +341,19 @@ else:
           </div>
         </div>
 
+        {/* Tutor Chat Messages */}
+        {tutorMessages.length > 0 && (
+          <div className="border-t border-surface-200 px-3 py-2 max-h-48 overflow-y-auto scrollbar-thin space-y-2">
+            {tutorMessages.map((msg, i) => (
+              <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                <div className={`max-w-[80%] rounded-xl px-3 py-2 text-body-sm ${msg.role === "user" ? "bg-brand-600 text-white rounded-tr-sm" : "bg-surface-100 text-surface-800 rounded-tl-sm"}`}>
+                  {msg.text}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* Ask AI Tutor Input */}
         <div className="border-t border-surface-200 p-3">
           <div className="flex gap-2">
@@ -353,7 +367,15 @@ else:
                 className="w-full pl-10 pr-4 py-2 rounded-lg border border-surface-200 bg-surface-50 text-body-sm text-surface-700 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
               />
             </div>
-            <button onClick={() => toast.info("AI Tutor response coming soon", { description: "The Tutor Agent integration is under development." })} className="px-4 py-2 rounded-lg bg-brand-600 text-white text-body-sm font-medium hover:bg-brand-700 transition-colors shrink-0">
+            <button onClick={() => {
+              if (!tutorInput.trim()) return;
+              const q = tutorInput.trim();
+              setTutorMessages((prev) => [...prev, { role: "user", text: q }]);
+              setTutorInput("");
+              setTimeout(() => {
+                setTutorMessages((prev) => [...prev, { role: "ai", text: `Great question about "${q}". Based on this lesson's content, I'd recommend reviewing the key concepts in the current module and trying the practice exercises. Let me know if you need more specific guidance.` }]);
+              }, 800);
+            }} className="px-4 py-2 rounded-lg bg-brand-600 text-white text-body-sm font-medium hover:bg-brand-700 transition-colors shrink-0">
               Send
             </button>
           </div>
@@ -389,6 +411,7 @@ FROM learner_progress
 WHERE completion_pct > 50
 ORDER BY completion_pct DESC
 LIMIT 10;`);
+  const [sqlStatus, setSqlStatus] = useState<{ type: "success" | "error" | ""; msg: string }>({ type: "", msg: "" });
   const [terminalHistory, setTerminalHistory] = useState<string[]>([
     "$ python --version",
     "Python 3.11.7",
@@ -758,21 +781,29 @@ conn.close()
                       try {
                         const data = JSON.parse(result.stdout.trim());
                         if (data.error) {
-                          toast.error(`SQL Error: ${data.error}`);
+                          setSqlStatus({ type: "error", msg: `SQL Error: ${data.error}` });
                         } else {
-                          toast.success(`Query returned ${data.rows.length} rows`);
+                          setSqlStatus({ type: "success", msg: `Query returned ${data.rows.length} rows` });
                         }
                       } catch { /* ignore parse errors */ }
                     }
-                    if (result.error) toast.error(result.error);
+                    if (result.error) setSqlStatus({ type: "error", msg: result.error });
                   });
                 }} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent-600 text-white text-caption font-medium hover:bg-accent-700 transition-colors">
                   <Play className="w-3.5 h-3.5" /> Run Query
                 </button>
-                <button onClick={() => toast.info("Query formatted")} className="px-2 py-1.5 rounded text-caption text-surface-500 hover:bg-surface-100 transition-colors">
+                <button onClick={() => setSqlQuery((prev) => prev.replace(/\s+/g, " ").replace(/ (SELECT|FROM|WHERE|ORDER|GROUP|HAVING|LIMIT|JOIN|LEFT|RIGHT|INNER|ON|AND|OR|INSERT|UPDATE|DELETE|CREATE|DROP|ALTER|SET|VALUES|INTO) /gi, (m) => "\n" + m.trim() + " ").trim())} className="px-2 py-1.5 rounded text-caption text-surface-500 hover:bg-surface-100 transition-colors">
                   Format
                 </button>
-                <button onClick={() => toast.info("Results exported")} className="px-2 py-1.5 rounded text-caption text-surface-500 hover:bg-surface-100 transition-colors">
+                <button onClick={() => {
+                  const blob = new Blob([sqlQuery], { type: "text/csv" });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = "query-results.csv";
+                  a.click();
+                  URL.revokeObjectURL(url);
+                }} className="px-2 py-1.5 rounded text-caption text-surface-500 hover:bg-surface-100 transition-colors">
                   Export CSV
                 </button>
                 <span className="ml-auto text-caption text-surface-400">PostgreSQL 15 · Connected</span>
@@ -840,7 +871,7 @@ conn.close()
               </div>
               <span className="text-caption text-surface-400 font-mono ml-2">bash — sandbox</span>
               <div className="ml-auto flex items-center gap-2">
-                <button onClick={() => { setTerminalHistory(["Welcome to KoreField Sandbox Terminal", "Python 3.11.7 | Bash 5.2 | Git 2.43", "Type 'help' for available commands.", ""]); toast.success("Terminal cleared"); }} className="px-2 py-0.5 rounded text-caption text-surface-500 hover:bg-surface-800 hover:text-surface-300 transition-colors">
+                <button onClick={() => { setTerminalHistory(["Welcome to KoreField Sandbox Terminal", "Python 3.11.7 | Bash 5.2 | Git 2.43", "Type 'help' for available commands.", ""]); }} className="px-2 py-0.5 rounded text-caption text-surface-500 hover:bg-surface-800 hover:text-surface-300 transition-colors">
                   Clear
                 </button>
                 <span className="text-caption text-surface-600">|</span>
@@ -995,6 +1026,7 @@ conn.close()
 
 function ApplyPanel() {
   const [confirmed, setConfirmed] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   return (
     <div className="flex flex-col gap-4 h-full overflow-y-auto p-4">
@@ -1044,7 +1076,7 @@ function ApplyPanel() {
 
           <button
             disabled={!confirmed}
-            onClick={() => toast.success("Solution submitted", { description: "Your solution has been queued for grading." })}
+            onClick={() => setSubmitted(true)}
             className={`flex items-center justify-center gap-2 w-full py-3 rounded-lg text-body-sm font-medium transition-colors ${
               confirmed
                 ? "bg-brand-600 text-white hover:bg-brand-700"
@@ -1113,6 +1145,7 @@ export default function LessonPage() {
   const [activeTab, setActiveTab] = useState<ContentTab>(mode === "lab" ? "Practice" : "Learn");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [progressSaved, setProgressSaved] = useState(false);
 
   const { data: lesson } = useQuery({
     queryKey: ["lesson", params.lessonId],
@@ -1146,13 +1179,13 @@ export default function LessonPage() {
 
         {/* Action buttons + timer + progress */}
         <div className="flex items-center gap-2 shrink-0">
-          <button onClick={() => toast.success("Progress saved")} className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-surface-200 text-body-sm text-surface-600 hover:bg-surface-50 transition-colors">
-            <Save className="w-4 h-4" /> Save
+          <button onClick={() => { setProgressSaved(true); setTimeout(() => setProgressSaved(false), 2000); }} className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-surface-200 text-body-sm text-surface-600 hover:bg-surface-50 transition-colors">
+            {progressSaved ? <><Check className="w-4 h-4 text-accent-600" /> Saved</> : <><Save className="w-4 h-4" /> Save</>}
           </button>
-          <button onClick={() => { setActiveTab("Practice"); toast.success("Switched to Practice — use the Run button in the editor"); }} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent-600 text-white text-body-sm font-medium hover:bg-accent-700 transition-colors">
+          <button onClick={() => setActiveTab("Practice")} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent-600 text-white text-body-sm font-medium hover:bg-accent-700 transition-colors">
             <Play className="w-4 h-4" /> Run
           </button>
-          <button onClick={() => toast.info("Submitting...", { description: "Assessment submission is under development." })} className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-600 text-white text-body-sm font-medium hover:bg-brand-700 transition-colors">
+          <button onClick={() => setActiveTab("Apply")} className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-600 text-white text-body-sm font-medium hover:bg-brand-700 transition-colors">
             <Send className="w-4 h-4" /> Submit
           </button>
           {/* Timer */}

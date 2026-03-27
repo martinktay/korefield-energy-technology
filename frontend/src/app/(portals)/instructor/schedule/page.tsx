@@ -2,8 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { X } from "lucide-react";
-import { toast } from "sonner";
+import { X, Check } from "lucide-react";
 
 interface Session {
   id: string; title: string; date: string; time: string; module: string; cohort: string; status: string;
@@ -27,6 +26,7 @@ export default function SchedulePage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [form, setForm] = useState({ title: "", date: "", time: "", module: MODULES[0], cohort: COHORTS[0] });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [justCreated, setJustCreated] = useState("");
 
   function openDialog() {
     setForm({ title: "", date: "", time: "", module: MODULES[0], cohort: COHORTS[0] });
@@ -59,7 +59,8 @@ export default function SchedulePage() {
     };
     setSessions((prev) => [newSession, ...prev]);
     setDialogOpen(false);
-    toast.success(`Session "${newSession.title}" scheduled`, { description: `${newSession.date} at ${newSession.time}.` });
+    setJustCreated(newSession.id);
+    setTimeout(() => setJustCreated(""), 3000);
   }
   return (
     <div className="space-y-6">

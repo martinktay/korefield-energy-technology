@@ -3,7 +3,6 @@
 
 import { useState } from "react";
 import { X } from "lucide-react";
-import { toast } from "sonner";
 
 import { useQuery } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
@@ -94,7 +93,6 @@ export default function UsersPage() {
     };
     setExtraUsers((prev) => [newUser, ...prev]);
     setDialogOpen(false);
-    toast.success(`User "${newUser.name}" created`, { description: `Added as ${newUser.role} (${newUser.status}).` });
   }
 
   return (

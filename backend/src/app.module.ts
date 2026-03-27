@@ -13,8 +13,10 @@ import { ContentModule } from './content/content.module';
 import { PaymentModule } from './payment/payment.module';
 import { CertificationModule } from './certification/certification.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { RecruitmentModule } from './recruitment/recruitment.module';
+import { FinanceModule } from './finance/finance.module';
 
 @Module({
-  imports: [CommonModule, AuthModule, EnrollmentModule, ContentModule, PaymentModule, CertificationModule, DashboardModule],
+  imports: [CommonModule, AuthModule, EnrollmentModule, ContentModule, PaymentModule, CertificationModule, DashboardModule, RecruitmentModule, FinanceModule],
 })
 export class AppModule {}

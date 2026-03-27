@@ -1,12 +1,16 @@
-/** @file corporate/layout.tsx — Layout wrapper for the Corporate Partner portal (sponsored learner tracking, billing). */
 "use client";
 
 import { NavigationShell, type NavItem } from "@/components/layout";
+import {
+  LayoutDashboard,
+  Users,
+  Receipt,
+} from "lucide-react";
 
 const navItems: NavItem[] = [
-  { label: "Dashboard", href: "/corporate" },
-  { label: "Sponsored Learners", href: "/corporate/learners" },
-  { label: "Billing", href: "/corporate/billing" },
+  { label: "Dashboard", href: "/corporate", Icon: LayoutDashboard },
+  { label: "Sponsored Learners", href: "/corporate/learners", Icon: Users },
+  { label: "Billing", href: "/corporate/billing", Icon: Receipt },
 ];
 
 export default function CorporateLayout({

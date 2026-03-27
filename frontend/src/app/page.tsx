@@ -37,6 +37,7 @@ const tracks = [
     icon: Cpu,
     color: "text-brand-600",
     bg: "bg-brand-50",
+    border: "hover:border-l-brand-500",
   },
   {
     id: "data-science",
@@ -45,6 +46,7 @@ const tracks = [
     icon: BarChart3,
     color: "text-accent-600",
     bg: "bg-accent-50",
+    border: "hover:border-l-accent-500",
   },
   {
     id: "cybersecurity",
@@ -53,6 +55,7 @@ const tracks = [
     icon: ShieldCheck,
     color: "text-amber-600",
     bg: "bg-amber-50",
+    border: "hover:border-l-amber-500",
   },
   {
     id: "ai-product",
@@ -61,6 +64,7 @@ const tracks = [
     icon: Rocket,
     color: "text-purple-600",
     bg: "bg-purple-50",
+    border: "hover:border-l-purple-500",
   },
 ];
 
@@ -93,16 +97,18 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-surface-0">
       {/* ── Navigation ── */}
-      <nav className="sticky top-0 z-50 border-b border-surface-200 bg-surface-0/80 backdrop-blur-md">
+      <nav className="sticky top-0 z-50 border-b border-surface-200/80 bg-surface-0/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
           <Link href="/" className="text-heading-sm text-brand-700 font-semibold">
             KoreField Academy
           </Link>
           <div className="hidden items-center gap-1 sm:flex">
-            <a href="#tracks" className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}>Tracks</a>
+            <a href="#tracks" className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}>Specialized Tracks</a>
             <a href="#features" className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}>Features</a>
             <Link href="/pricing" className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}>Pricing</Link>
             <a href="#how-it-works" className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}>How It Works</a>
+            <Link href="/team" className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}>Team</Link>
+            <Link href="/careers" className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}>Careers</Link>
             <Separator orientation="vertical" className="mx-2 h-5" />
             <Link href="/learner/login" className={cn(buttonVariants({ variant: "outline", size: "sm" }))}>Sign In</Link>
             <Link href="/learner/register" className={cn(buttonVariants({ size: "sm" }), "bg-brand-600 text-white hover:bg-brand-700")}>Get Started</Link>
@@ -137,11 +143,11 @@ export default function LandingPage() {
               intelligent industries. Start free with Foundation School.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/learner/register" className={cn(buttonVariants({ size: "lg" }), "bg-brand-500 text-white hover:bg-brand-400 shadow-lg gap-2")}>
+              <Link href="/learner/register" className={cn(buttonVariants({ size: "lg" }), "bg-white text-brand-700 hover:bg-surface-50 shadow-lg gap-2 font-semibold")}>
                 Start Free Foundation
                 <ArrowRight className="size-4" />
               </Link>
-              <a href="#tracks" className={cn(buttonVariants({ size: "lg" }), "bg-brand-500 text-white hover:bg-brand-400 shadow-lg")}>
+              <a href="#tracks" className={cn(buttonVariants({ size: "lg", variant: "outline" }), "border-brand-400/40 text-brand-100 hover:bg-brand-800/40 hover:text-white bg-transparent")}>
                 Explore Tracks
               </a>
             </div>
@@ -150,12 +156,12 @@ export default function LandingPage() {
       </header>
 
       {/* ── Stats Bar ── */}
-      <section className="border-b border-surface-200 bg-surface-50">
-        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-6 px-4 py-10 sm:px-6 md:grid-cols-4 lg:px-8">
+      <section className="border-b border-surface-200 bg-surface-0">
+        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-6 px-4 py-12 sm:px-6 md:grid-cols-4 lg:px-8">
           {stats.map((stat) => (
             <div key={stat.label} className="text-center">
-              <p className="text-display-sm text-brand-700">{stat.value}</p>
-              <p className="mt-1 text-body-sm text-surface-500">{stat.label}</p>
+              <p className="text-display-sm text-brand-600 font-bold">{stat.value}</p>
+              <p className="mt-1.5 text-body-sm text-surface-500 font-medium">{stat.label}</p>
             </div>
           ))}
         </div>
@@ -175,14 +181,11 @@ export default function LandingPage() {
             {steps.map((item) => {
               const Icon = item.icon;
               return (
-                <Card key={item.step} className="relative border-surface-200 bg-surface-0 shadow-card hover:shadow-card-hover transition-shadow">
+                <Card key={item.step} className="relative border-surface-200 bg-surface-0 shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all group">
                   <CardHeader>
-                    <div className="flex items-center gap-3">
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-600 text-body-sm font-bold text-white">
-                        {item.step}
-                      </span>
-                      <Icon className="size-5 text-brand-500" aria-hidden="true" />
-                    </div>
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-600 text-body-sm font-bold text-white group-hover:scale-110 transition-transform">
+                      {item.step}
+                    </span>
                     <CardTitle className="text-heading-sm text-surface-900 mt-1">{item.title}</CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -200,7 +203,7 @@ export default function LandingPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <Badge variant="outline" className="mb-3">Beginner → Advanced</Badge>
-            <h2 className="text-display-sm text-surface-900">Track Pathways</h2>
+            <h2 className="text-display-sm text-surface-900">Specialized Tracks</h2>
             <p className="mt-3 text-body-lg text-surface-500 max-w-2xl mx-auto">
               Four specialized tracks spanning Beginner to Advanced. Each includes
               AI-powered lessons, instructor-led labs, and a capstone defense.
@@ -210,11 +213,8 @@ export default function LandingPage() {
             {tracks.map((track) => {
               const Icon = track.icon;
               return (
-                <Card key={track.id} className="border-surface-200 bg-surface-0 shadow-card hover:shadow-card-hover transition-all group">
+                <Card key={track.id} className="border-surface-200 border-l-4 border-l-transparent bg-surface-0 shadow-card hover:shadow-card-hover transition-all group">
                   <CardHeader>
-                    <div className={`flex h-11 w-11 items-center justify-center rounded-xl ${track.bg}`}>
-                      <Icon className={`size-6 ${track.color}`} aria-hidden="true" />
-                    </div>
                     <CardTitle className="text-heading-sm text-surface-900 mt-1">{track.name}</CardTitle>
                     <CardDescription className="text-body-sm text-surface-500">
                       {track.description}
@@ -250,9 +250,9 @@ export default function LandingPage() {
             {features.map((feature) => {
               const Icon = feature.icon;
               return (
-                <Card key={feature.title} className="border-surface-200 bg-surface-0 shadow-card hover:shadow-card-hover transition-shadow">
+                <Card key={feature.title} className="border-surface-200 bg-surface-0 shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all group">
                   <CardHeader>
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-50">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 group-hover:bg-brand-100 transition-colors">
                       <Icon className="size-5 text-brand-600" aria-hidden="true" />
                     </div>
                     <CardTitle className="text-heading-sm text-surface-900 mt-1">{feature.title}</CardTitle>
@@ -295,7 +295,7 @@ export default function LandingPage() {
       {/* ── Footer ── */}
       <footer className="border-t border-surface-200 bg-surface-50">
         <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-5">
             <div>
               <p className="text-heading-sm text-brand-700">KoreField Academy</p>
               <p className="mt-2 text-body-sm text-surface-500">
@@ -305,9 +305,10 @@ export default function LandingPage() {
             <div>
               <p className="text-body-sm font-medium text-surface-900">Platform</p>
               <ul className="mt-2 space-y-1.5 text-body-sm text-surface-500">
-                <li><a href="#tracks" className="hover:text-surface-700 transition-colors">Tracks</a></li>
+                <li><a href="#tracks" className="hover:text-surface-700 transition-colors">Specialized Tracks</a></li>
                 <li><a href="#features" className="hover:text-surface-700 transition-colors">Features</a></li>
                 <li><a href="#how-it-works" className="hover:text-surface-700 transition-colors">How It Works</a></li>
+                <li><Link href="/pricing" className="hover:text-surface-700 transition-colors">Pricing</Link></li>
               </ul>
             </div>
             <div>
@@ -316,6 +317,15 @@ export default function LandingPage() {
                 <li><Link href="/learner" className="hover:text-surface-700 transition-colors">Learner</Link></li>
                 <li><Link href="/instructor" className="hover:text-surface-700 transition-colors">Instructor</Link></li>
                 <li><Link href="/admin" className="hover:text-surface-700 transition-colors">Admin</Link></li>
+                <li><Link href="/super-admin" className="hover:text-surface-700 transition-colors">Super Admin</Link></li>
+                <li><Link href="/corporate" className="hover:text-surface-700 transition-colors">Corporate</Link></li>
+              </ul>
+            </div>
+            <div>
+              <p className="text-body-sm font-medium text-surface-900">Company</p>
+              <ul className="mt-2 space-y-1.5 text-body-sm text-surface-500">
+                <li><Link href="/team" className="hover:text-surface-700 transition-colors">Team</Link></li>
+                <li><Link href="/careers" className="hover:text-surface-700 transition-colors">Careers</Link></li>
               </ul>
             </div>
             <div>

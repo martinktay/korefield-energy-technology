@@ -1,14 +1,18 @@
-/**
- * @file learner/page.tsx
- * Learner Dashboard — the default landing page for authenticated learners.
- * Displays enrolled track progress with visual progress bars, upcoming activities
- * (labs, performance gates, pod reviews), and quick navigation to key sections.
- */
 "use client";
 
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
+import {
+  BookOpen,
+  Users,
+  GraduationCap,
+  Award,
+  ArrowRight,
+  Calendar,
+  Zap,
+  Target,
+} from "lucide-react";
 
 const FALLBACK_TRACKS = [
   { id: "TRK-ai-eng-001", name: "AI Engineering and Intelligent Systems", level: "Beginner", module: "Module 2 of 6", progress: 33 },
@@ -22,11 +26,17 @@ const FALLBACK_ACTIVITIES = [
 ];
 
 const quickLinks = [
-  { label: "Foundation School", href: "/learner/foundation", icon: "📚" },
-  { label: "My Pods", href: "/learner/pods", icon: "👥" },
-  { label: "Lessons", href: "/learner/lessons", icon: "🎓" },
-  { label: "Certificates", href: "/learner/certificates", icon: "📜" },
+  { label: "Foundation School", href: "/learner/foundation", Icon: BookOpen, color: "text-brand-600", bg: "bg-brand-50", hoverBg: "group-hover:bg-brand-100" },
+  { label: "My Pods", href: "/learner/pods", Icon: Users, color: "text-accent-600", bg: "bg-accent-50", hoverBg: "group-hover:bg-accent-100" },
+  { label: "Lessons", href: "/learner/lessons", Icon: GraduationCap, color: "text-purple-600", bg: "bg-purple-50", hoverBg: "group-hover:bg-purple-100" },
+  { label: "Certificates", href: "/learner/certificates", Icon: Award, color: "text-amber-600", bg: "bg-amber-50", hoverBg: "group-hover:bg-amber-100" },
 ];
+
+const ACTIVITY_ICONS: Record<string, { Icon: typeof Calendar; color: string }> = {
+  lab: { Icon: Zap, color: "text-brand-500" },
+  gate: { Icon: Target, color: "text-amber-500" },
+  pod: { Icon: Users, color: "text-accent-500" },
+};
 
 interface LearnerData {
   tracks: { id: string; name: string; level: string; module: string; progress: number }[];
@@ -42,16 +52,12 @@ export default function LearnerDashboard() {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <div className="h-8 w-48 animate-pulse rounded bg-surface-200" />
+        <div className="h-8 w-48 skeleton" />
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-20 animate-pulse rounded-card bg-surface-200" />
-          ))}
+          {[1, 2, 3, 4].map((i) => <div key={i} className="h-24 skeleton rounded-xl" />)}
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
-          {[1, 2].map((i) => (
-            <div key={i} className="h-32 animate-pulse rounded-card bg-surface-200" />
-          ))}
+          {[1, 2].map((i) => <div key={i} className="h-36 skeleton rounded-xl" />)}
         </div>
       </div>
     );
@@ -61,47 +67,58 @@ export default function LearnerDashboard() {
   const activities = data?.activities ?? FALLBACK_ACTIVITIES;
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-heading-lg text-surface-900">Dashboard</h1>
+    <div className="space-y-8">
+      {/* Welcome header */}
+      <div>
+        <h1 className="text-display-sm text-surface-900">Welcome back, Kofi</h1>
+        <p className="mt-1 text-body-lg text-surface-500">Pick up where you left off.</p>
+      </div>
 
       {/* Quick Navigation */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {quickLinks.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            className="flex flex-col items-center gap-1.5 rounded-card border border-surface-200 bg-surface-0 p-3 shadow-card hover:border-brand-300 hover:shadow-card-hover transition-all text-center"
-          >
-            <span className="text-heading-sm">{link.icon}</span>
-            <span className="text-caption font-medium text-surface-700">{link.label}</span>
-          </Link>
-        ))}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 stagger-children">
+        {quickLinks.map((link) => {
+          const Icon = link.Icon;
+          return (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="group flex flex-col items-center gap-2.5 rounded-xl border border-surface-200 bg-surface-0 p-4 shadow-card hover:shadow-card-hover hover:border-surface-300 transition-all text-center"
+            >
+              <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${link.bg} ${link.hoverBg} transition-colors`}>
+                <Icon className={`h-5 w-5 ${link.color}`} aria-hidden="true" />
+              </div>
+              <span className="text-body-sm font-medium text-surface-700 group-hover:text-surface-900 transition-colors">{link.label}</span>
+            </Link>
+          );
+        })}
       </div>
 
       {/* Progress Overview */}
       <section aria-labelledby="progress-heading">
-        <h2 id="progress-heading" className="text-heading-sm text-surface-900 mb-3">
-          My Tracks
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="flex items-center justify-between mb-4">
+          <h2 id="progress-heading" className="text-heading-sm text-surface-900">My Tracks</h2>
+          <Link href="/learner/tracks" className="flex items-center gap-1 text-body-sm text-brand-600 hover:text-brand-700 transition-colors font-medium">
+            View all <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2 stagger-children">
           {tracks.map((track) => (
             <Link
               key={track.id}
               href={`/learner/tracks/${track.id}`}
-              className="block rounded-card border border-surface-200 bg-surface-0 p-4 shadow-card hover:border-brand-300 transition-colors"
+              className="group block rounded-xl border border-surface-200 bg-surface-0 p-5 shadow-card hover:shadow-card-hover hover:border-brand-200 transition-all"
             >
-              <h3 className="text-body-lg font-medium text-surface-900">{track.name}</h3>
-              <p className="text-body-sm text-surface-500 mt-1">
-                {track.level} · {track.module}
-              </p>
-              <div className="mt-3">
-                <div className="flex items-center justify-between text-caption text-surface-600 mb-1">
-                  <span>Progress</span>
-                  <span>{track.progress}%</span>
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <h3 className="text-body-lg font-semibold text-surface-900 group-hover:text-brand-700 transition-colors">{track.name}</h3>
+                  <p className="text-body-sm text-surface-500 mt-1">{track.level} · {track.module}</p>
                 </div>
-                <div className="h-2 w-full rounded-full bg-surface-200">
+                <span className="text-heading-sm font-bold text-brand-600">{track.progress}%</span>
+              </div>
+              <div className="mt-4">
+                <div className="h-2 w-full rounded-full bg-surface-100 overflow-hidden">
                   <div
-                    className="h-2 rounded-full bg-brand-600 transition-all"
+                    className="h-2 rounded-full bg-gradient-to-r from-brand-500 to-brand-400 transition-all duration-500"
                     style={{ width: `${track.progress}%` }}
                     role="progressbar"
                     aria-valuenow={track.progress}
@@ -118,17 +135,27 @@ export default function LearnerDashboard() {
 
       {/* Upcoming Activities */}
       <section aria-labelledby="activities-heading">
-        <h2 id="activities-heading" className="text-heading-sm text-surface-900 mb-3">
-          Upcoming Activities
-        </h2>
-        <div className="rounded-card border border-surface-200 bg-surface-0 shadow-card">
-          <ul className="divide-y divide-surface-200" role="list">
-            {activities.map((activity) => (
-              <li key={activity.id} className="flex items-center justify-between px-4 py-3">
-                <span className="text-body-sm text-surface-900">{activity.label}</span>
-                <span className="text-caption text-surface-500">{activity.date}</span>
-              </li>
-            ))}
+        <h2 id="activities-heading" className="text-heading-sm text-surface-900 mb-4">Upcoming Activities</h2>
+        <div className="rounded-xl border border-surface-200 bg-surface-0 shadow-card overflow-hidden">
+          <ul className="divide-y divide-surface-100" role="list">
+            {activities.map((activity) => {
+              const activityMeta = ACTIVITY_ICONS[activity.type] || ACTIVITY_ICONS.lab;
+              const Icon = activityMeta.Icon;
+              return (
+                <li key={activity.id} className="flex items-center gap-3 px-5 py-4 hover:bg-surface-50 transition-colors">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-surface-50">
+                    <Icon className={`h-4 w-4 ${activityMeta.color}`} aria-hidden="true" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-body-sm font-medium text-surface-900 truncate">{activity.label}</p>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-caption text-surface-400">
+                    <Calendar className="h-3.5 w-3.5" aria-hidden="true" />
+                    {activity.date}
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         </div>
       </section>

@@ -6,9 +6,8 @@
  */
 "use client";
 
-import { useState } from "react";
-import { Camera, Link2, Code2, Globe, AtSign, Save } from "lucide-react";
-import { toast } from "sonner";
+import { useState, useRef } from "react";
+import { Camera, Link2, Code2, Globe, AtSign, Save, Check } from "lucide-react";
 
 interface SocialLinks {
   linkedin?: string;
@@ -46,10 +45,23 @@ interface ProfilePageProps {
 export function ProfilePage({ initialData, roleKey }: ProfilePageProps) {
   const [data, setData] = useState(initialData);
   const [editing, setEditing] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   function handleSave() {
     setEditing(false);
-    toast.success("Profile updated", { description: "Your changes have been saved." });
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2500);
+  }
+
+  function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      setData((prev) => ({ ...prev, avatarUrl: ev.target?.result as string }));
+    };
+    reader.readAsDataURL(file);
   }
 
   function updateField(field: keyof ProfileData, value: string) {
@@ -67,22 +79,29 @@ export function ProfilePage({ initialData, roleKey }: ProfilePageProps) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-heading-lg text-surface-900">Profile</h1>
-        {editing ? (
-          <button
-            onClick={handleSave}
-            className="flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-body-sm font-medium text-white hover:bg-brand-700 transition-colors"
-          >
-            <Save className="h-4 w-4" />
-            Save Changes
-          </button>
-        ) : (
-          <button
-            onClick={() => setEditing(true)}
-            className="rounded-lg border border-surface-300 px-4 py-2 text-body-sm font-medium text-surface-700 hover:bg-surface-100 transition-colors"
-          >
-            Edit Profile
-          </button>
-        )}
+        <div className="flex items-center gap-3">
+          {saved && (
+            <span className="flex items-center gap-1.5 text-body-sm text-accent-600 animate-fade-in-up">
+              <Check className="h-4 w-4" /> Saved
+            </span>
+          )}
+          {editing ? (
+            <button
+              onClick={handleSave}
+              className="flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2 text-body-sm font-medium text-white hover:bg-brand-700 transition-all active:scale-[0.98]"
+            >
+              <Save className="h-4 w-4" />
+              Save Changes
+            </button>
+          ) : (
+            <button
+              onClick={() => setEditing(true)}
+              className="rounded-xl border border-surface-200 px-4 py-2 text-body-sm font-medium text-surface-700 hover:bg-surface-50 transition-all"
+            >
+              Edit Profile
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Avatar + Basic Info */}
@@ -98,14 +117,24 @@ export function ProfilePage({ initialData, roleKey }: ProfilePageProps) {
               )}
             </div>
             {editing && (
-              <button
-                type="button"
-                className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-brand-600 text-white shadow-md hover:bg-brand-700 transition-colors"
-                aria-label="Upload profile photo"
-                onClick={() => toast.info("Photo upload coming soon", { description: "This feature is under development." })}
-              >
-                <Camera className="h-3.5 w-3.5" />
-              </button>
+              <>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handlePhotoUpload}
+                  aria-label="Upload profile photo"
+                />
+                <button
+                  type="button"
+                  className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-brand-600 text-white shadow-md hover:bg-brand-700 transition-colors"
+                  aria-label="Upload profile photo"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <Camera className="h-3.5 w-3.5" />
+                </button>
+              </>
             )}
           </div>
 

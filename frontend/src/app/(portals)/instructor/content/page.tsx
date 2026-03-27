@@ -3,7 +3,6 @@
 
 import { useState } from "react";
 import { X } from "lucide-react";
-import { toast } from "sonner";
 import { AssessmentBuilder, type Question } from "@/components/content";
 
 interface Module {
@@ -85,7 +84,6 @@ export default function ContentPage() {
 
     setModules((prev) => [newModule, ...prev]);
     setDialogOpen(false);
-    toast.success(`Module "${newModule.title}" created`, { description: `Added as Draft with ${newModule.lessons} lessons.` });
   }
 
   return (

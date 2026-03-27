@@ -1,20 +1,16 @@
-/**
- * @file sidebar.tsx
- * Responsive sidebar navigation component used across all portal types.
- * Desktop: full sidebar with labels. Mobile: overlay drawer with close button.
- * Active route is highlighted with brand colors and aria-current="page".
- */
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useUIStore } from "@/stores/ui-store";
 import { useEffect } from "react";
+import type { LucideIcon } from "lucide-react";
 
 export interface NavItem {
   label: string;
   href: string;
   icon?: string;
+  Icon?: LucideIcon;
 }
 
 interface SidebarProps {
@@ -25,23 +21,20 @@ export function Sidebar({ items }: SidebarProps) {
   const pathname = usePathname();
   const { sidebarOpen, setSidebarOpen } = useUIStore();
 
-  // Close mobile sidebar on route change
   useEffect(() => {
     setSidebarOpen(false);
   }, [pathname, setSidebarOpen]);
 
   return (
     <>
-      {/* Mobile overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-surface-950/40 lg:hidden"
+          className="fixed inset-0 z-40 bg-surface-950/50 backdrop-blur-sm lg:hidden transition-opacity"
           onClick={() => setSidebarOpen(false)}
           aria-hidden="true"
         />
       )}
 
-      {/* Sidebar panel */}
       <aside
         className={`
           fixed inset-y-0 left-0 z-50 flex w-sidebar flex-col border-r border-surface-200 bg-surface-0
@@ -52,13 +45,13 @@ export function Sidebar({ items }: SidebarProps) {
         role="navigation"
         aria-label="Sidebar navigation"
       >
-        {/* Sidebar header (mobile close) */}
+        {/* Mobile header */}
         <div className="flex h-14 items-center justify-between border-b border-surface-200 px-4 lg:hidden">
           <span className="font-bold text-brand-700">KoreField</span>
           <button
             type="button"
             onClick={() => setSidebarOpen(false)}
-            className="rounded-md p-1 text-surface-500 hover:bg-surface-100"
+            className="rounded-md p-1.5 text-surface-500 hover:bg-surface-100 transition-colors"
             aria-label="Close navigation menu"
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
@@ -68,24 +61,39 @@ export function Sidebar({ items }: SidebarProps) {
         </div>
 
         {/* Nav items */}
-        <nav className="flex-1 overflow-y-auto px-3 py-4">
-          <ul className="space-y-1" role="list">
+        <nav className="flex-1 overflow-y-auto scrollbar-thin px-3 py-4">
+          <ul className="space-y-0.5" role="list">
             {items.map((item) => {
-              const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+              // Exact match for dashboard-level routes (e.g. /learner, /instructor)
+              // For sub-routes, use startsWith but exclude the portal root from matching children
+              const portalRoot = "/" + item.href.split("/").filter(Boolean)[0];
+              const isDashboardLink = item.href === portalRoot;
+              const isActive = isDashboardLink
+                ? pathname === item.href
+                : pathname === item.href || pathname.startsWith(item.href + "/");
+              const IconComponent = item.Icon;
               return (
                 <li key={item.href}>
                   <Link
                     href={item.href}
                     className={`
-                      flex items-center gap-3 rounded-lg px-3 py-2 text-body-sm transition-colors
+                      group flex items-center gap-3 rounded-lg px-3 py-2.5 text-body-sm transition-all duration-150
                       ${
                         isActive
-                          ? "bg-brand-50 text-brand-700 font-medium"
-                          : "text-surface-600 hover:bg-surface-100 hover:text-surface-900"
+                          ? "bg-brand-600/10 text-brand-700 font-medium border-l-2 border-brand-600 -ml-[2px] pl-[calc(0.75rem+2px)]"
+                          : "text-surface-500 hover:bg-surface-100 hover:text-surface-900"
                       }
                     `}
                     aria-current={isActive ? "page" : undefined}
                   >
+                    {IconComponent && (
+                      <IconComponent
+                        className={`h-[18px] w-[18px] shrink-0 transition-colors ${
+                          isActive ? "text-brand-600" : "text-surface-400 group-hover:text-surface-500"
+                        }`}
+                        aria-hidden="true"
+                      />
+                    )}
                     {item.label}
                   </Link>
                 </li>
@@ -93,6 +101,14 @@ export function Sidebar({ items }: SidebarProps) {
             })}
           </ul>
         </nav>
+
+        {/* Sidebar footer */}
+        <div className="border-t border-surface-200 px-3 py-3">
+          <div className="rounded-lg bg-brand-50/50 px-3 py-2.5">
+            <p className="text-caption font-medium text-brand-700">Need help?</p>
+            <p className="text-caption text-brand-600/70 mt-0.5">Visit our support center</p>
+          </div>
+        </div>
       </aside>
     </>
   );

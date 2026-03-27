@@ -646,3 +646,72 @@ model CertificationEligibility {
   @@index([track_id])
   @@map("certification_eligibilities")
 }
+
+// ─── Recruitment Domain ─────────────────────────────────────────
+
+enum JobOpeningType {
+  full_time
+  contract
+}
+
+enum JobOpeningStatus {
+  open
+  closed
+  filled
+}
+
+enum ApplicationStatus {
+  new_application
+  in_review
+  shortlisted
+  interview
+  offer
+  hired
+  rejected
+}
+
+model JobOpening {
+  id               String           @id @default("")
+  title            String
+  department       String
+  type             JobOpeningType
+  location         String
+  description      String
+  responsibilities Json             @default("[]")
+  requirements     Json             @default("[]")
+  nice_to_have     Json             @default("[]")
+  keywords         Json             @default("[]")
+  status           JobOpeningStatus @default(open)
+  created_at       DateTime         @default(now())
+  updated_at       DateTime         @updatedAt
+
+  applications Application[]
+
+  @@index([status])
+  @@index([department])
+  @@map("job_openings")
+}
+
+model Application {
+  id               String            @id @default("")
+  job_opening_id   String
+  applicant_name   String
+  applicant_email  String
+  cv_s3_key        String
+  cv_filename      String
+  cover_note       String?
+  ats_score        Int               @default(0)
+  matched_keywords Json              @default("[]")
+  missing_keywords Json              @default("[]")
+  status           ApplicationStatus @default(new_application)
+  reviewer_notes   String?
+  applied_at       DateTime          @default(now())
+  updated_at       DateTime          @updatedAt
+
+  job_opening JobOpening @relation(fields: [job_opening_id], references: [id], onDelete: Cascade)
+
+  @@index([job_opening_id])
+  @@index([status])
+  @@index([applicant_email])
+  @@map("applications")
+}

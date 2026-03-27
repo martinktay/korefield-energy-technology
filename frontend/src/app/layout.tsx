@@ -7,7 +7,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { QueryProvider } from "@/providers/query-provider";
-import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
 import "./globals.css";
 
@@ -27,7 +26,6 @@ export default function RootLayout({
     <html lang="en" className={cn("font-sans", inter.variable)}>
       <body>
         <QueryProvider>{children}</QueryProvider>
-        <Toaster position="top-right" richColors />
       </body>
     </html>
   );

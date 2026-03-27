@@ -5,7 +5,7 @@
 | Role | MFA Required | Portal Access |
 |------|-------------|---------------|
 | SuperAdmin | Yes | Super Admin Portal (full platform intelligence) |
-| Admin | No | Admin Portal (user/enrollment/curriculum/payment/certificate management) |
+| Admin | No | Admin Portal (user/enrollment/curriculum/payment/certificate/recruitment management) |
 | Instructor | Yes | Instructor Portal (cohort management, grading, content authoring) |
 | Assessor | Yes | Assessor Dashboard (pod supervision, certification approval) |
 | Learner | No | Learner Dashboard (progress, pods, payments, certificates) |
@@ -49,6 +49,18 @@
 | POST /certification/certificates/{CRT-*}/revoke | — | ✅ | — | — | — |
 
 ### AI Agent Endpoints
+
+### Recruitment Endpoints
+| Endpoint | SuperAdmin | Admin | Public |
+|----------|-----------|-------|--------|
+| POST /careers/apply | — | — | ✅ |
+| GET /careers/applications | ✅ | ✅ | — |
+| GET /careers/applications/{APP-*} | ✅ | ✅ | — |
+| PATCH /careers/applications/{APP-*}/status | ✅ | ✅ | — |
+| GET /careers/applications/{APP-*}/cv | ✅ | ✅ | — |
+| GET /careers/pipeline | ✅ | ✅ | — |
+
+### AI Agent Endpoints
 | Endpoint | SuperAdmin | Instructor | Assessor | Learner |
 |----------|-----------|-----------|----------|---------|
 | POST /ai/tutor/lesson | — | — | — | ✅ |
@@ -74,6 +86,6 @@
 | Learner | Own profile, own enrollments, own progress, own pod, own payments, own certificates |
 | Instructor | Assigned cohorts, grading queue, lesson schedules, student flags, pod visibility |
 | Assessor | Assigned pods and learners, submissions, professionalism scores, certification controls |
-| Admin | All users, enrollments, curriculum, payments, certificates (management operations) |
+| Admin | All users, enrollments, curriculum, payments, certificates, recruitment pipeline (management operations) |
 | SuperAdmin | Platform-wide aggregated metrics, revenue, enrollment, academic, AI, market intelligence |
 | CorporatePartner | Own sponsored learners and cohorts only |

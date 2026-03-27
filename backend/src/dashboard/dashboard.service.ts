@@ -13,6 +13,48 @@ export class DashboardService {
 
   // ── Admin Dashboard ───────────────────────────────────────────
 
+  async getRecruitmentPipeline() {
+    const applications = await this.prisma.application.findMany({
+      include: { job_opening: { select: { title: true, department: true } } },
+      orderBy: { applied_at: 'desc' },
+    });
+
+    const counts: Record<string, number> = {
+      total: applications.length,
+      new_application: 0,
+      in_review: 0,
+      shortlisted: 0,
+      interview: 0,
+      offer: 0,
+      hired: 0,
+      rejected: 0,
+    };
+
+    for (const app of applications) {
+      counts[app.status] = (counts[app.status] || 0) + 1;
+    }
+
+    const byDepartment = new Map<string, number>();
+    for (const app of applications) {
+      const dept = app.job_opening.department;
+      byDepartment.set(dept, (byDepartment.get(dept) || 0) + 1);
+    }
+
+    return {
+      pipeline: counts,
+      byDepartment: Object.fromEntries(byDepartment),
+      recentApplications: applications.slice(0, 10).map((a) => ({
+        id: a.id,
+        name: a.applicant_name,
+        role: a.job_opening.title,
+        department: a.job_opening.department,
+        atsScore: a.ats_score,
+        status: a.status,
+        appliedAt: a.applied_at.toISOString().split('T')[0],
+      })),
+    };
+  }
+
   async getAdminDashboard() {
     const [totalUsers, activeEnrollments, pendingPayments, certificatesIssued] =
       await Promise.all([
