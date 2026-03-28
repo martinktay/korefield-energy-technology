@@ -1,11 +1,11 @@
 /**
  * @file enrollment.service.ts
  * Core enrollment service managing the full learner lifecycle:
- * registration → onboarding → Foundation School → Track enrollment →
+ * registration → onboarding → AI Foundation School → Track enrollment →
  * pod assignment → performance-gated progression.
  *
  * Business rules enforced:
- * - Foundation School (5 modules) must be completed before paid Track enrollment
+ * - AI Foundation School (5 modules) must be completed before paid Track enrollment
  * - Learners enroll in full pathways (Beginner→Intermediate→Advanced), not individual levels
  * - Pods are multidisciplinary teams with 5 standard + 4 optional roles
  * - Performance gates allow max 2 reassessment attempts before module repeat
@@ -155,7 +155,7 @@ export class EnrollmentService {
    * 1. Update profile fields (country, background, goals) if provided
    * 2. Mark onboarding_complete = true
    * 3. Recommend tracks based on goals/background keywords
-   * 4. Auto-enroll in Foundation School (create FoundationProgress)
+   * 4. Auto-enroll in AI Foundation School (create FoundationProgress)
    */
   async onboardLearner(dto: OnboardLearnerDto) {
     const learner = await this.prisma.learner.findUnique({
@@ -253,7 +253,7 @@ export class EnrollmentService {
   }
 
   /**
-   * Get Foundation School progress for a learner.
+   * Get AI Foundation School progress for a learner.
    * Returns the 5 module statuses and overall completion state.
    */
   async getFoundationProgress(learnerId: string) {
@@ -288,7 +288,7 @@ export class EnrollmentService {
     }
 
     if (progress.completed) {
-      throw new BadRequestException('Foundation School already completed');
+      throw new BadRequestException('AI Foundation School already completed');
     }
 
     const statuses = progress.module_statuses as Array<{
@@ -322,7 +322,7 @@ export class EnrollmentService {
 
     this.logger.log(
       `Foundation module "${dto.module_name}" completed for learner ${dto.learner_id}` +
-        (allCompleted ? ' — Foundation School complete!' : ''),
+        (allCompleted ? ' — AI Foundation School complete!' : ''),
     );
 
     return {
@@ -383,7 +383,7 @@ export class EnrollmentService {
   }
 
   /**
-   * Check if a learner has completed Foundation School.
+   * Check if a learner has completed AI Foundation School.
    * Used as a prerequisite check before paid Track enrollment.
    */
   async assertFoundationComplete(learnerId: string): Promise<void> {
@@ -397,14 +397,14 @@ export class EnrollmentService {
 
     if (!progress.completed) {
       throw new ForbiddenException(
-        'Foundation School must be completed before enrolling in a paid Track Pathway',
+        'AI Foundation School must be completed before enrolling in a paid Track Pathway',
       );
     }
   }
 
   /**
    * Enroll a learner in a full Track Pathway (Beginner + Intermediate + Advanced).
-   * Requires Foundation School completion. Assigns learner to the first module
+   * Requires AI Foundation School completion. Assigns learner to the first module
    * of the Beginner level.
    */
   async enrollInTrack(trackId: string, dto: EnrollTrackDto) {

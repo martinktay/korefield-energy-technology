@@ -44,7 +44,7 @@ export default function TrackCatalogPage() {
       <div>
         <h1 className="text-heading-lg text-surface-900">Track Catalog</h1>
         <p className="mt-1 text-body-sm text-surface-500">
-          Browse available learning pathways. Complete Foundation School to enroll.
+          Browse available learning pathways. Complete AI Foundation School to enroll.
         </p>
       </div>
 

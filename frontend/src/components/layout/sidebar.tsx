@@ -1,3 +1,9 @@
+/**
+ * @file sidebar.tsx
+ * Responsive sidebar navigation shared across all portal layouts.
+ * Renders per-portal nav items with active state (left border accent),
+ * hover states, and a help footer linking to the portal's messages page.
+ */
 "use client";
 
 import Link from "next/link";
@@ -104,10 +110,10 @@ export function Sidebar({ items }: SidebarProps) {
 
         {/* Sidebar footer */}
         <div className="border-t border-surface-200 px-3 py-3">
-          <div className="rounded-lg bg-brand-50/50 px-3 py-2.5">
+          <Link href={`/${pathname.split("/")[1] || "learner"}/messages`} className="block rounded-lg bg-brand-50/50 px-3 py-2.5 hover:bg-brand-100/50 transition-colors">
             <p className="text-caption font-medium text-brand-700">Need help?</p>
-            <p className="text-caption text-brand-600/70 mt-0.5">Visit our support center</p>
-          </div>
+            <p className="text-caption text-brand-600/70 mt-0.5">Message our support team</p>
+          </Link>
         </div>
       </aside>
     </>

@@ -1,3 +1,9 @@
+/**
+ * @file navigation-shell.tsx
+ * Shared layout wrapper for all portal pages.
+ * Combines TopBar + Sidebar + main content area with max-width container,
+ * entrance animation, and custom scrollbar styling.
+ */
 "use client";
 
 import { TopBar } from "./top-bar";

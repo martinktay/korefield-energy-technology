@@ -13,7 +13,7 @@ import { useState, useMemo } from "react";
 import { Bot, Code, CheckCircle2, Play, Clock, ChevronDown, ChevronRight } from "lucide-react";
 import Link from "next/link";
 
-type LessonType = "video" | "lab";
+type LessonType = "video" | "lab" | "quiz";
 
 interface Lesson {
   id: string;
@@ -37,7 +37,7 @@ interface TrackSection {
 
 const INITIAL_DATA: TrackSection[] = [
   {
-    track: "Foundation School",
+    track: "AI Foundation School",
     level: "Required",
     modules: [
       {
@@ -63,19 +63,48 @@ const INITIAL_DATA: TrackSection[] = [
     level: "Beginner",
     modules: [
       {
-        id: "MOD-AI01", name: "Python for AI",
+        id: "MOD-aie-01", name: "Python for AI",
         lessons: [
-          { id: "LSN-py-001", title: "Variables and Data Types", type: "video", duration: "30 min", completed: true },
-          { id: "LSN-py-002", title: "Control Flow and Functions", type: "lab", duration: "35 min", completed: false },
-          { id: "LSN-py-003", title: "Working with Lists and Dictionaries", type: "lab", duration: "28 min", completed: false },
+          { id: "LSN-aie-101", title: "Variables, Types, and Data Structures", type: "video", duration: "25 min", completed: true },
+          { id: "LSN-aie-102", title: "Functions, Loops, and List Comprehensions", type: "lab", duration: "35 min", completed: false },
+          { id: "LSN-aie-103", title: "Python for AI — Module Assessment", type: "quiz", duration: "15 min", completed: false },
         ],
       },
       {
-        id: "MOD-AI02", name: "REST APIs and Data Formats",
+        id: "MOD-aie-02", name: "Data Structures for AI",
         lessons: [
-          { id: "LSN-api-001", title: "HTTP Fundamentals", type: "video", duration: "25 min", completed: false },
-          { id: "LSN-api-002", title: "REST API Design Patterns", type: "video", duration: "30 min", completed: false },
-          { id: "LSN-api-003", title: "Building Your First API", type: "lab", duration: "40 min", completed: false },
+          { id: "LSN-aie-201", title: "NumPy Arrays and Vectorized Operations", type: "lab", duration: "40 min", completed: false },
+          { id: "LSN-aie-202", title: "Pandas DataFrames for Data Wrangling", type: "video", duration: "30 min", completed: false },
+          { id: "LSN-aie-203", title: "Data Structures — Matching Exercise", type: "quiz", duration: "10 min", completed: false },
+        ],
+      },
+      {
+        id: "MOD-aie-03", name: "REST APIs and HTTP",
+        lessons: [
+          { id: "LSN-aie-301", title: "HTTP Methods, Status Codes, and API Design", type: "video", duration: "25 min", completed: false },
+          { id: "LSN-aie-302", title: "Building a FastAPI Prediction Endpoint", type: "lab", duration: "40 min", completed: false },
+          { id: "LSN-aie-303", title: "REST APIs — Module Assessment", type: "quiz", duration: "15 min", completed: false },
+        ],
+      },
+      {
+        id: "MOD-aie-04", name: "Prompt Engineering",
+        lessons: [
+          { id: "LSN-aie-401", title: "Prompt Patterns and Chain-of-Thought", type: "video", duration: "30 min", completed: false },
+          { id: "LSN-aie-402", title: "Building a Prompt Testing Pipeline", type: "lab", duration: "35 min", completed: false },
+        ],
+      },
+      {
+        id: "MOD-aie-05", name: "Model API Integration",
+        lessons: [
+          { id: "LSN-aie-501", title: "Calling LLM APIs with Python", type: "lab", duration: "35 min", completed: false },
+          { id: "LSN-aie-502", title: "Model APIs — Matching Exercise", type: "quiz", duration: "10 min", completed: false },
+        ],
+      },
+      {
+        id: "MOD-aie-06", name: "Cloud Basics for AI",
+        lessons: [
+          { id: "LSN-aie-601", title: "Cloud Architecture for AI Workloads", type: "video", duration: "30 min", completed: false },
+          { id: "LSN-aie-602", title: "Beginner Level — Final Assessment", type: "quiz", duration: "20 min", completed: false },
         ],
       },
     ],

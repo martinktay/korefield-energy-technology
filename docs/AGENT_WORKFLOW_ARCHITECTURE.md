@@ -9,7 +9,7 @@ ai-services/
 ├── agents/
 │   ├── learner/       # Tutor, Feedback, Dropout Risk, Career Support
 │   ├── faculty/       # Instructor Insight, Assessor Support, Certification Validation
-│   └── executive/     # Market Intelligence, Pricing Intelligence, Expansion, Academic Performance
+│   └── executive/     # Market Intelligence, Pricing Intelligence, Expansion, Academic Performance, Strategy, Growth, Product Strategy, Workforce Intelligence
 ├── workflows/         # LangGraph workflow definitions
 ├── prompts/           # Version-controlled prompts
 ├── rag/               # RAG pipelines, vector DB, chunking/embedding
@@ -90,6 +90,34 @@ ai-services/
 ### Academic Performance Insight Agent (`agents/executive/academic_performance.py`)
 - **Endpoint**: `GET /ai/executive/academic-analytics`
 - **Function**: Gate pass rate trends, remediation patterns, certification throughput, cross-track comparisons
+
+### Strategy Agent (`agents/executive/strategy.py`)
+- **Type**: LangGraph multi-step workflow
+- **Endpoint**: `POST /ai/executive/strategy-report`
+- **Function**: Competitive positioning analysis, market gap identification, strategic recommendations
+- **Controls**: All queries logged (AQR-*), confidence scores on all output sections, unsupported claims rejected
+- **Access**: Super Admin role only
+
+### Growth Agent (`agents/executive/growth.py`)
+- **Type**: LangGraph multi-step workflow
+- **Endpoint**: `POST /ai/executive/growth-report`
+- **Function**: Acquisition channel analysis, conversion funnel metrics, viral loop opportunity identification
+- **Controls**: All queries logged (AQR-*), confidence scores on all output sections, unsupported claims rejected
+- **Access**: Super Admin role only
+
+### Product Strategy Agent (`agents/executive/product_strategy.py`)
+- **Type**: LangGraph multi-step workflow
+- **Endpoint**: `POST /ai/executive/product-report`
+- **Function**: Feature prioritization analysis, user journey optimization recommendations
+- **Controls**: All queries logged (AQR-*), confidence scores on all output sections, unsupported claims rejected
+- **Access**: Super Admin role only
+
+### Workforce Intelligence Agent (`agents/executive/workforce_intelligence.py`)
+- **Type**: LangGraph multi-step workflow
+- **Endpoint**: `POST /ai/executive/workforce-report`
+- **Function**: Hiring trend analysis, skill demand signals, talent pipeline assessment
+- **Controls**: All queries logged (AQR-*), confidence scores on all output sections, unsupported claims rejected
+- **Access**: Super Admin role only
 
 ## Workflow Design Standards
 

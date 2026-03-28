@@ -14,7 +14,7 @@ KoreField Academy exists to close the AI skills gap across Africa and emerging m
 
 ## Two-Layer Curriculum
 
-### Layer 1 — Foundation School (Free)
+### Layer 1 — AI Foundation School (Free)
 A mandatory, free intellectual base that all learners must complete before accessing paid content. Covers AI literacy, prompt engineering awareness, systems awareness, governance, and professional discipline across 5 modules.
 
 ### Layer 2 — Track Pathways (Paid)

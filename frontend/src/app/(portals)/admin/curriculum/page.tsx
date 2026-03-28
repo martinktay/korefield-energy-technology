@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { X } from "lucide-react";
+import { X, Pencil, Trash2 } from "lucide-react";
 
 interface TrackRow {
   id: string; name: string; modules: number; available: boolean; gateThreshold: number;
@@ -31,6 +31,11 @@ export default function CurriculumPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [form, setForm] = useState({ title: "", track: TRACK_NAMES[0], gateThreshold: "70" });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [annotations, setAnnotations] = useState<Record<string, string>>({});
+  const [editingAnnotation, setEditingAnnotation] = useState<string | null>(null);
+  const [editAnnotationValue, setEditAnnotationValue] = useState("");
+  const [addingAnnotation, setAddingAnnotation] = useState<string | null>(null);
+  const [addAnnotationValue, setAddAnnotationValue] = useState("");
 
   function openDialog() {
     setForm({ title: "", track: TRACK_NAMES[0], gateThreshold: "70" });
@@ -86,6 +91,7 @@ export default function CurriculumPage() {
                 <th className="px-4 py-3 text-surface-600 font-medium">Modules</th>
                 <th className="px-4 py-3 text-surface-600 font-medium">Gate Threshold</th>
                 <th className="px-4 py-3 text-surface-600 font-medium">Available</th>
+                <th className="px-4 py-3 text-surface-600 font-medium">Annotations</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-surface-200">
@@ -100,6 +106,31 @@ export default function CurriculumPage() {
                     }`}>
                       {t.available ? "Active" : "Inactive"}
                     </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    {addingAnnotation === t.id ? (
+                      <div className="flex gap-2 items-center">
+                        <input type="text" value={addAnnotationValue} onChange={(e) => setAddAnnotationValue(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { const v = addAnnotationValue.trim(); if (v) { setAnnotations((p) => ({ ...p, [t.id]: v })); } setAddingAnnotation(null); setAddAnnotationValue(""); } }} className="flex-1 rounded-lg border border-brand-300 bg-white px-3 py-1.5 text-body-sm text-surface-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20" autoFocus placeholder="Enter annotation..." />
+                        <button onClick={() => { const v = addAnnotationValue.trim(); if (v) { setAnnotations((p) => ({ ...p, [t.id]: v })); } setAddingAnnotation(null); setAddAnnotationValue(""); }} className="rounded-lg bg-brand-600 px-3 py-1.5 text-caption font-medium text-white hover:bg-brand-700 transition-all">Save</button>
+                        <button onClick={() => { setAddingAnnotation(null); setAddAnnotationValue(""); }} className="rounded-lg border border-surface-200 px-3 py-1.5 text-caption text-surface-500 hover:bg-surface-100 transition-all">Cancel</button>
+                      </div>
+                    ) : editingAnnotation === t.id ? (
+                      <div className="flex gap-2 items-center">
+                        <input type="text" value={editAnnotationValue} onChange={(e) => setEditAnnotationValue(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { const v = editAnnotationValue.trim(); if (v) { setAnnotations((p) => ({ ...p, [t.id]: v })); } setEditingAnnotation(null); setEditAnnotationValue(""); } }} className="flex-1 rounded-lg border border-brand-300 bg-white px-3 py-1.5 text-body-sm text-surface-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20" autoFocus />
+                        <button onClick={() => { const v = editAnnotationValue.trim(); if (v) { setAnnotations((p) => ({ ...p, [t.id]: v })); } setEditingAnnotation(null); setEditAnnotationValue(""); }} className="rounded-lg bg-brand-600 px-3 py-1.5 text-caption font-medium text-white hover:bg-brand-700 transition-all">Save</button>
+                        <button onClick={() => { setEditingAnnotation(null); setEditAnnotationValue(""); }} className="rounded-lg border border-surface-200 px-3 py-1.5 text-caption text-surface-500 hover:bg-surface-100 transition-all">Cancel</button>
+                      </div>
+                    ) : annotations[t.id] ? (
+                      <div className="flex items-start gap-2 group">
+                        <p className="flex-1 text-body-sm text-surface-600">{annotations[t.id]}</p>
+                        <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button onClick={() => { setEditingAnnotation(t.id); setEditAnnotationValue(annotations[t.id]); }} className="rounded-md p-1 text-surface-400 hover:text-brand-600 hover:bg-brand-50 transition-all" aria-label="Edit annotation"><Pencil className="h-3.5 w-3.5" /></button>
+                          <button onClick={() => setAnnotations((p) => { const n = { ...p }; delete n[t.id]; return n; })} className="rounded-md p-1 text-surface-400 hover:text-red-600 hover:bg-red-50 transition-all" aria-label="Delete annotation"><Trash2 className="h-3.5 w-3.5" /></button>
+                        </div>
+                      </div>
+                    ) : (
+                      <button onClick={() => { setAddingAnnotation(t.id); setAddAnnotationValue(""); }} className="text-body-sm text-brand-600 hover:text-brand-700 font-medium transition-colors">Add Note</button>
+                    )}
                   </td>
                 </tr>
               ))}

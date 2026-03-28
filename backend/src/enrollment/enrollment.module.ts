@@ -1,7 +1,7 @@
 /**
  * @file enrollment.module.ts
  * NestJS module for the enrollment domain.
- * Manages learner registration, onboarding, Foundation School, Track enrollment,
+ * Manages learner registration, onboarding, AI Foundation School, Track enrollment,
  * pod assignment, and performance-gated progression.
  */
 import { Module } from '@nestjs/common';

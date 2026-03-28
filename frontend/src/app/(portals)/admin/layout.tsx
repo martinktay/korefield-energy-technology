@@ -2,7 +2,7 @@
 
 import { NavigationShell, type NavItem } from "@/components/layout";
 import { useAuthStore } from "@/stores/auth-store";
-import { LayoutDashboard, Users, UserPlus, BookOpen, CreditCard, Award, Briefcase, MessageSquare } from "lucide-react";
+import { LayoutDashboard, Users, UserPlus, BookOpen, CreditCard, Award, Briefcase, Mail } from "lucide-react";
 
 const navItems: NavItem[] = [
   { label: "Dashboard", href: "/admin", Icon: LayoutDashboard },
@@ -12,7 +12,7 @@ const navItems: NavItem[] = [
   { label: "Payments", href: "/admin/payments", Icon: CreditCard },
   { label: "Certificates", href: "/admin/certificates", Icon: Award },
   { label: "Recruitment", href: "/admin/recruitment", Icon: Briefcase },
-  { label: "Messages", href: "/admin/messages", Icon: MessageSquare },
+  { label: "Messages", href: "/admin/messages", Icon: Mail },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

@@ -13,8 +13,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from agents.executive import (
     academic_performance_router,
     expansion_router,
+    growth_router,
     market_intelligence_router,
     pricing_intelligence_router,
+    product_strategy_router,
+    strategy_router,
+    workforce_intelligence_router,
 )
 from agents.faculty import (
     assessor_support_router,
@@ -75,6 +79,10 @@ app.include_router(market_intelligence_router)
 app.include_router(pricing_intelligence_router)
 app.include_router(expansion_router)
 app.include_router(academic_performance_router)
+app.include_router(strategy_router)
+app.include_router(growth_router)
+app.include_router(product_strategy_router)
+app.include_router(workforce_intelligence_router)
 
 
 @app.get("/health")

@@ -1,11 +1,11 @@
 /**
  * @file complete-foundation-module.dto.ts
- * Validation DTO for marking a Foundation School module as completed.
+ * Validation DTO for marking an AI Foundation School module as completed.
  * Module name must be one of the 5 mandatory Foundation modules.
  */
 import { IsNotEmpty, IsString, IsIn } from 'class-validator';
 
-/** The 5 mandatory Foundation School modules every learner must complete */
+/** The 5 mandatory AI Foundation School modules every learner must complete */
 const VALID_MODULES = [
   'AI Literacy',
   'AI Fluency',

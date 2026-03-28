@@ -250,11 +250,7 @@ export default function PricingPage() {
           Create Free Account
         </Link>
       </section>
-
-      {/* Footer */}
-      <footer className="border-t border-surface-200 bg-surface-50 py-6 text-center text-caption text-surface-400">
-        © {new Date().getFullYear()} KoreField Academy. All rights reserved.
-      </footer>
     </div>
   );
 }
+

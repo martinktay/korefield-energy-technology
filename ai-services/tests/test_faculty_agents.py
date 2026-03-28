@@ -153,7 +153,7 @@ async def test_cert_validation_has_all_six_prerequisites(client):
     )
     assert resp.status_code == 200
     prereq_names = [p["prerequisite"] for p in resp.json()["prerequisites"]]
-    assert "Foundation School Complete" in prereq_names
+    assert "AI Foundation School Complete" in prereq_names
     assert "Track Levels Complete" in prereq_names
     assert "Pod Deliverables Submitted" in prereq_names
     assert "Capstone Passed" in prereq_names

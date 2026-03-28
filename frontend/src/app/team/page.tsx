@@ -166,9 +166,6 @@ export default function TeamPage() {
         </Link>
       </section>
 
-      <footer className="border-t border-surface-200 bg-surface-50 py-8 text-center">
-        <p className="text-caption text-surface-400">© {new Date().getFullYear()} KoreField Academy. All rights reserved.</p>
-      </footer>
     </div>
   );
 }

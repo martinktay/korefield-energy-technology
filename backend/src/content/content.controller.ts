@@ -11,6 +11,7 @@ import {
   Get,
   Post,
   Put,
+  Delete,
   Param,
   Body,
   UseGuards,
@@ -19,6 +20,11 @@ import { AuthGuard } from '@nestjs/passport';
 import { ContentService } from './content.service';
 import { CreateModuleDto } from './dto/create-module.dto';
 import { UpdateModuleDto } from './dto/update-module.dto';
+import { CreateLessonDto } from './dto/create-lesson.dto';
+import { UpdateLessonDto } from './dto/update-lesson.dto';
+import { CreateAssessmentDto } from './dto/create-assessment.dto';
+import { UpdateAssessmentDto } from './dto/update-assessment.dto';
+import { PresignUploadDto } from './dto/presign-upload.dto';
 import { ScheduleLabSessionDto } from './dto/schedule-lab-session.dto';
 import { UpdateLabRecordingDto } from './dto/update-lab-recording.dto';
 import { SubmitLabWorkDto } from './dto/submit-lab-work.dto';
@@ -27,10 +33,14 @@ import { CreateCodingExerciseDto } from './dto/create-coding-exercise.dto';
 import { ExecuteCodeDto } from './dto/execute-code.dto';
 import { RbacGuard } from '@common/guards/rbac.guard';
 import { Roles } from '@common/decorators/roles.decorator';
+import { UploadService } from './upload.service';
 
 @Controller('content')
 export class ContentController {
-  constructor(private readonly contentService: ContentService) {}
+  constructor(
+    private readonly contentService: ContentService,
+    private readonly uploadService: UploadService,
+  ) {}
 
   @Get('tracks')
   async getTrackCatalog() {
@@ -69,6 +79,81 @@ export class ContentController {
   @Get('lessons/:lessonId')
   async getLesson(@Param('lessonId') lessonId: string) {
     return this.contentService.getLesson(lessonId);
+  }
+
+  // ── Lesson CRUD Endpoints ────────────────────────────────────
+
+  @UseGuards(AuthGuard('jwt'), RbacGuard)
+  @Roles('SuperAdmin', 'Admin', 'Instructor')
+  @Post('lessons')
+  async createLesson(@Body() dto: CreateLessonDto) {
+    return this.contentService.createLesson(dto);
+  }
+
+  @UseGuards(AuthGuard('jwt'), RbacGuard)
+  @Roles('SuperAdmin', 'Admin', 'Instructor')
+  @Put('lessons/:lessonId')
+  async updateLesson(
+    @Param('lessonId') lessonId: string,
+    @Body() dto: UpdateLessonDto,
+  ) {
+    return this.contentService.updateLesson(lessonId, dto);
+  }
+
+  @UseGuards(AuthGuard('jwt'), RbacGuard)
+  @Roles('SuperAdmin', 'Admin', 'Instructor')
+  @Delete('lessons/:lessonId')
+  async deleteLesson(@Param('lessonId') lessonId: string) {
+    return this.contentService.deleteLesson(lessonId);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('modules/:moduleId/lessons')
+  async getModuleLessons(@Param('moduleId') moduleId: string) {
+    return this.contentService.getModuleLessons(moduleId);
+  }
+
+  // ── Assessment CRUD Endpoints ────────────────────────────────
+
+  @UseGuards(AuthGuard('jwt'), RbacGuard)
+  @Roles('SuperAdmin', 'Admin', 'Instructor')
+  @Post('assessments')
+  async createAssessment(@Body() dto: CreateAssessmentDto) {
+    return this.contentService.createAssessment(dto);
+  }
+
+  @UseGuards(AuthGuard('jwt'), RbacGuard)
+  @Roles('SuperAdmin', 'Admin', 'Instructor')
+  @Put('assessments/:assessmentId')
+  async updateAssessment(
+    @Param('assessmentId') assessmentId: string,
+    @Body() dto: UpdateAssessmentDto,
+  ) {
+    return this.contentService.updateAssessment(assessmentId, dto);
+  }
+
+  @UseGuards(AuthGuard('jwt'), RbacGuard)
+  @Roles('SuperAdmin', 'Admin', 'Instructor')
+  @Delete('assessments/:assessmentId')
+  async deleteAssessment(@Param('assessmentId') assessmentId: string) {
+    return this.contentService.deleteAssessment(assessmentId);
+  }
+
+  // ── File Upload Endpoint ─────────────────────────────────────
+
+  @UseGuards(AuthGuard('jwt'), RbacGuard)
+  @Roles('SuperAdmin', 'Admin', 'Instructor')
+  @Post('upload/presign')
+  async getPresignedUploadUrl(@Body() dto: PresignUploadDto) {
+    return this.uploadService.generatePresignedUrl(dto.filename, dto.content_type);
+  }
+
+  // ── AI Foundation School Endpoint ───────────────────────────────
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('foundation')
+  async getFoundationContent() {
+    return this.contentService.getFoundationContent();
   }
 
   // ── Lab Session Endpoints ────────────────────────────────────

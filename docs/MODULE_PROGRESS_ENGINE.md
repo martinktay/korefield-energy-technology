@@ -7,7 +7,7 @@ The Module Progress Engine controls how learners advance through the curriculum.
 ## Progression Hierarchy
 
 ```
-Foundation School (5 modules, free, mandatory)
+AI Foundation School (5 modules, free, mandatory)
     ↓ (all 5 complete)
 Track Pathway Enrollment (paid)
     ↓

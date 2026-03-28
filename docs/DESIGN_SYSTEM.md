@@ -43,7 +43,17 @@
 - Empty states
 - Error states
 - shadcn/ui primitives: Button, Badge, Card, Separator
-- Sonner toast notifications for success confirmations
+
+## Notification System
+- In-app notifications via bell icon in TopBar — role-specific notification sets
+- Notification categories: general, payment, enrollment, content, certification, pod, recruitment, system
+- Unread count badge on bell icon with red dot indicator per notification
+- Mark individual or all notifications as read
+- Browser push notifications via Web Push API (Notification.requestPermission on first portal visit)
+- Push subscription stored in PushSubscription table, dispatched via web-push library
+- Notification store (Zustand) manages state client-side with fallback data per role
+- Backend: NotificationModule with CRUD, broadcast (SuperAdmin), and push subscription endpoints
+- Notification worker (SQS consumer) creates Notification records and triggers push dispatch
 
 ## Communication
 - Staff messaging (Super Admin, Instructor, Admin) — channel-based with group channels and DMs
@@ -64,6 +74,17 @@
 - Module creation dialog with assessment builder
 - Question types: Multiple Choice (with correct answer selection), Coding Exercise (starter code + test cases), Drag & Drop matching
 - Lesson types: Video (AI avatar tutorial) and Lab (interactive code editor)
+- Lesson authoring: create/edit/delete/reorder lessons within a module via inline forms
+- Lesson content fields by type:
+  - Text: markdown content body editor
+  - Video: Cloudflare Stream URL input
+  - Interactive Code: linked coding exercise with starter code and test cases
+  - Quiz: linked assessment with question builder
+  - Downloadable: file upload via S3 presigned URL with filename display
+- Assessment authoring: create/edit/delete assessments within a module
+- File upload: presigned S3 URLs for PDFs, documents, and resources (max 50MB)
+- Instructor content page (`/instructor/content`): module table with expandable lesson list, inline lesson creation, API-connected CRUD
+- Admin curriculum page (`/admin/curriculum`): track management with module counts, gate thresholds, availability toggles
 
 ## Coding Practice Environment (Pyodide + Custom Editor)
 - Four execution modes: Script Mode, Notebook Mode (Jupyter-style with Code/Markdown/Magic cells), SQL Workspace (schema browser + query editor + result tables), and Terminal Mode (sandboxed Bash/Shell)

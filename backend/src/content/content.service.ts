@@ -11,6 +11,10 @@ import { CacheService } from '@common/cache/cache.service';
 import { generateId } from '@common/utils/generate-id';
 import { CreateModuleDto } from './dto/create-module.dto';
 import { UpdateModuleDto } from './dto/update-module.dto';
+import { CreateLessonDto } from './dto/create-lesson.dto';
+import { UpdateLessonDto } from './dto/update-lesson.dto';
+import { CreateAssessmentDto } from './dto/create-assessment.dto';
+import { UpdateAssessmentDto } from './dto/update-assessment.dto';
 import { ScheduleLabSessionDto } from './dto/schedule-lab-session.dto';
 import { UpdateLabRecordingDto } from './dto/update-lab-recording.dto';
 import { SubmitLabWorkDto } from './dto/submit-lab-work.dto';
@@ -117,7 +121,7 @@ export class ContentService {
       description: track.description,
       status: track.status,
       estimated_duration: track.estimated_duration,
-      prerequisites: ['Foundation School completion required'],
+      prerequisites: ['AI Foundation School completion required'],
       certification_outcomes: [
         `${track.name} Certificate upon completion of all levels, capstone defense, and assessor approval`,
         `Verifiable certificate with KFCERT verification code`,
@@ -344,6 +348,195 @@ export class ContentService {
     }
 
     return lesson;
+  }
+
+  // ── Lesson CRUD ─────────────────────────────────────────────
+
+  /**
+   * POST /content/lessons — create a new lesson within a module.
+   */
+  async createLesson(dto: CreateLessonDto) {
+    const mod = await this.prisma.module.findUnique({ where: { id: dto.module_id } });
+    if (!mod) {
+      throw new NotFoundException(`Module ${dto.module_id} not found`);
+    }
+
+    const lesson = await this.prisma.lesson.create({
+      data: {
+        id: generateId('LSN'),
+        module_id: dto.module_id,
+        title: dto.title,
+        content_type: dto.content_type as any,
+        sequence: dto.sequence,
+        content_body: dto.content_body ?? null,
+        video_url: dto.video_url ?? null,
+        file_url: dto.file_url ?? null,
+        file_name: dto.file_name ?? null,
+      },
+    });
+
+    const level = await this.prisma.level.findUnique({ where: { id: mod.level_id } });
+    if (level) await this.invalidateTrackCaches(level.track_id);
+
+    this.logger.log(`Lesson ${lesson.id} created in module ${dto.module_id}`);
+    return lesson;
+  }
+
+  /**
+   * PUT /content/lessons/:lessonId — update a lesson.
+   */
+  async updateLesson(lessonId: string, dto: UpdateLessonDto) {
+    const existing = await this.prisma.lesson.findUnique({ where: { id: lessonId } });
+    if (!existing) {
+      throw new NotFoundException(`Lesson ${lessonId} not found`);
+    }
+
+    const updated = await this.prisma.lesson.update({
+      where: { id: lessonId },
+      data: {
+        ...(dto.title !== undefined && { title: dto.title }),
+        ...(dto.content_type !== undefined && { content_type: dto.content_type as any }),
+        ...(dto.sequence !== undefined && { sequence: dto.sequence }),
+        ...(dto.content_body !== undefined && { content_body: dto.content_body }),
+        ...(dto.video_url !== undefined && { video_url: dto.video_url }),
+        ...(dto.file_url !== undefined && { file_url: dto.file_url }),
+        ...(dto.file_name !== undefined && { file_name: dto.file_name }),
+      },
+    });
+
+    const mod = await this.prisma.module.findUnique({ where: { id: existing.module_id } });
+    if (mod) {
+      const level = await this.prisma.level.findUnique({ where: { id: mod.level_id } });
+      if (level) await this.invalidateTrackCaches(level.track_id);
+    }
+
+    this.logger.log(`Lesson ${lessonId} updated`);
+    return updated;
+  }
+
+  /**
+   * DELETE /content/lessons/:lessonId — delete a lesson.
+   */
+  async deleteLesson(lessonId: string) {
+    const existing = await this.prisma.lesson.findUnique({ where: { id: lessonId } });
+    if (!existing) {
+      throw new NotFoundException(`Lesson ${lessonId} not found`);
+    }
+
+    await this.prisma.lesson.delete({ where: { id: lessonId } });
+
+    const mod = await this.prisma.module.findUnique({ where: { id: existing.module_id } });
+    if (mod) {
+      const level = await this.prisma.level.findUnique({ where: { id: mod.level_id } });
+      if (level) await this.invalidateTrackCaches(level.track_id);
+    }
+
+    this.logger.log(`Lesson ${lessonId} deleted`);
+    return { deleted: true, id: lessonId };
+  }
+
+  /**
+   * GET /content/modules/:moduleId/lessons — list lessons for a module.
+   */
+  async getModuleLessons(moduleId: string) {
+    const mod = await this.prisma.module.findUnique({ where: { id: moduleId } });
+    if (!mod) {
+      throw new NotFoundException(`Module ${moduleId} not found`);
+    }
+
+    return this.prisma.lesson.findMany({
+      where: { module_id: moduleId },
+      orderBy: { sequence: 'asc' },
+      include: {
+        coding_exercises: {
+          select: { id: true, language: true },
+        },
+      },
+    });
+  }
+
+  // ── Assessment CRUD ───────────────────────────────────────────
+
+  /**
+   * POST /content/assessments — create a new assessment within a module.
+   */
+  async createAssessment(dto: CreateAssessmentDto) {
+    const mod = await this.prisma.module.findUnique({ where: { id: dto.module_id } });
+    if (!mod) {
+      throw new NotFoundException(`Module ${dto.module_id} not found`);
+    }
+
+    const assessment = await this.prisma.assessment.create({
+      data: {
+        id: generateId('ASM'),
+        module_id: dto.module_id,
+        title: dto.title,
+        type: dto.type as any,
+        max_score: dto.max_score,
+        rubric: dto.rubric ?? {},
+      },
+    });
+
+    this.logger.log(`Assessment ${assessment.id} created in module ${dto.module_id}`);
+    return assessment;
+  }
+
+  /**
+   * PUT /content/assessments/:assessmentId — update an assessment.
+   */
+  async updateAssessment(assessmentId: string, dto: UpdateAssessmentDto) {
+    const existing = await this.prisma.assessment.findUnique({ where: { id: assessmentId } });
+    if (!existing) {
+      throw new NotFoundException(`Assessment ${assessmentId} not found`);
+    }
+
+    const updated = await this.prisma.assessment.update({
+      where: { id: assessmentId },
+      data: {
+        ...(dto.title !== undefined && { title: dto.title }),
+        ...(dto.type !== undefined && { type: dto.type as any }),
+        ...(dto.max_score !== undefined && { max_score: dto.max_score }),
+        ...(dto.rubric !== undefined && { rubric: dto.rubric }),
+      },
+    });
+
+    this.logger.log(`Assessment ${assessmentId} updated`);
+    return updated;
+  }
+
+  /**
+   * DELETE /content/assessments/:assessmentId — delete an assessment.
+   */
+  async deleteAssessment(assessmentId: string) {
+    const existing = await this.prisma.assessment.findUnique({ where: { id: assessmentId } });
+    if (!existing) {
+      throw new NotFoundException(`Assessment ${assessmentId} not found`);
+    }
+
+    await this.prisma.assessment.delete({ where: { id: assessmentId } });
+    this.logger.log(`Assessment ${assessmentId} deleted`);
+    return { deleted: true, id: assessmentId };
+  }
+
+  // ── AI Foundation School ─────────────────────────────────────────
+
+  /**
+   * GET /content/foundation — return AI Foundation School modules and lessons.
+   * Reads from the foundation-modules.json seed file as reference data.
+   */
+  async getFoundationContent() {
+    const fs = await import('fs');
+    const path = await import('path');
+
+    const filePath = path.join(process.cwd(), '..', 'db', 'seeds', 'foundation-modules.json');
+
+    try {
+      const raw = fs.readFileSync(filePath, 'utf-8');
+      return JSON.parse(raw);
+    } catch {
+      this.logger.warn('Foundation modules JSON not found, returning empty array');
+      return [];
+    }
   }
 
   // ── Lab Session Management ─────────────────────────────────────

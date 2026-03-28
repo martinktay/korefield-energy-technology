@@ -43,7 +43,7 @@ Tracks that are announced but not yet available for enrollment. Learners can joi
 
 ## Track Enrollment Rules
 
-- Foundation School must be completed before any paid Track enrollment
+- AI Foundation School must be completed before any paid Track enrollment
 - Learners enroll in the full pathway (Beginner + Intermediate + Advanced) — not individual levels
 - Each Track has available/waitlisted status displayed in the catalog
 - Track catalog and detail pages are cached in Redis (15 min TTL)

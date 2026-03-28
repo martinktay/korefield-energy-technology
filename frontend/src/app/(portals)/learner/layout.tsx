@@ -16,7 +16,7 @@ import {
 
 const navItems: NavItem[] = [
   { label: "Dashboard", href: "/learner", Icon: LayoutDashboard },
-  { label: "Foundation", href: "/learner/foundation", Icon: BookOpen },
+  { label: "AI Foundation", href: "/learner/foundation", Icon: BookOpen },
   { label: "Tracks", href: "/learner/tracks", Icon: Route },
   { label: "Lessons", href: "/learner/lessons", Icon: GraduationCap },
   { label: "Progress", href: "/learner/progress", Icon: TrendingUp },

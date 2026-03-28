@@ -10,6 +10,7 @@ import { PaymentService } from './payment.service';
 import { PaymentGatewayService } from './payment-gateway.service';
 import { PaymentStateMachine } from './payment-state-machine';
 import { FraudMonitorService } from './fraud-monitor.service';
+import { CouponService } from './coupon.service';
 
 @Module({
   controllers: [PaymentController],
@@ -18,7 +19,8 @@ import { FraudMonitorService } from './fraud-monitor.service';
     PaymentGatewayService,
     PaymentStateMachine,
     FraudMonitorService,
+    CouponService,
   ],
-  exports: [PaymentService, PaymentGatewayService, PaymentStateMachine, FraudMonitorService],
+  exports: [PaymentService, PaymentGatewayService, PaymentStateMachine, FraudMonitorService, CouponService],
 })
 export class PaymentModule {}

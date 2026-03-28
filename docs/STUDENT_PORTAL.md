@@ -61,6 +61,6 @@ The Learner Dashboard is the primary interface for all enrolled learners. It pro
 2. Email verification
 3. Onboarding: country, professional background, learning goals
 4. Track recommendations based on goals/background
-5. Auto-enrollment in Foundation School
-6. Foundation School progress view (5 module cards)
+5. Auto-enrollment in AI Foundation School
+6. AI Foundation School progress view (5 module cards)
 7. On Foundation completion: paid Track catalog displayed

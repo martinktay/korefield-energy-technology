@@ -1,7 +1,7 @@
 /**
  * @file page.tsx (Landing Page)
  * Public marketing landing page for KoreField Academy.
- * Showcases the two-layer curriculum (Foundation School + Track Pathways),
+ * Showcases the two-layer curriculum (AI Foundation School + Track Pathways),
  * platform features, and the 4-step learner journey.
  * Uses shadcn/ui components (Button, Badge, Card, Separator).
  * No authentication required.
@@ -85,7 +85,7 @@ const features = [
 ];
 
 const steps = [
-  { step: "1", title: "Foundation School", desc: "Complete 5 free modules covering AI literacy, prompt engineering, governance, and professional discipline.", icon: BookOpen },
+  { step: "1", title: "AI Foundation School", desc: "Complete 5 free modules covering AI literacy, prompt engineering, governance, and professional discipline.", icon: BookOpen },
   { step: "2", title: "Choose Your Track", desc: "Enroll in a full pathway — Beginner through Advanced — in one of four specialized tracks.", icon: BrainCircuit },
   { step: "3", title: "Learn in Pods", desc: "Collaborate in multidisciplinary teams with AI tutoring, hands-on labs, and peer reviews.", icon: Users },
   { step: "4", title: "Earn Your Certificate", desc: "Pass all performance gates, defend your capstone, and receive a verifiable certificate.", icon: GraduationCap },
@@ -140,7 +140,7 @@ export default function LandingPage() {
             <p className="mt-5 max-w-2xl text-body-lg text-surface-200 leading-relaxed">
               KoreField Academy combines AI-powered teaching, hands-on labs, and
               multidisciplinary team projects to prepare Africa&apos;s workforce for
-              intelligent industries. Start free with Foundation School.
+              intelligent industries. Start free with AI Foundation School.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href="/learner/register" className={cn(buttonVariants({ size: "lg" }), "bg-white text-brand-700 hover:bg-surface-50 shadow-lg gap-2 font-semibold")}>
@@ -267,10 +267,10 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Foundation School CTA ── */}
+      {/* ── AI Foundation School CTA ── */}
       <section className="bg-gradient-to-r from-brand-900 to-brand-800 py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
-          <h2 className="text-display-sm text-white">Start With Foundation School</h2>
+          <h2 className="text-display-sm text-white">Start With AI Foundation School</h2>
           <p className="mt-4 max-w-2xl mx-auto text-body-lg text-brand-200">
             Five free modules that every learner completes before accessing paid tracks.
             Build your AI literacy, prompt engineering skills, and professional discipline.
@@ -292,57 +292,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Footer ── */}
-      <footer className="border-t border-surface-200 bg-surface-50">
-        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-5">
-            <div>
-              <p className="text-heading-sm text-brand-700">KoreField Academy</p>
-              <p className="mt-2 text-body-sm text-surface-500">
-                Applied AI learning for Africa&apos;s workforce.
-              </p>
-            </div>
-            <div>
-              <p className="text-body-sm font-medium text-surface-900">Platform</p>
-              <ul className="mt-2 space-y-1.5 text-body-sm text-surface-500">
-                <li><a href="#tracks" className="hover:text-surface-700 transition-colors">Specialized Tracks</a></li>
-                <li><a href="#features" className="hover:text-surface-700 transition-colors">Features</a></li>
-                <li><a href="#how-it-works" className="hover:text-surface-700 transition-colors">How It Works</a></li>
-                <li><Link href="/pricing" className="hover:text-surface-700 transition-colors">Pricing</Link></li>
-              </ul>
-            </div>
-            <div>
-              <p className="text-body-sm font-medium text-surface-900">Portals</p>
-              <ul className="mt-2 space-y-1.5 text-body-sm text-surface-500">
-                <li><Link href="/learner" className="hover:text-surface-700 transition-colors">Learner</Link></li>
-                <li><Link href="/instructor" className="hover:text-surface-700 transition-colors">Instructor</Link></li>
-                <li><Link href="/admin" className="hover:text-surface-700 transition-colors">Admin</Link></li>
-                <li><Link href="/super-admin" className="hover:text-surface-700 transition-colors">Super Admin</Link></li>
-                <li><Link href="/corporate" className="hover:text-surface-700 transition-colors">Corporate</Link></li>
-              </ul>
-            </div>
-            <div>
-              <p className="text-body-sm font-medium text-surface-900">Company</p>
-              <ul className="mt-2 space-y-1.5 text-body-sm text-surface-500">
-                <li><Link href="/team" className="hover:text-surface-700 transition-colors">Team</Link></li>
-                <li><Link href="/careers" className="hover:text-surface-700 transition-colors">Careers</Link></li>
-              </ul>
-            </div>
-            <div>
-              <p className="text-body-sm font-medium text-surface-900">Legal</p>
-              <ul className="mt-2 space-y-1.5 text-body-sm text-surface-500">
-                <li><span className="cursor-default">Privacy Policy</span></li>
-                <li><span className="cursor-default">Terms of Service</span></li>
-                <li><span className="cursor-default">Cookie Policy</span></li>
-              </ul>
-            </div>
-          </div>
-          <Separator className="my-6" />
-          <p className="text-center text-caption text-surface-400">
-            © {new Date().getFullYear()} KoreField Academy. All rights reserved.
-          </p>
-        </div>
-      </footer>
     </div>
   );
 }

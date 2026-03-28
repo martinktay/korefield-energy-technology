@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Users, FileText, CheckCircle2, Clock, Star, X, Download, ChevronDown, ChevronUp } from "lucide-react";
+import { Users, FileText, CheckCircle2, Clock, Star, X, Download, ChevronDown, ChevronUp, Pencil, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 type AppStatus = "New" | "In Review" | "Shortlisted" | "Interview" | "Offer" | "Hired" | "Rejected";
@@ -55,6 +55,8 @@ export default function RecruitmentPage() {
   const [filterDept, setFilterDept] = useState("All");
   const [expanded, setExpanded] = useState<string | null>(null);
   const [noteInput, setNoteInput] = useState<Record<string, string>>({});
+  const [editingNote, setEditingNote] = useState<{ appId: string; noteIndex: number } | null>(null);
+  const [editNoteValue, setEditNoteValue] = useState("");
 
   const depts = ["All", "Faculty", "Engineering", "AI Services", "Operations"];
   const filtered = applications.filter((a) =>
@@ -81,6 +83,36 @@ export default function RecruitmentPage() {
     if (!note) return;
     setApplications((prev) => prev.map((a) => a.id === id ? { ...a, reviewerNotes: a.reviewerNotes ? `${a.reviewerNotes}\n${note}` : note } : a));
     setNoteInput((prev) => ({ ...prev, [id]: "" }));
+  }
+
+  function deleteNote(appId: string, noteIndex: number) {
+    setApplications((prev) => prev.map((a) => {
+      if (a.id !== appId) return a;
+      const lines = a.reviewerNotes.split("\n").filter((_, i) => i !== noteIndex);
+      return { ...a, reviewerNotes: lines.join("\n") };
+    }));
+    if (editingNote?.appId === appId && editingNote.noteIndex === noteIndex) {
+      setEditingNote(null);
+    }
+  }
+
+  function startEditNote(appId: string, noteIndex: number, currentText: string) {
+    setEditingNote({ appId, noteIndex });
+    setEditNoteValue(currentText);
+  }
+
+  function saveEditNote() {
+    if (!editingNote) return;
+    const trimmed = editNoteValue.trim();
+    if (!trimmed) return;
+    setApplications((prev) => prev.map((a) => {
+      if (a.id !== editingNote.appId) return a;
+      const lines = a.reviewerNotes.split("\n");
+      lines[editingNote.noteIndex] = trimmed;
+      return { ...a, reviewerNotes: lines.join("\n") };
+    }));
+    setEditingNote(null);
+    setEditNoteValue("");
   }
 
   return (
@@ -200,7 +232,33 @@ export default function RecruitmentPage() {
                   <div>
                     <p className="text-caption text-surface-400 mb-1">Reviewer Notes</p>
                     {app.reviewerNotes ? (
-                      <p className="text-body-sm text-surface-600 bg-surface-50 rounded-lg p-3 whitespace-pre-line">{app.reviewerNotes}</p>
+                      <div className="space-y-2">
+                        {app.reviewerNotes.split("\n").map((note, idx) => (
+                          <div key={idx} className="flex items-start gap-2 bg-surface-50 rounded-lg p-3 group">
+                            {editingNote?.appId === app.id && editingNote.noteIndex === idx ? (
+                              <div className="flex-1 flex gap-2">
+                                <input type="text" value={editNoteValue} onChange={(e) => setEditNoteValue(e.target.value)}
+                                  onKeyDown={(e) => e.key === "Enter" && saveEditNote()}
+                                  className="flex-1 rounded-lg border border-brand-300 bg-white px-3 py-1.5 text-body-sm text-surface-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20" autoFocus />
+                                <button onClick={saveEditNote} className="rounded-lg bg-brand-600 px-3 py-1.5 text-caption font-medium text-white hover:bg-brand-700 transition-all">Save</button>
+                                <button onClick={() => setEditingNote(null)} className="rounded-lg border border-surface-200 px-3 py-1.5 text-caption text-surface-500 hover:bg-surface-100 transition-all">Cancel</button>
+                              </div>
+                            ) : (
+                              <>
+                                <p className="flex-1 text-body-sm text-surface-600">{note}</p>
+                                <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <button onClick={() => startEditNote(app.id, idx, note)} className="rounded-md p-1 text-surface-400 hover:text-brand-600 hover:bg-brand-50 transition-all" aria-label="Edit note">
+                                    <Pencil className="h-3.5 w-3.5" />
+                                  </button>
+                                  <button onClick={() => deleteNote(app.id, idx)} className="rounded-md p-1 text-surface-400 hover:text-red-600 hover:bg-red-50 transition-all" aria-label="Delete note">
+                                    <Trash2 className="h-3.5 w-3.5" />
+                                  </button>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     ) : (
                       <p className="text-body-sm text-surface-400 italic">No notes yet.</p>
                     )}

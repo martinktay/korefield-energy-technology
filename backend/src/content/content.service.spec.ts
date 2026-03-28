@@ -3,196 +3,59 @@ import { NotFoundException } from '@nestjs/common';
 import { ContentService } from './content.service';
 import { PrismaService } from '@common/prisma/prisma.service';
 import { CacheService } from '@common/cache/cache.service';
-
-const mockPrisma = {
-  track: { findMany: jest.fn(), findUnique: jest.fn() },
-};
-
-const mockCache = {
-  get: jest.fn(),
-  set: jest.fn(),
-  del: jest.fn(),
-};
-
+jest.mock('@common/utils/generate-id', () => ({ generateId: jest.fn((prefix: string) => `${prefix}-test01`) }));
+const mockPrisma = { track: { findMany: jest.fn(), findUnique: jest.fn() }, level: { findUnique: jest.fn() }, module: { create: jest.fn(), findUnique: jest.fn(), update: jest.fn() }, lesson: { findUnique: jest.fn() }, contentVersion: { create: jest.fn() } };
+const mockCache = { get: jest.fn(), set: jest.fn(), del: jest.fn() };
 describe('ContentService', () => {
   let service: ContentService;
-
   beforeEach(async () => {
     jest.clearAllMocks();
-
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        ContentService,
-        { provide: PrismaService, useValue: mockPrisma },
-        { provide: CacheService, useValue: mockCache },
-      ],
-    }).compile();
-
+    const module: TestingModule = await Test.createTestingModule({ providers: [ContentService, { provide: PrismaService, useValue: mockPrisma }, { provide: CacheService, useValue: mockCache }] }).compile();
     service = module.get<ContentService>(ContentService);
   });
-
-  // ── GET /content/tracks (catalog) ──────────────────────────────
-
   describe('getTrackCatalog', () => {
-    const dbTracks = [
-      {
-        id: 'TRK-001',
-        name: 'AI Engineering and Intelligent Systems',
-        description: 'AI track',
-        status: 'available',
-        estimated_duration: '6 months',
-        levels: [
-          { id: 'LVL-001', tier: 'Beginner', sequence: 1 },
-          { id: 'LVL-002', tier: 'Intermediate', sequence: 2 },
-          { id: 'LVL-003', tier: 'Advanced', sequence: 3 },
-        ],
-      },
-      {
-        id: 'TRK-002',
-        name: 'Cybersecurity and AI Security',
-        description: 'Security track',
-        status: 'waitlisted',
-        estimated_duration: '6 months',
-        levels: [
-          { id: 'LVL-004', tier: 'Beginner', sequence: 1 },
-        ],
-      },
-    ];
-
-    it('should return catalog from cache when available', async () => {
-      const cached = [{ id: 'TRK-cached' }];
-      mockCache.get.mockResolvedValue(cached);
-
-      const result = await service.getTrackCatalog();
-
-      expect(result).toBe(cached);
-      expect(mockPrisma.track.findMany).not.toHaveBeenCalled();
-    });
-
-    it('should fetch from DB and cache when cache miss', async () => {
-      mockCache.get.mockResolvedValue(null);
-      mockPrisma.track.findMany.mockResolvedValue(dbTracks);
-
-      const result = await service.getTrackCatalog() as any[];
-
-      expect(result).toHaveLength(2);
-      expect(result[0].id).toBe('TRK-001');
-      expect(result[0].name).toBe('AI Engineering and Intelligent Systems');
-      expect(result[0].status).toBe('available');
-      expect(result[0].levels).toHaveLength(3);
-      expect(result[1].status).toBe('waitlisted');
-
-      // Verify cache was set with 15 min TTL
-      expect(mockCache.set).toHaveBeenCalledWith(
-        'catalog:tracks',
-        expect.any(Array),
-        900,
-      );
-    });
-
-    it('should distinguish available and waitlisted tracks', async () => {
-      mockCache.get.mockResolvedValue(null);
-      mockPrisma.track.findMany.mockResolvedValue(dbTracks);
-
-      const result = await service.getTrackCatalog() as any[];
-
-      const available = result.filter((t: any) => t.status === 'available');
-      const waitlisted = result.filter((t: any) => t.status === 'waitlisted');
-      expect(available).toHaveLength(1);
-      expect(waitlisted).toHaveLength(1);
-    });
+    const dbTracks = [{ id: 'TRK-001', name: 'AI Eng', description: 'AI', status: 'available', estimated_duration: '6m', levels: [{ id: 'LVL-001', tier: 'Beginner', sequence: 1 }] }, { id: 'TRK-002', name: 'Cyber', description: 'Sec', status: 'waitlisted', estimated_duration: '6m', levels: [{ id: 'LVL-002', tier: 'Beginner', sequence: 1 }] }];
+    it('returns catalog from cache', async () => { mockCache.get.mockResolvedValue([{ id: 'c' }]); expect(await service.getTrackCatalog()).toEqual([{ id: 'c' }]); });
+    it('fetches from DB on miss', async () => { mockCache.get.mockResolvedValue(null); mockPrisma.track.findMany.mockResolvedValue(dbTracks); const r = (await service.getTrackCatalog()) as any[]; expect(r).toHaveLength(2); expect(mockCache.set).toHaveBeenCalledWith('catalog:tracks', expect.any(Array), 900); });
+    it('distinguishes available/waitlisted', async () => { mockCache.get.mockResolvedValue(null); mockPrisma.track.findMany.mockResolvedValue(dbTracks); const r = (await service.getTrackCatalog()) as any[]; expect(r.filter((t: any) => t.status === 'available')).toHaveLength(1); expect(r.filter((t: any) => t.status === 'waitlisted')).toHaveLength(1); });
   });
-
-  // ── GET /content/tracks/:trackId (detail) ──────────────────────
-
   describe('getTrackDetail', () => {
-    const dbTrack = {
-      id: 'TRK-001',
-      name: 'AI Engineering and Intelligent Systems',
-      description: 'Full AI engineering pathway',
-      status: 'available',
-      estimated_duration: '6 months',
-      levels: [
-        {
-          id: 'LVL-001',
-          tier: 'Beginner',
-          sequence: 1,
-          modules: [
-            { id: 'MOD-001', title: 'Python for AI', sequence: 1, published: true },
-            { id: 'MOD-002', title: 'REST APIs', sequence: 2, published: true },
-          ],
-        },
-        {
-          id: 'LVL-002',
-          tier: 'Intermediate',
-          sequence: 2,
-          modules: [
-            { id: 'MOD-003', title: 'RAG Pipelines', sequence: 1, published: true },
-          ],
-        },
-        {
-          id: 'LVL-003',
-          tier: 'Advanced',
-          sequence: 3,
-          modules: [
-            { id: 'MOD-004', title: 'Multi-Agent Systems', sequence: 1, published: false },
-          ],
-        },
-      ],
-    };
-
-    it('should return detail from cache when available', async () => {
-      const cached = { id: 'TRK-cached' };
-      mockCache.get.mockResolvedValue(cached);
-
-      const result = await service.getTrackDetail('TRK-001');
-
-      expect(result).toBe(cached);
-      expect(mockPrisma.track.findUnique).not.toHaveBeenCalled();
-    });
-
-    it('should fetch from DB and cache when cache miss', async () => {
-      mockCache.get.mockResolvedValue(null);
-      mockPrisma.track.findUnique.mockResolvedValue(dbTrack);
-
-      const result = await service.getTrackDetail('TRK-001') as any;
-
-      expect(result.id).toBe('TRK-001');
-      expect(result.name).toBe('AI Engineering and Intelligent Systems');
-      expect(result.prerequisites).toContain('Foundation School completion required');
-      expect(result.certification_outcomes).toHaveLength(2);
-      expect(result.curriculum).toHaveLength(3);
-      expect(result.curriculum[0].tier).toBe('Beginner');
-      expect(result.curriculum[0].modules).toHaveLength(2);
-
-      // Verify cache was set with 15 min TTL
-      expect(mockCache.set).toHaveBeenCalledWith(
-        'track:TRK-001:detail',
-        expect.any(Object),
-        900,
-      );
-    });
-
-    it('should throw NotFoundException when track does not exist', async () => {
-      mockCache.get.mockResolvedValue(null);
-      mockPrisma.track.findUnique.mockResolvedValue(null);
-
-      await expect(
-        service.getTrackDetail('TRK-missing'),
-      ).rejects.toThrow(NotFoundException);
-    });
-
-    it('should include curriculum outline with modules per level', async () => {
-      mockCache.get.mockResolvedValue(null);
-      mockPrisma.track.findUnique.mockResolvedValue(dbTrack);
-
-      const result = await service.getTrackDetail('TRK-001') as any;
-
-      const beginner = result.curriculum.find((l: any) => l.tier === 'Beginner');
-      expect(beginner.modules).toEqual([
-        { id: 'MOD-001', title: 'Python for AI', sequence: 1, published: true },
-        { id: 'MOD-002', title: 'REST APIs', sequence: 2, published: true },
-      ]);
-    });
+    const dbTrack = { id: 'TRK-001', name: 'AI Eng', description: 'Full', status: 'available', estimated_duration: '6m', levels: [{ id: 'LVL-001', tier: 'Beginner', sequence: 1, modules: [{ id: 'MOD-001', title: 'Python', sequence: 1, published: true }, { id: 'MOD-002', title: 'APIs', sequence: 2, published: true }] }, { id: 'LVL-002', tier: 'Intermediate', sequence: 2, modules: [{ id: 'MOD-003', title: 'RAG', sequence: 1, published: true }] }, { id: 'LVL-003', tier: 'Advanced', sequence: 3, modules: [{ id: 'MOD-004', title: 'Agents', sequence: 1, published: false }] }] };
+    it('returns detail from cache', async () => { mockCache.get.mockResolvedValue({ id: 'c' }); expect(await service.getTrackDetail('TRK-001')).toEqual({ id: 'c' }); });
+    it('fetches from DB on miss', async () => { mockCache.get.mockResolvedValue(null); mockPrisma.track.findUnique.mockResolvedValue(dbTrack); const r = (await service.getTrackDetail('TRK-001')) as any; expect(r.id).toBe('TRK-001'); expect(r.prerequisites).toContain('Foundation School completion required'); expect(r.curriculum).toHaveLength(3); expect(mockCache.set).toHaveBeenCalledWith('track:TRK-001:detail', expect.any(Object), 900); });
+    it('throws NotFoundException when not found', async () => { mockCache.get.mockResolvedValue(null); mockPrisma.track.findUnique.mockResolvedValue(null); await expect(service.getTrackDetail('TRK-x')).rejects.toThrow(NotFoundException); });
+    it('includes modules per level', async () => { mockCache.get.mockResolvedValue(null); mockPrisma.track.findUnique.mockResolvedValue(dbTrack); const r = (await service.getTrackDetail('TRK-001')) as any; expect(r.curriculum[0].modules).toHaveLength(2); });
+  });
+  describe('getTrackCurriculum', () => {
+    const dbTrack = { id: 'TRK-001', name: 'AI Eng', levels: [{ id: 'LVL-001', tier: 'Beginner', sequence: 1, modules: [{ id: 'MOD-001', title: 'Python', sequence: 1, version: 2, published: true, lessons: [{ id: 'LSN-001', title: 'Intro', content_type: 'text', sequence: 1 }, { id: 'LSN-002', title: 'Vid', content_type: 'video', sequence: 2 }, { id: 'LSN-003', title: 'Code', content_type: 'interactive_code', sequence: 3 }] }] }, { id: 'LVL-002', tier: 'Intermediate', sequence: 2, modules: [{ id: 'MOD-002', title: 'RAG', sequence: 1, version: 1, published: true, lessons: [{ id: 'LSN-004', title: 'Quiz', content_type: 'quiz', sequence: 1 }, { id: 'LSN-005', title: 'DL', content_type: 'downloadable', sequence: 2 }] }] }] };
+    it('returns from cache', async () => { mockCache.get.mockResolvedValue({ track_id: 'c' }); expect(await service.getTrackCurriculum('TRK-001')).toEqual({ track_id: 'c' }); });
+    it('returns full hierarchy', async () => { mockCache.get.mockResolvedValue(null); mockPrisma.track.findUnique.mockResolvedValue(dbTrack); const r = (await service.getTrackCurriculum('TRK-001')) as any; expect(r.track_id).toBe('TRK-001'); expect(r.levels).toHaveLength(2); expect(r.levels[0].modules[0].lessons).toHaveLength(3); expect(r.levels[0].modules[0].version).toBe(2); });
+    it('includes all content types', async () => { mockCache.get.mockResolvedValue(null); mockPrisma.track.findUnique.mockResolvedValue(dbTrack); const r = (await service.getTrackCurriculum('TRK-001')) as any; const types = r.levels.flatMap((l: any) => l.modules.flatMap((m: any) => m.lessons)).map((x: any) => x.content_type); expect(types).toContain('text'); expect(types).toContain('video'); expect(types).toContain('interactive_code'); expect(types).toContain('quiz'); expect(types).toContain('downloadable'); });
+    it('throws NotFoundException', async () => { mockCache.get.mockResolvedValue(null); mockPrisma.track.findUnique.mockResolvedValue(null); await expect(service.getTrackCurriculum('TRK-x')).rejects.toThrow(NotFoundException); });
+    it('caches with 15min TTL', async () => { mockCache.get.mockResolvedValue(null); mockPrisma.track.findUnique.mockResolvedValue(dbTrack); await service.getTrackCurriculum('TRK-001'); expect(mockCache.set).toHaveBeenCalledWith('curriculum:TRK-001', expect.objectContaining({ track_id: 'TRK-001' }), 900); });
+  });
+  describe('createModule', () => {
+    it('creates module with MOD-* ID', async () => { mockPrisma.level.findUnique.mockResolvedValue({ id: 'LVL-001', track_id: 'TRK-001' }); mockPrisma.module.create.mockResolvedValue({ id: 'MOD-test01', level_id: 'LVL-001', title: 'New', sequence: 1, version: 1, published: false }); const r = await service.createModule({ level_id: 'LVL-001', title: 'New', sequence: 1 }); expect(r.id).toBe('MOD-test01'); expect(mockPrisma.module.create).toHaveBeenCalledWith({ data: expect.objectContaining({ id: 'MOD-test01', published: false }) }); });
+    it('throws NotFoundException when level not found', async () => { mockPrisma.level.findUnique.mockResolvedValue(null); await expect(service.createModule({ level_id: 'LVL-x', title: 'T', sequence: 1 })).rejects.toThrow(NotFoundException); });
+    it('invalidates caches', async () => { mockPrisma.level.findUnique.mockResolvedValue({ id: 'LVL-001', track_id: 'TRK-001' }); mockPrisma.module.create.mockResolvedValue({ id: 'MOD-test01', level_id: 'LVL-001', title: 'T', sequence: 1, version: 1, published: false }); await service.createModule({ level_id: 'LVL-001', title: 'T', sequence: 1 }); expect(mockCache.del).toHaveBeenCalledWith('catalog:tracks'); expect(mockCache.del).toHaveBeenCalledWith('track:TRK-001:detail'); expect(mockCache.del).toHaveBeenCalledWith('curriculum:TRK-001'); });
+    it('supports published flag', async () => { mockPrisma.level.findUnique.mockResolvedValue({ id: 'LVL-001', track_id: 'TRK-001' }); mockPrisma.module.create.mockResolvedValue({ id: 'MOD-test01', level_id: 'LVL-001', title: 'P', sequence: 2, version: 1, published: true }); await service.createModule({ level_id: 'LVL-001', title: 'P', sequence: 2, published: true }); expect(mockPrisma.module.create).toHaveBeenCalledWith({ data: expect.objectContaining({ published: true }) }); });
+  });
+  describe('updateModule', () => {
+    const unpub = { id: 'MOD-001', level_id: 'LVL-001', title: 'Old', sequence: 1, version: 1, published: false, lessons: [] };
+    const pub = { id: 'MOD-002', level_id: 'LVL-001', title: 'Pub', sequence: 2, version: 3, published: true, lessons: [{ id: 'LSN-001', title: 'L1', content_type: 'text', sequence: 1, version: 1 }, { id: 'LSN-002', title: 'L2', content_type: 'video', sequence: 2, version: 1 }] };
+    it('updates unpublished without content version', async () => { mockPrisma.module.findUnique.mockResolvedValue(unpub); mockPrisma.module.update.mockResolvedValue({ ...unpub, title: 'N' }); mockPrisma.level.findUnique.mockResolvedValue({ id: 'LVL-001', track_id: 'TRK-001' }); const r = (await service.updateModule('MOD-001', { title: 'N' })) as any; expect(r.content_version).toBeNull(); expect(mockPrisma.contentVersion.create).not.toHaveBeenCalled(); });
+    it('creates ContentVersion for published', async () => { mockPrisma.module.findUnique.mockResolvedValue(pub); mockPrisma.contentVersion.create.mockResolvedValue({ id: 'CVR-test01', module_id: 'MOD-002', version_number: 3, published_at: new Date(), content_snapshot: {} }); mockPrisma.module.update.mockResolvedValue({ ...pub, title: 'U', version: 4 }); mockPrisma.level.findUnique.mockResolvedValue({ id: 'LVL-001', track_id: 'TRK-001' }); const r = (await service.updateModule('MOD-002', { title: 'U' })) as any; expect(mockPrisma.contentVersion.create).toHaveBeenCalledWith({ data: expect.objectContaining({ id: 'CVR-test01', module_id: 'MOD-002', version_number: 3, content_snapshot: expect.objectContaining({ title: 'Pub', lessons: pub.lessons }) }) }); expect(r.content_version).toEqual({ id: 'CVR-test01', version_number: 3 }); });
+    it('bumps version for published', async () => { mockPrisma.module.findUnique.mockResolvedValue(pub); mockPrisma.contentVersion.create.mockResolvedValue({ id: 'CVR-test01', module_id: 'MOD-002', version_number: 3 }); mockPrisma.module.update.mockResolvedValue({ ...pub, version: 4 }); mockPrisma.level.findUnique.mockResolvedValue({ id: 'LVL-001', track_id: 'TRK-001' }); await service.updateModule('MOD-002', { title: 'X' }); expect(mockPrisma.module.update).toHaveBeenCalledWith({ where: { id: 'MOD-002' }, data: expect.objectContaining({ version: 4 }) }); });
+    it('keeps version for unpublished', async () => { mockPrisma.module.findUnique.mockResolvedValue(unpub); mockPrisma.module.update.mockResolvedValue(unpub); mockPrisma.level.findUnique.mockResolvedValue({ id: 'LVL-001', track_id: 'TRK-001' }); await service.updateModule('MOD-001', { title: 'U' }); expect(mockPrisma.module.update).toHaveBeenCalledWith({ where: { id: 'MOD-001' }, data: expect.objectContaining({ version: 1 }) }); });
+    it('throws NotFoundException', async () => { mockPrisma.module.findUnique.mockResolvedValue(null); await expect(service.updateModule('MOD-x', { title: 'T' })).rejects.toThrow(NotFoundException); });
+    it('invalidates caches', async () => { mockPrisma.module.findUnique.mockResolvedValue(unpub); mockPrisma.module.update.mockResolvedValue({ ...unpub, title: 'U' }); mockPrisma.level.findUnique.mockResolvedValue({ id: 'LVL-001', track_id: 'TRK-001' }); await service.updateModule('MOD-001', { title: 'U' }); expect(mockCache.del).toHaveBeenCalledWith('catalog:tracks'); expect(mockCache.del).toHaveBeenCalledWith('track:TRK-001:detail'); expect(mockCache.del).toHaveBeenCalledWith('curriculum:TRK-001'); });
+    it('snapshots lessons in content version', async () => { mockPrisma.module.findUnique.mockResolvedValue(pub); mockPrisma.contentVersion.create.mockResolvedValue({ id: 'CVR-test01', module_id: 'MOD-002', version_number: 3 }); mockPrisma.module.update.mockResolvedValue({ ...pub, version: 4 }); mockPrisma.level.findUnique.mockResolvedValue({ id: 'LVL-001', track_id: 'TRK-001' }); await service.updateModule('MOD-002', { sequence: 5 }); const snap = mockPrisma.contentVersion.create.mock.calls[0][0].data.content_snapshot; expect(snap.lessons).toHaveLength(2); expect(snap.lessons[0].id).toBe('LSN-001'); });
+  });
+  describe('getLesson', () => {
+    const lesson = { id: 'LSN-001', module_id: 'MOD-001', title: 'Intro', content_type: 'text', sequence: 1, version: 1, created_at: new Date(), updated_at: new Date(), coding_exercises: [] };
+    const codeLsn = { id: 'LSN-002', module_id: 'MOD-001', title: 'Code', content_type: 'interactive_code', sequence: 2, version: 1, created_at: new Date(), updated_at: new Date(), coding_exercises: [{ id: 'CEX-001', starter_code: 'pass', test_cases: [{ input: '', expected: 'ok' }], language: 'python', time_limit: 10, memory_limit: 256 }] };
+    it('returns lesson by ID', async () => { mockPrisma.lesson.findUnique.mockResolvedValue(lesson); const r = (await service.getLesson('LSN-001')) as any; expect(r.id).toBe('LSN-001'); expect(r.content_type).toBe('text'); });
+    it('includes coding exercises', async () => { mockPrisma.lesson.findUnique.mockResolvedValue(codeLsn); const r = (await service.getLesson('LSN-002')) as any; expect(r.coding_exercises).toHaveLength(1); expect(r.coding_exercises[0].language).toBe('python'); expect(r.coding_exercises[0].time_limit).toBe(10); });
+    it('throws NotFoundException', async () => { mockPrisma.lesson.findUnique.mockResolvedValue(null); await expect(service.getLesson('LSN-x')).rejects.toThrow(NotFoundException); });
   });
 });

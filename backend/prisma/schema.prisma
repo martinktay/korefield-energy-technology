@@ -389,6 +389,53 @@ model Campaign {
   @@map("campaigns")
 }
 
+// ─── Coupon / Promo Code Domain ─────────────────────────────────
+
+enum CouponStatus {
+  active
+  expired
+  exhausted
+  disabled
+}
+
+model Coupon {
+  id              String       @id @default("")
+  code            String       @unique
+  description     String?
+  discount_type   String       @default("percentage") // percentage | fixed_amount | full_access
+  discount_value  Float        @default(0)
+  track_ids       String[]     // empty = all tracks, otherwise specific TRK-* IDs
+  max_uses        Int          @default(0) // 0 = unlimited
+  times_used      Int          @default(0)
+  valid_from      DateTime
+  valid_to        DateTime
+  status          CouponStatus @default(active)
+  created_by      String       // USR-* of the Super Admin who created it
+  created_at      DateTime     @default(now())
+  updated_at      DateTime     @updatedAt
+
+  redemptions CouponRedemption[]
+
+  @@index([code])
+  @@index([status])
+  @@map("coupons")
+}
+
+model CouponRedemption {
+  id          String   @id @default("")
+  coupon_id   String
+  learner_id  String
+  track_id    String
+  discount    Float    // actual discount amount applied
+  redeemed_at DateTime @default(now())
+
+  coupon Coupon @relation(fields: [coupon_id], references: [id], onDelete: Cascade)
+
+  @@index([coupon_id])
+  @@index([learner_id])
+  @@map("coupon_redemptions")
+}
+
 model Scholarship {
   id                String   @id @default("")
   learner_id        String
@@ -443,6 +490,10 @@ model Lesson {
   module_id    String
   title        String
   content_type ContentType
+  content_body String?
+  video_url    String?
+  file_url     String?
+  file_name    String?
   sequence     Int
   version      Int         @default(1)
   created_at   DateTime    @default(now())
@@ -648,6 +699,47 @@ model CertificationEligibility {
 }
 
 // ─── Recruitment Domain ─────────────────────────────────────────
+
+// ─── Notification Domain ────────────────────────────────────────
+
+enum NotificationChannel {
+  in_app
+  push
+  email
+}
+
+model Notification {
+  id          String              @id @default("")
+  user_id     String
+  title       String
+  body        String
+  channel     NotificationChannel @default(in_app)
+  category    String              @default("general") // general, payment, enrollment, content, certification, pod, recruitment, system
+  action_url  String?
+  read        Boolean             @default(false)
+  pushed      Boolean             @default(false)
+  created_at  DateTime            @default(now())
+
+  @@index([user_id])
+  @@index([user_id, read])
+  @@index([created_at])
+  @@map("notifications")
+}
+
+model PushSubscription {
+  id          String   @id @default("")
+  user_id     String
+  endpoint    String
+  p256dh      String
+  auth        String
+  created_at  DateTime @default(now())
+
+  @@index([user_id])
+  @@unique([user_id, endpoint])
+  @@map("push_subscriptions")
+}
+
+// ─── Recruitment Domain (continued) ─────────────────────────────
 
 enum JobOpeningType {
   full_time

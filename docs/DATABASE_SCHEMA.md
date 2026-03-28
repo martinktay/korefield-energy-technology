@@ -84,7 +84,7 @@ All entities use domain-prefixed custom IDs: `{PREFIX}-{UNIQUE_SEGMENT}`. Certif
 
 | Entity | Key Fields | Notes |
 |--------|-----------|-------|
-| Lesson | id (LSN-*), module_id (MOD-*), title, content_type, sequence, version | Lesson within module |
+| Lesson | id (LSN-*), module_id (MOD-*), title, content_type, content_body, video_url, file_url, file_name, sequence, version | Lesson within module |
 | Assessment | id (ASM-*), module_id (MOD-*), title, rubric, max_score, type | Assessment definition |
 | LabSession | id (LAB-*), module_id (MOD-*), instructor_id (USR-*), scheduled_at, recording_url, status | Lab session |
 | CodingExercise | id (CEX-*), lesson_id/assessment_id, starter_code, test_cases[], language, time_limit, memory_limit | Code exercise |
@@ -108,6 +108,13 @@ All entities use domain-prefixed custom IDs: `{PREFIX}-{UNIQUE_SEGMENT}`. Certif
 | AgentQuery | id (AQR-*), agent_type, requesting_user_id, query_params, timestamp | Audit log |
 | PromptVersion | id (PMV-*), agent_type, prompt_key, version, content, evaluation_results, deployed_at | Prompt versions |
 | DropoutRiskScore | id (DRS-*), learner_id, score, signals, computed_at | Risk assessment |
+
+### Notification Domain
+
+| Entity | Key Fields | Notes |
+|--------|-----------|-------|
+| Notification | id (NTF-*), user_id, title, body, channel (in_app/push/email), category, action_url, read, pushed, created_at | Per-user notification |
+| PushSubscription | id (PSB-*), user_id, endpoint, p256dh, auth, created_at | Web Push subscription |
 
 ## Key Relationships
 

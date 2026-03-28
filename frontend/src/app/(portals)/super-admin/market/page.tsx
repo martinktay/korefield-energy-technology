@@ -151,6 +151,31 @@ export default function MarketPage() {
           </div>
         </div>
       </section>
+
+      {/* AI Executive Reports */}
+      <section aria-labelledby="ai-reports">
+        <h2 id="ai-reports" className="text-heading-sm text-surface-900 mb-3">AI Executive Reports</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <a
+            href="/super-admin/strategy"
+            className="rounded-card border border-surface-200 bg-surface-0 shadow-card p-5 hover:shadow-md transition-shadow"
+          >
+            <h3 className="text-body-sm font-medium text-surface-900 mb-1">Strategy Intelligence</h3>
+            <p className="text-caption text-surface-500">
+              Generate competitive positioning, market gap analysis, and strategic recommendations using the Strategy Agent.
+            </p>
+          </a>
+          <a
+            href="/super-admin/growth"
+            className="rounded-card border border-surface-200 bg-surface-0 shadow-card p-5 hover:shadow-md transition-shadow"
+          >
+            <h3 className="text-body-sm font-medium text-surface-900 mb-1">Growth Intelligence</h3>
+            <p className="text-caption text-surface-500">
+              Generate acquisition channel analysis, conversion funnel insights, and viral loop strategies using the Growth Agent.
+            </p>
+          </a>
+        </div>
+      </section>
     </div>
   );
 }

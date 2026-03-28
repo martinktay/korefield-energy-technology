@@ -1,7 +1,7 @@
 """Certification Validation Agent — multi-step LangGraph workflow.
 
 Verifies all 6 certification prerequisites via a LangGraph state graph:
-  1. Foundation School complete
+  1. AI Foundation School complete
   2. Track levels complete
   3. Pod deliverables submitted
   4. Capstone passed
@@ -105,7 +105,7 @@ class ValidationState(TypedDict):
 
 
 def _check_foundation(state: ValidationState) -> ValidationState:
-    """Node 1: Verify Foundation School completion."""
+    """Node 1: Verify AI Foundation School completion."""
     logger.info(
         "cert_validation_check_foundation",
         extra={"learner_id": state["learner_id"], "step": 1},
@@ -115,7 +115,7 @@ def _check_foundation(state: ValidationState) -> ValidationState:
     # Stub: in production, call backend API GET /enrollment/progress
     state["foundation_complete"] = True
     state["foundation_details"] = (
-        "All 5 Foundation School modules completed: "
+        "All 5 AI Foundation School modules completed: "
         "AI Literacy, AI Fluency, Systems Awareness, Governance, Professional Discipline."
     )
     return state
@@ -350,7 +350,7 @@ async def validate_certification(
         # Build prerequisite statuses
         prerequisites = [
             PrerequisiteStatus(
-                prerequisite="Foundation School Complete",
+                prerequisite="AI Foundation School Complete",
                 status="passed" if result["foundation_complete"] else "failed",
                 details=result["foundation_details"],
                 blocking=not result["foundation_complete"],

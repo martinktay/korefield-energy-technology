@@ -9,6 +9,7 @@ import {
   Controller,
   Get,
   Post,
+  Patch,
   Param,
   Query,
   Body,
@@ -19,6 +20,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 import { PaymentService } from './payment.service';
+import { CouponService } from './coupon.service';
 import { PricingQueryDto } from './dto/pricing-query.dto';
 import { PriceLockDto } from './dto/price-lock.dto';
 import { CheckoutDto } from './dto/checkout.dto';
@@ -26,6 +28,10 @@ import { PauseInstallmentDto } from './dto/pause-installment.dto';
 import { ResumeInstallmentDto } from './dto/resume-installment.dto';
 import { WebhookGuard } from './webhook.guard';
 import { FraudMonitorService } from './fraud-monitor.service';
+import { CreateCouponDto } from './dto/create-coupon.dto';
+import { ValidateCouponDto } from './dto/validate-coupon.dto';
+import { RbacGuard } from '@common/guards/rbac.guard';
+import { Roles } from '@common/decorators/roles.decorator';
 
 @Controller('payment')
 export class PaymentController {
@@ -33,6 +39,7 @@ export class PaymentController {
 
   constructor(
     private readonly paymentService: PaymentService,
+    private readonly couponService: CouponService,
     private readonly fraudMonitorService: FraudMonitorService,
   ) {}
 
@@ -117,6 +124,40 @@ export class PaymentController {
   @Get('status')
   async getPaymentStatus(@Query('enrollment_id') enrollmentId: string) {
     return this.paymentService.getPaymentStatus(enrollmentId);
+  }
+
+  // ── Coupon / Promo Code Endpoints ──────────────────────────────
+
+  /** POST /payment/coupons — create a new promo coupon (SuperAdmin only). */
+  @UseGuards(AuthGuard('jwt'), RbacGuard)
+  @Roles('SuperAdmin')
+  @Post('coupons')
+  async createCoupon(@Body() dto: CreateCouponDto) {
+    // In production, extract createdBy from JWT. Using placeholder for now.
+    return this.couponService.createCoupon(dto, 'USR-super-admin');
+  }
+
+  /** GET /payment/coupons — list all coupons with usage stats (SuperAdmin only). */
+  @UseGuards(AuthGuard('jwt'), RbacGuard)
+  @Roles('SuperAdmin')
+  @Get('coupons')
+  async listCoupons() {
+    return this.couponService.listCoupons();
+  }
+
+  /** POST /payment/coupons/validate — validate a coupon code at checkout. */
+  @UseGuards(AuthGuard('jwt'))
+  @Post('coupons/validate')
+  async validateCoupon(@Body() dto: ValidateCouponDto) {
+    return this.couponService.validateCoupon(dto.code, dto.track_id);
+  }
+
+  /** PATCH /payment/coupons/:couponId/disable — disable a coupon (SuperAdmin only). */
+  @UseGuards(AuthGuard('jwt'), RbacGuard)
+  @Roles('SuperAdmin')
+  @Patch('coupons/:couponId/disable')
+  async disableCoupon(@Param('couponId') couponId: string) {
+    return this.couponService.disableCoupon(couponId);
   }
 
   /**

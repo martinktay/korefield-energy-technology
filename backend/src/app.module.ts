@@ -15,8 +15,9 @@ import { CertificationModule } from './certification/certification.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { RecruitmentModule } from './recruitment/recruitment.module';
 import { FinanceModule } from './finance/finance.module';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
-  imports: [CommonModule, AuthModule, EnrollmentModule, ContentModule, PaymentModule, CertificationModule, DashboardModule, RecruitmentModule, FinanceModule],
+  imports: [CommonModule, AuthModule, EnrollmentModule, ContentModule, PaymentModule, CertificationModule, DashboardModule, RecruitmentModule, FinanceModule, NotificationModule],
 })
 export class AppModule {}

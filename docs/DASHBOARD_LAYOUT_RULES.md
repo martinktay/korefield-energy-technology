@@ -52,7 +52,7 @@ Used for: revenue totals, enrollment counts, completion rates, active users
 │ Module 4 of 6       │
 └─────────────────────┘
 ```
-Used for: learner progress, Foundation School modules, pod deliverables
+Used for: learner progress, AI Foundation School modules, pod deliverables
 
 ### List Card
 ```

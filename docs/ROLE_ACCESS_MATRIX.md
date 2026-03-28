@@ -60,8 +60,38 @@
 | GET /careers/applications/{APP-*}/cv | ✅ | ✅ | — |
 | GET /careers/pipeline | ✅ | ✅ | — |
 
+### Notification Endpoints
+| Endpoint | SuperAdmin | Admin | Instructor | Learner |
+|----------|-----------|-------|-----------|---------|
+| GET /notifications | ✅ | ✅ | ✅ | ✅ |
+| GET /notifications/unread-count | ✅ | ✅ | ✅ | ✅ |
+| PATCH /notifications/{NTF-*}/read | ✅ | ✅ | ✅ | ✅ |
+| POST /notifications/mark-all-read | ✅ | ✅ | ✅ | ✅ |
+| POST /notifications/push/subscribe | ✅ | ✅ | ✅ | ✅ |
+| POST /notifications/broadcast | ✅ | — | — | — |
+
+### Content Endpoints
+| Endpoint | SuperAdmin | Admin | Instructor | Learner | Public |
+|----------|-----------|-------|-----------|---------|--------|
+| GET /content/tracks | ✅ | ✅ | ✅ | ✅ | ✅ |
+| GET /content/tracks/{TRK-*} | ✅ | ✅ | ✅ | ✅ | ✅ |
+| GET /content/tracks/{TRK-*}/curriculum | ✅ | ✅ | ✅ | ✅ | — |
+| POST /content/modules | ✅ | ✅ | ✅ | — | — |
+| PUT /content/modules/{MOD-*} | ✅ | ✅ | ✅ | — | — |
+| POST /content/lessons | ✅ | ✅ | ✅ | — | — |
+| PUT /content/lessons/{LSN-*} | ✅ | ✅ | ✅ | — | — |
+| DELETE /content/lessons/{LSN-*} | ✅ | ✅ | ✅ | — | — |
+| GET /content/lessons/{LSN-*} | ✅ | ✅ | ✅ | ✅ | — |
+| GET /content/modules/{MOD-*}/lessons | ✅ | ✅ | ✅ | ✅ | — |
+| POST /content/assessments | ✅ | ✅ | ✅ | — | — |
+| PUT /content/assessments/{ASM-*} | ✅ | ✅ | ✅ | — | — |
+| DELETE /content/assessments/{ASM-*} | ✅ | ✅ | ✅ | — | — |
+| POST /content/upload/presign | ✅ | ✅ | ✅ | — | — |
+| POST /content/labs | ✅ | ✅ | ✅ | — | — |
+| POST /content/exercises | ✅ | ✅ | ✅ | — | — |
+| GET /content/foundation | ✅ | ✅ | ✅ | ✅ | — |
+
 ### AI Agent Endpoints
-| Endpoint | SuperAdmin | Instructor | Assessor | Learner |
 |----------|-----------|-----------|----------|---------|
 | POST /ai/tutor/lesson | — | — | — | ✅ |
 | POST /ai/tutor/summarize | — | — | — | ✅ |

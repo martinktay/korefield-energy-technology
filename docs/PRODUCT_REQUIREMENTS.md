@@ -16,7 +16,7 @@ KoreField Academy is a full-stack applied AI learning platform encompassing:
 
 ### Learner Journey
 1. Register → verify email → complete onboarding (country, background, goals)
-2. Auto-enroll in Foundation School (free, mandatory)
+2. Auto-enroll in AI Foundation School (free, mandatory)
 3. Complete 5 Foundation modules → unlock paid Track catalog
 4. Enroll in full Track Pathway (Beginner + Intermediate + Advanced)
 5. Get assigned to a Pod with role based on enrolled track
@@ -26,7 +26,7 @@ KoreField Academy is a full-stack applied AI learning platform encompassing:
 9. Meet all 6 eligibility conditions → receive verifiable certificate
 
 ### Certification Eligibility (All 6 Required)
-1. Foundation School complete
+1. AI Foundation School complete
 2. All Track levels complete (Beginner + Intermediate + Advanced)
 3. Pod deliverables submitted (prototype, documentation, governance checklist, sprint reviews, presentation)
 4. Capstone passed (defense with 2+ assessors)

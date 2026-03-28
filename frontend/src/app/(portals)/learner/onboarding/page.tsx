@@ -51,7 +51,7 @@ export default function OnboardingPage() {
           </div>
           <h1 className="mt-4 text-heading-lg text-surface-900">You&apos;re all set!</h1>
           <p className="mt-2 text-body-sm text-surface-500">
-            Based on your goals, we recommend starting with the Foundation School.
+            Based on your goals, we recommend starting with the AI Foundation School.
             You&apos;ll be auto-enrolled now.
           </p>
           <button
@@ -59,7 +59,7 @@ export default function OnboardingPage() {
             onClick={() => router.push("/learner/foundation")}
             className="mt-6 rounded-lg bg-brand-600 px-6 py-2.5 text-body-sm font-medium text-white hover:bg-brand-700 transition-colors"
           >
-            Start Foundation School
+            Start AI Foundation School
           </button>
         </div>
       </div>

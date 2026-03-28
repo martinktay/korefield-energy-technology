@@ -4,7 +4,7 @@
  * capstone unlock → submission → panel defense → eligibility check → certificate issuance.
  *
  * Certification requires all 6 conditions:
- * 1. Foundation School complete
+ * 1. AI Foundation School complete
  * 2. All level performance gates passed
  * 3. Pod deliverables complete (assessor-verified)
  * 4. Capstone defense passed

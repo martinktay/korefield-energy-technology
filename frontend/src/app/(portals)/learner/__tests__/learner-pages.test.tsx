@@ -87,7 +87,7 @@ describe("OnboardingPage", () => {
 });
 
 describe("FoundationPage", () => {
-  it("renders Foundation School modules", () => {
+  it("renders AI Foundation School modules", () => {
     render(<FoundationPage />);
     expect(screen.getByText(/foundation/i)).toBeInTheDocument();
   });

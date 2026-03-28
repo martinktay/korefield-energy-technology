@@ -26,7 +26,7 @@ const FALLBACK_ACTIVITIES = [
 ];
 
 const quickLinks = [
-  { label: "Foundation School", href: "/learner/foundation", Icon: BookOpen, color: "text-brand-600", bg: "bg-brand-50", hoverBg: "group-hover:bg-brand-100" },
+  { label: "AI Foundation School", href: "/learner/foundation", Icon: BookOpen, color: "text-brand-600", bg: "bg-brand-50", hoverBg: "group-hover:bg-brand-100" },
   { label: "My Pods", href: "/learner/pods", Icon: Users, color: "text-accent-600", bg: "bg-accent-50", hoverBg: "group-hover:bg-accent-100" },
   { label: "Lessons", href: "/learner/lessons", Icon: GraduationCap, color: "text-purple-600", bg: "bg-purple-50", hoverBg: "group-hover:bg-purple-100" },
   { label: "Certificates", href: "/learner/certificates", Icon: Award, color: "text-amber-600", bg: "bg-amber-50", hoverBg: "group-hover:bg-amber-100" },

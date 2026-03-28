@@ -4,7 +4,7 @@
  * Seeds:
  *  - 4 launch tracks with 3 levels each (Beginner, Intermediate, Advanced)
  *  - Modules per level matching TRACKS_OVERVIEW.md curriculum
- *  - Foundation School 5 reference modules
+ *  - AI Foundation School 5 reference modules
  *  - Country bands with purchasing power multipliers
  *  - Pricing configs per track
  *
@@ -234,7 +234,7 @@ const tracks: TrackSeed[] = [
 ];
 
 
-// ─── Foundation School Reference Modules ────────────────────────
+// ─── AI Foundation School Reference Modules ────────────────────────
 // Foundation progress is tracked via FoundationProgress JSON, but we
 // store reference data so the frontend can display module names/descriptions.
 
@@ -430,15 +430,15 @@ async function seedTracks(): Promise<void> {
 }
 
 /**
- * Seeds Foundation School reference data.
+ * Seeds AI Foundation School reference data.
  *
  * Foundation modules are not stored as Track → Level → Module in the DB
- * because Foundation School is a standalone layer tracked via FoundationProgress JSON.
+ * because AI Foundation School is a standalone layer tracked via FoundationProgress JSON.
  * We store them as a JSON reference file that the frontend and services can read.
  * This function writes the reference data to a JSON file alongside the seed.
  */
 async function seedFoundationModules(): Promise<void> {
-  console.log('Seeding Foundation School reference data...');
+  console.log('Seeding AI Foundation School reference data...');
 
   const fs = await import('fs');
   const path = await import('path');
@@ -446,7 +446,7 @@ async function seedFoundationModules(): Promise<void> {
   const outputPath = path.join(__dirname, 'foundation-modules.json');
   fs.writeFileSync(outputPath, JSON.stringify(foundationModules, null, 2), 'utf-8');
 
-  console.log(`  ✓ Foundation School (${foundationModules.length} modules) → ${outputPath}`);
+  console.log(`  ✓ AI Foundation School (${foundationModules.length} modules) → ${outputPath}`);
 }
 
 async function seedCountryBands(): Promise<void> {

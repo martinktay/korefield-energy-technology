@@ -8,10 +8,11 @@ import { Module } from '@nestjs/common';
 import { ContentController } from './content.controller';
 import { ContentService } from './content.service';
 import { CodeExecutionService } from './code-execution.service';
+import { UploadService } from './upload.service';
 
 @Module({
   controllers: [ContentController],
-  providers: [ContentService, CodeExecutionService],
-  exports: [ContentService, CodeExecutionService],
+  providers: [ContentService, CodeExecutionService, UploadService],
+  exports: [ContentService, CodeExecutionService, UploadService],
 })
 export class ContentModule {}

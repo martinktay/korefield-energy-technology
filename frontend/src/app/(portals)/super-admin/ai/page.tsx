@@ -26,6 +26,10 @@ const mockAgentCategories = [
       { name: "Pricing Intelligence Agent", workflows: 124, traces: 124, failures: 0, failRate: "0.00%" },
       { name: "Expansion Opportunity Agent", workflows: 45, traces: 45, failures: 0, failRate: "0.00%" },
       { name: "Academic Performance Agent", workflows: 67, traces: 67, failures: 1, failRate: "1.49%" },
+      { name: "Strategy Report Agent", workflows: 34, traces: 34, failures: 0, failRate: "0.00%" },
+      { name: "Growth Report Agent", workflows: 29, traces: 29, failures: 1, failRate: "3.45%" },
+      { name: "Product Strategy Agent", workflows: 22, traces: 22, failures: 0, failRate: "0.00%" },
+      { name: "Workforce Intelligence Agent", workflows: 18, traces: 18, failures: 0, failRate: "0.00%" },
     ],
   },
 ];

@@ -18,7 +18,7 @@ test.describe("Learner Portal — Page Navigation", () => {
     await expect(page.locator("h1")).toBeVisible();
   });
 
-  test("foundation school page shows module cards", async ({ page }) => {
+  test("AI Foundation School page shows module cards", async ({ page }) => {
     await page.goto("/learner/foundation");
     await expect(page.locator("h1")).toBeVisible();
   });

@@ -7,7 +7,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Send, Hash, Smile, ThumbsUp, Heart, PartyPopper, Flame, Star } from "lucide-react";
+import { Send, Hash, Smile, Pencil, Trash2 } from "lucide-react";
 
 interface Reaction {
   emoji: string;
@@ -21,6 +21,7 @@ interface Message {
   text: string;
   time: string;
   reactions: Reaction[];
+  edited?: boolean;
 }
 
 interface Channel {
@@ -79,6 +80,8 @@ export function PodChat({ podName, members, currentUser }: Props) {
   const [input, setInput] = useState("");
   const [emojiOpen, setEmojiOpen] = useState(false);
   const [reactionPickerFor, setReactionPickerFor] = useState<string | null>(null);
+  const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
+  const [editMessageValue, setEditMessageValue] = useState("");
   const [allMessages, setAllMessages] = useState<Record<string, Message[]>>({
     general: [
       { id: "g1", sender: "Amara Okafor", role: "Product Manager", text: "Hey team! 👋 Let's sync on the sprint deliverables. Who's available for a quick standup?", time: "9:00 AM", reactions: [{ emoji: "👍", users: ["Kwame Asante", "Fatima Bello"] }] },
@@ -166,6 +169,31 @@ export function PodChat({ podName, members, currentUser }: Props) {
     setReactionPickerFor(null);
   }
 
+  function editMessage(msgId: string) {
+    const msg = activeMessages.find((m) => m.id === msgId);
+    if (!msg) return;
+    setEditingMessageId(msgId);
+    setEditMessageValue(msg.text);
+  }
+
+  function saveEdit(msgId: string) {
+    setAllMessages((prev) => {
+      const channelMsgs = (prev[activeChannel] || []).map((m) =>
+        m.id === msgId ? { ...m, text: editMessageValue, edited: true } : m
+      );
+      return { ...prev, [activeChannel]: channelMsgs };
+    });
+    setEditingMessageId(null);
+    setEditMessageValue("");
+  }
+
+  function deleteMessage(msgId: string) {
+    setAllMessages((prev) => ({
+      ...prev,
+      [activeChannel]: (prev[activeChannel] || []).filter((m) => m.id !== msgId),
+    }));
+  }
+
   return (
     <div className="flex h-[calc(100vh-8rem)] rounded-card border border-surface-200 bg-surface-0 shadow-card overflow-hidden">
       {/* Sidebar */}
@@ -232,10 +260,26 @@ export function PodChat({ podName, members, currentUser }: Props) {
                       {!isMe && <span className="text-caption font-medium text-surface-900">{msg.sender}</span>}
                       <span className="text-[10px] text-surface-400">{msg.role}</span>
                       <span className="text-[10px] text-surface-400">{msg.time}</span>
+                      {msg.edited && <span className="text-caption text-surface-400">(edited)</span>}
                     </div>
-                    <div className={`inline-block rounded-2xl px-4 py-2 text-body-sm whitespace-pre-wrap ${isMe ? "bg-brand-600 text-white rounded-tr-sm" : "bg-surface-100 text-surface-800 rounded-tl-sm"}`}>
-                      {msg.text}
-                    </div>
+                    {editingMessageId === msg.id ? (
+                      <div className="flex gap-2 items-center">
+                        <input
+                          type="text"
+                          value={editMessageValue}
+                          onChange={(e) => setEditMessageValue(e.target.value)}
+                          onKeyDown={(e) => e.key === "Enter" && saveEdit(msg.id)}
+                          className="flex-1 rounded-lg border border-brand-300 bg-white px-3 py-1.5 text-body-sm text-surface-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+                          autoFocus
+                        />
+                        <button onClick={() => saveEdit(msg.id)} className="rounded-lg bg-brand-600 px-3 py-1.5 text-caption font-medium text-white hover:bg-brand-700 transition-all">Save</button>
+                        <button onClick={() => setEditingMessageId(null)} className="rounded-lg border border-surface-200 px-3 py-1.5 text-caption text-surface-500 hover:bg-surface-100 transition-all">Cancel</button>
+                      </div>
+                    ) : (
+                      <div className={`inline-block rounded-2xl px-4 py-2 text-body-sm whitespace-pre-wrap ${isMe ? "bg-brand-600 text-white rounded-tr-sm" : "bg-surface-100 text-surface-800 rounded-tl-sm"}`}>
+                        {msg.text}
+                      </div>
+                    )}
                     {/* Reactions */}
                     {msg.reactions.length > 0 && (
                       <div className={`flex gap-1 mt-1 flex-wrap ${isMe ? "justify-end" : ""}`}>
@@ -248,8 +292,18 @@ export function PodChat({ podName, members, currentUser }: Props) {
                       </div>
                     )}
                   </div>
-                  {/* Add reaction button */}
-                  <div className="relative self-end opacity-0 group-hover:opacity-100 transition-opacity">
+                  {/* Add reaction button + edit/delete for own messages */}
+                  <div className="relative self-end opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5">
+                    {isMe && (
+                      <>
+                        <button onClick={() => editMessage(msg.id)} className="p-1 rounded text-surface-400 hover:bg-surface-100 hover:text-brand-600 transition-colors" aria-label="Edit message">
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                        <button onClick={() => deleteMessage(msg.id)} className="p-1 rounded text-surface-400 hover:bg-red-50 hover:text-red-600 transition-colors" aria-label="Delete message">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </>
+                    )}
                     <button onClick={() => setReactionPickerFor(reactionPickerFor === msg.id ? null : msg.id)} className="p-1 rounded text-surface-400 hover:bg-surface-100 hover:text-surface-600 transition-colors">
                       <Smile className="w-4 h-4" />
                     </button>

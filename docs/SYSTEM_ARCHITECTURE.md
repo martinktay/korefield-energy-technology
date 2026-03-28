@@ -6,7 +6,7 @@ Four independently deployable workloads on AWS ECS Fargate:
 
 1. **Frontend** — Next.js 14+ App Router, serves all portal types
 2. **Backend API** — NestJS, core business logic, REST APIs
-3. **AI Services** — Python FastAPI, LangChain/LangGraph agents (isolated to prevent resource contention)
+3. **AI Services** — Python FastAPI, LangChain/LangGraph agents (8 executive, 3 faculty, 4 learner — isolated to prevent resource contention)
 4. **Background Workers** — TypeScript SQS consumers for async operations
 
 ## Service Communication

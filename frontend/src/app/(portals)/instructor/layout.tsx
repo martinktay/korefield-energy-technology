@@ -9,7 +9,7 @@ import {
   FileText,
   Calendar,
   ShieldCheck,
-  MessageSquare,
+  Mail,
 } from "lucide-react";
 
 const navItems: NavItem[] = [
@@ -19,7 +19,7 @@ const navItems: NavItem[] = [
   { label: "Content", href: "/instructor/content", Icon: FileText },
   { label: "Schedule", href: "/instructor/schedule", Icon: Calendar },
   { label: "Assessor", href: "/instructor/assessor", Icon: ShieldCheck },
-  { label: "Messages", href: "/instructor/messages", Icon: MessageSquare },
+  { label: "Messages", href: "/instructor/messages", Icon: Mail },
 ];
 
 export default function InstructorLayout({ children }: { children: React.ReactNode }) {

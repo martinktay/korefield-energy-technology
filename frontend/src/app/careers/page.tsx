@@ -1,3 +1,8 @@
+/**
+ * @file careers/page.tsx
+ * Public careers page with job listings, department filters, ATS CV scoring,
+ * inline application form, and department-specific "Why Work With Us" perks.
+ */
 "use client";
 
 import { useState, useRef } from "react";
@@ -7,6 +12,11 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { MapPin, Clock, Briefcase, ChevronDown, ChevronUp, Send, CheckCircle2, Upload, FileText, Loader2, AlertCircle } from "lucide-react";
+
+interface Perk {
+  title: string;
+  description: string;
+}
 
 interface JobOpening {
   id: string;
@@ -19,6 +29,7 @@ interface JobOpening {
   requirements: string[];
   niceToHave: string[];
   keywords: string[]; // ATS matching keywords
+  perks: Perk[];
 }
 
 const openings: JobOpening[] = [
@@ -49,6 +60,11 @@ const openings: JobOpening[] = [
       "Familiarity with NestJS or FastAPI backend development",
     ],
     keywords: ["python", "pytorch", "tensorflow", "mlops", "rag", "langchain", "ai", "machine learning", "deep learning", "model training", "deployment", "aws", "docker", "teaching", "curriculum", "phd", "msc"],
+    perks: [
+      { title: "Remote-First", description: "Work from anywhere in Africa or globally. Flexible hours, async communication via the platform's messaging system." },
+      { title: "Shape Curriculum", description: "Design and own the learning experience for thousands of AI practitioners across Africa. Your expertise directly shapes careers." },
+      { title: "AI-Powered Teaching Tools", description: "Collaborate with 11 AI agents — Tutor, Feedback, Assessor Support — that amplify your teaching impact." },
+    ],
   },
   {
     id: "INS-002",
@@ -77,6 +93,11 @@ const openings: JobOpening[] = [
       "Familiarity with Jupyter notebooks and interactive teaching",
     ],
     keywords: ["python", "pandas", "numpy", "scikit-learn", "sql", "statistics", "data science", "machine learning", "data analysis", "visualization", "matplotlib", "tableau", "eda", "teaching", "msc", "phd"],
+    perks: [
+      { title: "Remote-First", description: "Work from anywhere in Africa or globally. Flexible hours, async communication via the platform's messaging system." },
+      { title: "Flexible Teaching Schedule", description: "Async-first delivery model — record lessons, review submissions, and mentor pods on your own schedule." },
+      { title: "AI-Powered Teaching Tools", description: "The Assignment Feedback Agent and Tutor Agent handle routine Q&A so you can focus on high-impact mentoring." },
+    ],
   },
   {
     id: "INS-003",
@@ -105,6 +126,11 @@ const openings: JobOpening[] = [
       "Published research in AI security or adversarial ML",
     ],
     keywords: ["cybersecurity", "security", "penetration testing", "adversarial", "ai safety", "wireshark", "metasploit", "burp suite", "owasp", "python", "incident response", "threat intelligence", "cissp", "ceh", "oscp", "network security"],
+    perks: [
+      { title: "Remote-First", description: "Work from anywhere in Africa or globally. Flexible hours, async communication via the platform's messaging system." },
+      { title: "Shape Curriculum", description: "Build Africa's first dedicated AI Security track — define the standard for how cybersecurity meets AI on the continent." },
+      { title: "Sandboxed Lab Environment", description: "Design attack/defense scenarios in our in-browser execution environment with Python, SQL, and JavaScript support." },
+    ],
   },
   {
     id: "ASR-001",
@@ -133,6 +159,11 @@ const openings: JobOpening[] = [
       "Experience with multiple African tech ecosystems",
     ],
     keywords: ["assessment", "evaluation", "capstone", "defense", "mentoring", "feedback", "professionalism", "certification", "industry", "ai", "data science", "cybersecurity", "product management", "examiner"],
+    perks: [
+      { title: "Remote-First", description: "Work from anywhere in Africa or globally. Flexible hours, async communication via the platform's messaging system." },
+      { title: "Flexible Contract Hours", description: "~10-15 hrs/week with scheduled defense panels. Fits alongside other professional commitments." },
+      { title: "AI-Assisted Assessment", description: "The Certification Validation Agent and Assessor Support Agent help you maintain consistent, fair evaluations at scale." },
+    ],
   },
   {
     id: "ENG-001",
@@ -161,6 +192,11 @@ const openings: JobOpening[] = [
       "Experience building real-time features (WebSocket, SSE)",
     ],
     keywords: ["typescript", "react", "next.js", "nextjs", "nestjs", "node.js", "nodejs", "postgresql", "postgres", "redis", "aws", "ecs", "fargate", "s3", "sqs", "docker", "terraform", "tailwind", "prisma", "ci/cd", "github actions", "jest", "testing"],
+    perks: [
+      { title: "Remote-First", description: "Work from anywhere in Africa or globally. Flexible hours, async communication via the platform's messaging system." },
+      { title: "Cutting-Edge Stack", description: "Next.js 14, NestJS, Prisma, AWS (ECS Fargate, RDS, SQS), Terraform, GitHub Actions. Modern tools on meaningful problems." },
+      { title: "Ship to Production", description: "Small team, high ownership. Your code goes live to real learners — no bureaucratic bottlenecks." },
+    ],
   },
   {
     id: "ENG-002",
@@ -189,6 +225,11 @@ const openings: JobOpening[] = [
       "Familiarity with AWS Bedrock or other managed LLM services",
     ],
     keywords: ["python", "langchain", "langgraph", "langsmith", "rag", "llm", "ai", "machine learning", "fastapi", "vector database", "embedding", "prompt engineering", "guardrails", "agent", "nlp", "chatbot"],
+    perks: [
+      { title: "Remote-First", description: "Work from anywhere in Africa or globally. Flexible hours, async communication via the platform's messaging system." },
+      { title: "Build 11 AI Agents", description: "LangChain, LangGraph, LangSmith — you'll own the full agent lifecycle from prompt design to production observability." },
+      { title: "LangSmith Observability", description: "Full tracing, prompt debugging, and workflow evaluation with 90-day retention. See exactly how your agents perform." },
+    ],
   },
   {
     id: "OPS-001",
@@ -196,9 +237,9 @@ const openings: JobOpening[] = [
     department: "Operations",
     type: "Full-time",
     location: "Remote (Africa)",
-    description: "Manage the end-to-end learner lifecycle from registration through certification. Handle Foundation School onboarding, track enrollment, payment support, pod assignment coordination, and dropout intervention. Work closely with the Dropout Risk Agent to identify and support at-risk learners.",
+    description: "Manage the end-to-end learner lifecycle from registration through certification. Handle AI Foundation School onboarding, track enrollment, payment support, pod assignment coordination, and dropout intervention. Work closely with the Dropout Risk Agent to identify and support at-risk learners.",
     responsibilities: [
-      "Onboard new learners through Foundation School and track enrollment",
+      "Onboard new learners through AI Foundation School and track enrollment",
       "Coordinate pod assignments ensuring multidisciplinary team composition",
       "Monitor payment plans, handle overdue escalations, and manage grace periods",
       "Identify at-risk learners using Dropout Risk Agent insights and intervene proactively",
@@ -217,6 +258,11 @@ const openings: JobOpening[] = [
       "Familiarity with payment systems in African markets (mobile money, local gateways)",
     ],
     keywords: ["operations", "customer success", "enrollment", "onboarding", "learner", "education", "lms", "crm", "communication", "administration", "support", "payment", "coordination"],
+    perks: [
+      { title: "Remote-First", description: "Work from anywhere in Africa or globally. Flexible hours, async communication via the platform's messaging system." },
+      { title: "Pan-African Impact", description: "Support learners across the continent — your work directly shapes career outcomes for thousands of people." },
+      { title: "Growth Path", description: "Join early and grow with the platform. Operations roles evolve into leadership as KoreField scales to new regions." },
+    ],
   },
 ];
 
@@ -402,6 +448,19 @@ export default function CareersPage() {
                       </>
                     )}
 
+                    {/* Why Work With Us — inline per job */}
+                    <div className="mt-6 rounded-xl bg-surface-50 border border-surface-200 p-4">
+                      <p className="text-body-sm font-semibold text-surface-900 mb-3">Why Work With Us</p>
+                      <div className="grid gap-3 sm:grid-cols-3">
+                        {job.perks.map((perk) => (
+                          <div key={perk.title}>
+                            <p className="text-body-sm font-medium text-surface-900">{perk.title}</p>
+                            <p className="text-caption text-surface-500 mt-0.5">{perk.description}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
                     {isSubmitted ? (
                       <div className="mt-6 rounded-xl bg-accent-50 border border-accent-200 p-5 text-center">
                         <CheckCircle2 className="h-6 w-6 text-accent-600 mx-auto mb-2" />
@@ -532,27 +591,6 @@ export default function CareersPage() {
         </div>
       </section>
 
-      <section className="bg-surface-50 py-14">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-heading-lg text-surface-900 mb-8">Why Work With Us</h2>
-          <div className="grid gap-6 sm:grid-cols-3">
-            {[
-              { title: "Remote-First", desc: "Work from anywhere in Africa or globally. Flexible hours, async communication via the platform's messaging system." },
-              { title: "Mission-Driven", desc: "Shape AI education for an entire continent. Real impact — every learner you teach builds real skills, not just certificates." },
-              { title: "Cutting-Edge Stack", desc: "Next.js 14, NestJS, LangChain, LangGraph, AWS, Terraform. Work with modern tools on meaningful problems." },
-            ].map((item) => (
-              <div key={item.title} className="rounded-2xl border border-surface-200 bg-surface-0 p-6 shadow-card">
-                <h3 className="text-heading-sm text-surface-900">{item.title}</h3>
-                <p className="mt-2 text-body-sm text-surface-500">{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <footer className="border-t border-surface-200 bg-surface-50 py-8 text-center">
-        <p className="text-caption text-surface-400">© {new Date().getFullYear()} KoreField Academy. All rights reserved.</p>
-      </footer>
     </div>
   );
 }

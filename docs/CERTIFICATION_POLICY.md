@@ -8,7 +8,7 @@ Certificates are issued only when ALL 6 eligibility conditions are met. No excep
 
 | # | Condition | Description |
 |---|-----------|-------------|
-| 1 | Foundation complete | All 5 Foundation School modules completed |
+| 1 | Foundation complete | All 5 AI Foundation School modules completed |
 | 2 | All levels complete | Beginner + Intermediate + Advanced levels passed for the Track |
 | 3 | Pod deliverables submitted | Working prototype, documentation, governance checklist, sprint reviews, final presentation |
 | 4 | Capstone passed | Capstone project submitted and defense passed with panel of 2+ assessors |

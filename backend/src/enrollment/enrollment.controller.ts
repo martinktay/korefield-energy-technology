@@ -1,7 +1,7 @@
 /**
  * @file enrollment.controller.ts
  * REST controller for the enrollment domain.
- * Exposes endpoints for learner registration, onboarding, Foundation School progress,
+ * Exposes endpoints for learner registration, onboarding, AI Foundation School progress,
  * Track enrollment, waitlist management, pod assignment/activation, and performance gate evaluation.
  * All endpoints require JWT authentication.
  */
