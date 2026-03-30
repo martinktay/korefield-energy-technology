@@ -9,6 +9,7 @@ import {
   Controller,
   Post,
   Get,
+  Patch,
   Body,
   Param,
   Query,
@@ -24,6 +25,7 @@ import { JoinWaitlistDto } from './dto/join-waitlist.dto';
 import { AssignPodDto } from './dto/assign-pod.dto';
 import { ActivatePodDto } from './dto/activate-pod.dto';
 import { EvaluateGateDto } from './dto/evaluate-gate.dto';
+import { UpdateLearnerDto } from './dto/update-learner.dto';
 
 /**
  * Enrollment controller managing the learner journey from registration through progression.
@@ -115,5 +117,15 @@ export class EnrollmentController {
   @Get('progress')
   async getLearnerProgress(@Query('learner_id') learnerId: string) {
     return this.enrollmentService.getLearnerProgress(learnerId);
+  }
+
+  /** PATCH /enrollment/learners/:id — Update mutable learner profile fields (e.g. project_interest). */
+  @UseGuards(AuthGuard('jwt'))
+  @Patch('learners/:id')
+  async updateLearner(
+    @Param('id') id: string,
+    @Body() dto: UpdateLearnerDto,
+  ) {
+    return this.enrollmentService.updateLearner(id, dto);
   }
 }

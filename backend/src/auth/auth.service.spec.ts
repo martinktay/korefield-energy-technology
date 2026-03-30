@@ -30,7 +30,7 @@ describe('AuthService', () => {
     session: { create: jest.Mock };
   };
   let jwtService: { sign: jest.Mock; verify: jest.Mock; decode: jest.Mock };
-  let emailService: { sendVerificationEmail: jest.Mock };
+  let emailService: { sendVerificationEmail: jest.Mock; sendWelcomeEmail: jest.Mock; sendMfaSetupConfirmationEmail: jest.Mock };
 
   beforeEach(async () => {
     prisma = {
@@ -52,6 +52,8 @@ describe('AuthService', () => {
 
     emailService = {
       sendVerificationEmail: jest.fn().mockResolvedValue(undefined),
+      sendWelcomeEmail: jest.fn().mockResolvedValue(undefined),
+      sendMfaSetupConfirmationEmail: jest.fn().mockResolvedValue(undefined),
     };
 
     const module: TestingModule = await Test.createTestingModule({

@@ -26,6 +26,12 @@ class Settings(BaseSettings):
     langsmith_project: str = "korefield-academy"
     langsmith_tracing_enabled: bool = False
 
+    # Database
+    database_url: str = "postgresql://localhost:5432/korefield"
+
+    # Redis
+    redis_url: str = "redis://localhost:6379"
+
     # RAG Configuration
     rag_chunk_size: int = 1000
     rag_chunk_overlap: int = 200

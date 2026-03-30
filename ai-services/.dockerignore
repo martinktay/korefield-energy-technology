@@ -1,0 +1,31 @@
+# KoreField Academy AI Services — .dockerignore
+
+# Virtual environment (recreated inside container)
+.venv/
+
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Environment files (injected at runtime)
+.env
+.env.local
+.env.*.local
+
+# Test artifacts (not needed in production image)
+tests/
+coverage/
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Docs
+*.md
+
+# Logs
+*.log

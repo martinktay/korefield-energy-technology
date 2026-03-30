@@ -6,6 +6,7 @@ output "queue_urls" {
     analytics        = aws_sqs_queue.analytics.url
     notifications    = aws_sqs_queue.notifications.url
     payment_events   = aws_sqs_queue.payment_events.url
+    email            = aws_sqs_queue.email.url
   }
 }
 
@@ -17,6 +18,7 @@ output "queue_arns" {
     analytics        = aws_sqs_queue.analytics.arn
     notifications    = aws_sqs_queue.notifications.arn
     payment_events   = aws_sqs_queue.payment_events.arn
+    email            = aws_sqs_queue.email.arn
   }
 }
 
@@ -28,5 +30,6 @@ output "dlq_arns" {
     analytics        = aws_sqs_queue.analytics_dlq.arn
     notifications    = aws_sqs_queue.notifications_dlq.arn
     payment_events   = aws_sqs_queue.payment_events_dlq.arn
+    email            = aws_sqs_queue.email_dlq.arn
   }
 }

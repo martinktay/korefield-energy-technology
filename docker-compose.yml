@@ -1,0 +1,135 @@
+# KoreField Academy — Local Development Docker Compose
+# Orchestrates all 4 services + PostgreSQL + Redis for local dev.
+#
+# Usage:
+#   docker compose up              # Full stack
+#   docker compose up backend      # Backend + dependencies only
+#   docker compose up ai-services  # AI services only
+#
+# Environment files:
+#   backend/.env       — Backend config (copy from .env.example)
+#   ai-services/.env   — AI services config (copy from .env.example)
+
+services:
+  # ── Infrastructure ──────────────────────────
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: kf-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: korefield_academy
+      POSTGRES_USER: korefield_admin
+      POSTGRES_PASSWORD: korefield_local_dev
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - korefield-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U korefield_admin -d korefield_academy"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: kf-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - korefield-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Application Services ────────────────────
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: kf-backend
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./backend/.env
+    environment:
+      DATABASE_URL: postgresql://korefield_admin:korefield_local_dev@postgres:5432/korefield_academy?schema=public
+      NODE_ENV: development
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - korefield-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: kf-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://backend:3001
+      NODE_ENV: development
+    depends_on:
+      - backend
+    networks:
+      - korefield-network
+
+  workers:
+    build:
+      context: ./workers
+      dockerfile: Dockerfile
+    container_name: kf-workers
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    environment:
+      DATABASE_URL: postgresql://korefield_admin:korefield_local_dev@postgres:5432/korefield_academy?schema=public
+      NODE_ENV: development
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      backend:
+        condition: service_started
+    networks:
+      - korefield-network
+
+  ai-services:
+    build:
+      context: ./ai-services
+      dockerfile: Dockerfile
+    container_name: kf-ai-services
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./ai-services/.env
+    environment:
+      KF_ENVIRONMENT: dev
+    networks:
+      - korefield-network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  korefield-network:
+    driver: bridge

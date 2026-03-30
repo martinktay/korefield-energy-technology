@@ -2,6 +2,8 @@
  * @file update-module.dto.ts
  * Validation DTO for updating an existing curriculum module.
  * Triggers content versioning if the module is already published.
+ * Includes `version` field for optimistic locking — the client must send
+ * the current version to prevent silent overwrites of concurrent edits.
  */
 import { IsBoolean, IsInt, IsOptional, IsString, Min } from 'class-validator';
 
@@ -19,4 +21,10 @@ export class UpdateModuleDto {
   @IsBoolean()
   @IsOptional()
   published?: boolean;
+
+  /** Current version for optimistic locking. If provided and mismatched, returns HTTP 409. */
+  @IsInt()
+  @Min(1)
+  @IsOptional()
+  version?: number;
 }

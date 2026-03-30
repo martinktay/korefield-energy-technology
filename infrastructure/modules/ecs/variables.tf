@@ -27,25 +27,21 @@ variable "security_group_id" {
 variable "frontend_image" {
   description = "Docker image for frontend service"
   type        = string
-  default     = "placeholder:latest"
 }
 
 variable "backend_image" {
   description = "Docker image for backend service"
   type        = string
-  default     = "placeholder:latest"
 }
 
 variable "ai_services_image" {
   description = "Docker image for AI services"
   type        = string
-  default     = "placeholder:latest"
 }
 
 variable "workers_image" {
   description = "Docker image for workers"
   type        = string
-  default     = "placeholder:latest"
 }
 
 variable "frontend_cpu" {

@@ -13,6 +13,11 @@ output "uploads_bucket_id" {
   value       = aws_s3_bucket.uploads.id
 }
 
+output "uploads_bucket_arn" {
+  description = "Learner uploads bucket ARN"
+  value       = aws_s3_bucket.uploads.arn
+}
+
 output "backups_bucket_id" {
   description = "Backups bucket ID"
   value       = aws_s3_bucket.backups.id

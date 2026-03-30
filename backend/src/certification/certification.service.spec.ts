@@ -6,6 +6,11 @@ import {
 } from '@nestjs/common';
 import { CertificationService } from './certification.service';
 import { PrismaService } from '@common/prisma/prisma.service';
+import { EmailService } from '@email/email.service';
+
+const mockEmailService = {
+  sendCertificateIssuedEmail: jest.fn().mockResolvedValue(undefined),
+};
 
 const mockPrisma = {
   learner: { findUnique: jest.fn() },
@@ -50,6 +55,7 @@ describe('CertificationService', () => {
       providers: [
         CertificationService,
         { provide: PrismaService, useValue: mockPrisma },
+        { provide: EmailService, useValue: mockEmailService },
       ],
     }).compile();
 

@@ -1,5 +1,6 @@
 """Tests for executive-side AI agents: Market Intelligence, Pricing Intelligence,
-Expansion Opportunity, Academic Performance Insight.
+Expansion Opportunity, Academic Performance Insight, Strategy, Growth, Product Strategy,
+Workforce Intelligence.
 
 Covers Super Admin access restriction, AQR-* query logging, confidence scores,
 LangGraph workflow execution, and endpoint behavior.
@@ -24,9 +25,21 @@ def client():
 def _clear_query_log():
     """Clear the in-memory AQR query log between tests."""
     from agents.executive.market_intelligence import _query_log
+    from agents.executive.strategy import _query_log as strategy_query_log
+    from agents.executive.growth import _query_log as growth_query_log
+    from agents.executive.product_strategy import _query_log as product_query_log
+    from agents.executive.workforce_intelligence import _query_log as workforce_query_log
     _query_log.clear()
+    strategy_query_log.clear()
+    growth_query_log.clear()
+    product_query_log.clear()
+    workforce_query_log.clear()
     yield
     _query_log.clear()
+    strategy_query_log.clear()
+    growth_query_log.clear()
+    product_query_log.clear()
+    workforce_query_log.clear()
 
 
 # -----------------------------------------------------------------------
@@ -362,3 +375,316 @@ def test_track_relevance_bounded():
 
     score = compute_track_relevance(0.5, 0.5, 0.5, 0.5)
     assert 0 <= score <= 1
+
+
+# -----------------------------------------------------------------------
+# Strategy Agent — POST /ai/executive/strategy-report
+# -----------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_strategy_report_returns_200(client):
+    resp = await client.post(
+        "/ai/executive/strategy-report",
+        json={"focus_areas": [], "tracks": []},
+        headers=SUPER_ADMIN_HEADERS,
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert len(data["sections"]) > 0
+    assert 0 <= data["overall_confidence"] <= 1
+    assert data["aqr_record_id"].startswith("AQR-")
+    assert data["workflow_steps_executed"] == 3
+    assert "telemetry" in data
+
+
+@pytest.mark.asyncio
+async def test_strategy_report_rejects_non_super_admin(client):
+    resp = await client.post(
+        "/ai/executive/strategy-report",
+        json={"focus_areas": [], "tracks": []},
+        headers=NON_ADMIN_HEADERS,
+    )
+    assert resp.status_code == 403
+
+
+@pytest.mark.asyncio
+async def test_strategy_report_logs_aqr_record(client):
+    from agents.executive.strategy import _query_log
+
+    await client.post(
+        "/ai/executive/strategy-report",
+        json={"focus_areas": ["competitive"], "tracks": []},
+        headers=SUPER_ADMIN_HEADERS,
+    )
+    assert len(_query_log) == 1
+    record = _query_log[0]
+    assert record["record_id"].startswith("AQR-")
+    assert record["requesting_user_id"] == "USR-sa001"
+    assert record["query_type"] == "strategy_report"
+
+
+@pytest.mark.asyncio
+async def test_strategy_report_confidence_scores_on_sections(client):
+    resp = await client.post(
+        "/ai/executive/strategy-report",
+        json={"focus_areas": [], "tracks": []},
+        headers=SUPER_ADMIN_HEADERS,
+    )
+    data = resp.json()
+    for section in data["sections"]:
+        assert 0.5 <= section["confidence"] <= 1.0, (
+            "Section confidence should be between 0.5 and 1.0"
+        )
+
+
+@pytest.mark.asyncio
+async def test_strategy_report_telemetry_present(client):
+    resp = await client.post(
+        "/ai/executive/strategy-report",
+        json={"focus_areas": [], "tracks": []},
+        headers=SUPER_ADMIN_HEADERS,
+    )
+    data = resp.json()
+    telemetry = data["telemetry"]
+    assert "workflow" in telemetry
+    assert "status" in telemetry
+    assert "duration_ms" in telemetry
+    assert "steps_executed" in telemetry
+    assert "model" in telemetry
+    assert "trace_id" in telemetry
+
+
+# -----------------------------------------------------------------------
+# Growth Agent — POST /ai/executive/growth-report
+# -----------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_growth_report_returns_200(client):
+    resp = await client.post(
+        "/ai/executive/growth-report",
+        json={"channels": [], "regions": []},
+        headers=SUPER_ADMIN_HEADERS,
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert len(data["sections"]) > 0
+    assert 0 <= data["overall_confidence"] <= 1
+    assert data["aqr_record_id"].startswith("AQR-")
+    assert data["workflow_steps_executed"] == 3
+    assert "telemetry" in data
+
+
+@pytest.mark.asyncio
+async def test_growth_report_rejects_non_super_admin(client):
+    resp = await client.post(
+        "/ai/executive/growth-report",
+        json={"channels": [], "regions": []},
+        headers=NON_ADMIN_HEADERS,
+    )
+    assert resp.status_code == 403
+    assert "Super Admin" in resp.json()["detail"]
+
+
+@pytest.mark.asyncio
+async def test_growth_report_logs_aqr_record(client):
+    from agents.executive.growth import _query_log
+
+    await client.post(
+        "/ai/executive/growth-report",
+        json={"channels": ["whatsapp"], "regions": ["west_africa"]},
+        headers=SUPER_ADMIN_HEADERS,
+    )
+    assert len(_query_log) == 1
+    record = _query_log[0]
+    assert record["record_id"].startswith("AQR-")
+    assert record["requesting_user_id"] == "USR-sa001"
+    assert record["query_type"] == "growth_report"
+
+
+@pytest.mark.asyncio
+async def test_growth_report_confidence_scores_on_sections(client):
+    resp = await client.post(
+        "/ai/executive/growth-report",
+        json={"channels": [], "regions": []},
+        headers=SUPER_ADMIN_HEADERS,
+    )
+    data = resp.json()
+    for section in data["sections"]:
+        assert 0.5 <= section["confidence"] <= 1.0, (
+            "Section confidence should be between 0.5 and 1.0"
+        )
+
+
+@pytest.mark.asyncio
+async def test_growth_report_telemetry_present(client):
+    resp = await client.post(
+        "/ai/executive/growth-report",
+        json={"channels": [], "regions": []},
+        headers=SUPER_ADMIN_HEADERS,
+    )
+    data = resp.json()
+    telemetry = data["telemetry"]
+    assert "workflow" in telemetry
+    assert "status" in telemetry
+    assert "duration_ms" in telemetry
+    assert "steps_executed" in telemetry
+    assert "model" in telemetry
+    assert "trace_id" in telemetry
+
+
+# -----------------------------------------------------------------------
+# Product Strategy Agent — POST /ai/executive/product-report
+# -----------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_product_report_returns_200(client):
+    resp = await client.post(
+        "/ai/executive/product-report",
+        json={"feature_categories": [], "user_segments": []},
+        headers=SUPER_ADMIN_HEADERS,
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert len(data["sections"]) > 0
+    assert 0 <= data["overall_confidence"] <= 1
+    assert data["aqr_record_id"].startswith("AQR-")
+    assert data["workflow_steps_executed"] == 2
+    assert "telemetry" in data
+
+
+@pytest.mark.asyncio
+async def test_product_report_rejects_non_super_admin(client):
+    resp = await client.post(
+        "/ai/executive/product-report",
+        json={"feature_categories": [], "user_segments": []},
+        headers=NON_ADMIN_HEADERS,
+    )
+    assert resp.status_code == 403
+
+
+@pytest.mark.asyncio
+async def test_product_report_logs_aqr_record(client):
+    from agents.executive.product_strategy import _query_log
+
+    await client.post(
+        "/ai/executive/product-report",
+        json={"feature_categories": ["collaboration"], "user_segments": []},
+        headers=SUPER_ADMIN_HEADERS,
+    )
+    assert len(_query_log) == 1
+    record = _query_log[0]
+    assert record["record_id"].startswith("AQR-")
+    assert record["requesting_user_id"] == "USR-sa001"
+    assert record["query_type"] == "product_report"
+
+
+@pytest.mark.asyncio
+async def test_product_report_confidence_scores_on_sections(client):
+    resp = await client.post(
+        "/ai/executive/product-report",
+        json={"feature_categories": [], "user_segments": []},
+        headers=SUPER_ADMIN_HEADERS,
+    )
+    data = resp.json()
+    for section in data["sections"]:
+        assert 0.5 <= section["confidence"] <= 1.0, (
+            "Section confidence should be between 0.5 and 1.0"
+        )
+
+
+@pytest.mark.asyncio
+async def test_product_report_telemetry_present(client):
+    resp = await client.post(
+        "/ai/executive/product-report",
+        json={"feature_categories": [], "user_segments": []},
+        headers=SUPER_ADMIN_HEADERS,
+    )
+    data = resp.json()
+    telemetry = data["telemetry"]
+    assert "workflow" in telemetry
+    assert "status" in telemetry
+    assert "duration_ms" in telemetry
+    assert "steps_executed" in telemetry
+    assert "model" in telemetry
+    assert "trace_id" in telemetry
+
+
+# -----------------------------------------------------------------------
+# Workforce Intelligence Agent — POST /ai/executive/workforce-report
+# -----------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_workforce_report_returns_200(client):
+    resp = await client.post(
+        "/ai/executive/workforce-report",
+        json={"skill_domains": [], "regions": []},
+        headers=SUPER_ADMIN_HEADERS,
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert len(data["sections"]) > 0
+    assert 0 <= data["overall_confidence"] <= 1
+    assert data["aqr_record_id"].startswith("AQR-")
+    assert data["workflow_steps_executed"] == 3
+    assert "telemetry" in data
+
+
+@pytest.mark.asyncio
+async def test_workforce_report_rejects_non_super_admin(client):
+    resp = await client.post(
+        "/ai/executive/workforce-report",
+        json={"skill_domains": [], "regions": []},
+        headers=NON_ADMIN_HEADERS,
+    )
+    assert resp.status_code == 403
+
+
+@pytest.mark.asyncio
+async def test_workforce_report_logs_aqr_record(client):
+    from agents.executive.workforce_intelligence import _query_log
+
+    await client.post(
+        "/ai/executive/workforce-report",
+        json={"skill_domains": ["ai_ml"], "regions": ["west_africa"]},
+        headers=SUPER_ADMIN_HEADERS,
+    )
+    assert len(_query_log) == 1
+    record = _query_log[0]
+    assert record["record_id"].startswith("AQR-")
+    assert record["requesting_user_id"] == "USR-sa001"
+    assert record["query_type"] == "workforce_report"
+
+
+@pytest.mark.asyncio
+async def test_workforce_report_confidence_scores_on_sections(client):
+    resp = await client.post(
+        "/ai/executive/workforce-report",
+        json={"skill_domains": [], "regions": []},
+        headers=SUPER_ADMIN_HEADERS,
+    )
+    data = resp.json()
+    for section in data["sections"]:
+        assert 0.5 <= section["confidence"] <= 1.0, (
+            "Section confidence should be between 0.5 and 1.0"
+        )
+
+
+@pytest.mark.asyncio
+async def test_workforce_report_telemetry_present(client):
+    resp = await client.post(
+        "/ai/executive/workforce-report",
+        json={"skill_domains": [], "regions": []},
+        headers=SUPER_ADMIN_HEADERS,
+    )
+    data = resp.json()
+    telemetry = data["telemetry"]
+    assert "workflow" in telemetry
+    assert "status" in telemetry
+    assert "duration_ms" in telemetry
+    assert "steps_executed" in telemetry
+    assert "model" in telemetry
+    assert "trace_id" in telemetry

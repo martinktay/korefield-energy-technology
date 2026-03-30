@@ -125,6 +125,15 @@ export class AuthService {
       },
     });
 
+    // Fire-and-forget welcome email — don't let email failures break verification
+    try {
+      await this.emailService.sendWelcomeEmail(user.email, user.id);
+    } catch (error) {
+      this.logger.error(
+        `Failed to queue welcome email for user ${user.id}: ${(error as Error).message}`,
+      );
+    }
+
     this.logger.log(`Email verified for user: ${user.id}`);
 
     return { message: 'Email verified successfully' };
@@ -290,6 +299,15 @@ export class AuthService {
       where: { id: userId },
       data: { mfa_enabled: true },
     });
+
+    // Fire-and-forget MFA confirmation email
+    try {
+      await this.emailService.sendMfaSetupConfirmationEmail(user.email, user.id);
+    } catch (error) {
+      this.logger.error(
+        `Failed to queue MFA confirmation email for user ${userId}: ${(error as Error).message}`,
+      );
+    }
 
     this.logger.log(`MFA enabled for user: ${userId}`);
 

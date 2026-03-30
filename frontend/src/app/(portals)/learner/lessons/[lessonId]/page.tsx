@@ -1,7 +1,7 @@
 "use client";
-/** @file learner/lessons/[lessonId]/page.tsx — Track lesson viewer with Learn/Practice/Apply tabs. Supports video_text, coding_lab, mcq, and drag_drop lesson types. */
+/** @file learner/lessons/[lessonId]/page.tsx — Track lesson viewer with Learn/Practice/Apply tabs. Supports video_text, coding_lab, mcq, and drag_drop lesson types. Persists progress via learner-progress-store. */
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -19,24 +19,15 @@ import {
   HelpCircle,
   Code,
   GripVertical,
+  Loader2,
+  Save,
 } from "lucide-react";
-import {
-  AI_ENGINEERING_LESSONS,
-  type TrackLesson,
-  type McqQuestion,
-  type DragDropPair,
-} from "@/data/ai-engineering-content";
-import { DATA_SCIENCE_LESSONS } from "@/data/data-science-content";
-import { CYBERSECURITY_LESSONS } from "@/data/cybersecurity-content";
-import { AI_PRODUCT_LESSONS } from "@/data/ai-product-content";
+import type { McqQuestion, DragDropPair } from "@/data/ai-engineering-content";
 import type { ContentSection } from "@/data/foundation-content";
-
-const ALL_LESSONS: TrackLesson[] = [
-  ...AI_ENGINEERING_LESSONS,
-  ...DATA_SCIENCE_LESSONS,
-  ...CYBERSECURITY_LESSONS,
-  ...AI_PRODUCT_LESSONS,
-];
+import { useContentStore } from "@/stores/content-store";
+import { useLearnerProgressStore } from "@/stores/learner-progress-store";
+import { runPython } from "@/lib/pyodide-runner";
+import CloudflareStreamPlayer from "@/components/content/cloudflare-stream-player";
 
 type TabId = "learn" | "practice" | "apply";
 
@@ -85,10 +76,28 @@ function renderSection(section: ContentSection, index: number) {
 
 // ─── MCQ Component ──────────────────────────────────────────────
 
-function McqAssessment({ questions }: { questions: McqQuestion[] }) {
-  const [answers, setAnswers] = useState<Record<number, number>>({});
-  const [showResults, setShowResults] = useState(false);
+function McqAssessment({ questions, initialAnswers, initialShowResults, onStateChange }: {
+  questions: McqQuestion[];
+  initialAnswers?: Record<number, number>;
+  initialShowResults?: boolean;
+  onStateChange?: (answers: Record<number, number>, showResults: boolean, score: number) => void;
+}) {
+  const [answers, setAnswers] = useState<Record<number, number>>(initialAnswers ?? {});
+  const [showResults, setShowResults] = useState(initialShowResults ?? false);
   const score = questions.filter((q, i) => answers[i] === q.correctIndex).length;
+
+  function handleSelectAnswer(qi: number, oi: number) {
+    if (showResults) return;
+    const next = { ...answers, [qi]: oi };
+    setAnswers(next);
+    const newScore = questions.filter((q, i) => next[i] === q.correctIndex).length;
+    onStateChange?.(next, false, newScore);
+  }
+
+  function handleSubmit() {
+    setShowResults(true);
+    onStateChange?.(answers, true, score);
+  }
 
   return (
     <div className="space-y-6">
@@ -110,7 +119,7 @@ function McqAssessment({ questions }: { questions: McqQuestion[] }) {
                 else if (showResults && isSelected && !isCorrect) { border = "border-red-500"; bg = "bg-red-50"; }
                 return (
                   <button key={oi} type="button" disabled={showResults}
-                    onClick={() => setAnswers(prev => ({ ...prev, [qi]: oi }))}
+                    onClick={() => handleSelectAnswer(qi, oi)}
                     className={`w-full flex items-center gap-3 rounded-lg border px-4 py-2.5 text-left text-body-sm transition-colors ${border} ${bg} disabled:cursor-default`}>
                     <span className="shrink-0 flex h-6 w-6 items-center justify-center rounded-full border border-surface-300 text-caption font-medium text-surface-600">{letter}</span>
                     <span className="text-surface-700">{opt}</span>
@@ -126,7 +135,7 @@ function McqAssessment({ questions }: { questions: McqQuestion[] }) {
       })}
       {!showResults && Object.keys(answers).length === questions.length && (
         <div className="flex justify-center">
-          <button type="button" onClick={() => setShowResults(true)} className="rounded-lg bg-brand-600 px-6 py-3 text-body-sm font-medium text-white hover:bg-brand-700 transition-colors">Submit Assessment</button>
+          <button type="button" onClick={handleSubmit} className="rounded-lg bg-brand-600 px-6 py-3 text-body-sm font-medium text-white hover:bg-brand-700 transition-colors">Submit Assessment</button>
         </div>
       )}
       {showResults && (
@@ -142,14 +151,21 @@ function McqAssessment({ questions }: { questions: McqQuestion[] }) {
 
 // ─── Drag & Drop Component ──────────────────────────────────────
 
-function DragDropExercise({ pairs }: { pairs: DragDropPair[] }) {
+function DragDropExercise({ pairs, initialMatches, initialChecked, onStateChange }: {
+  pairs: DragDropPair[];
+  initialMatches?: Record<string, string>;
+  initialChecked?: boolean;
+  onStateChange?: (matches: Record<string, string>, checked: boolean, correctCount: number) => void;
+}) {
   const shuffledDefs = useMemo(() => [...pairs.map(p => p.definition)].sort(() => Math.random() - 0.5), [pairs]);
-  const [matches, setMatches] = useState<Record<string, string>>({});
-  const [checked, setChecked] = useState(false);
+  const [matches, setMatches] = useState<Record<string, string>>(initialMatches ?? {});
+  const [checked, setChecked] = useState(initialChecked ?? false);
 
   function handleSelect(term: string, def: string) {
     if (checked) return;
-    setMatches(prev => ({ ...prev, [term]: def }));
+    const next = { ...matches, [term]: def };
+    setMatches(next);
+    onStateChange?.(next, false, pairs.filter(p => next[p.term] === p.definition).length);
   }
 
   const allMatched = Object.keys(matches).length === pairs.length;
@@ -193,14 +209,14 @@ function DragDropExercise({ pairs }: { pairs: DragDropPair[] }) {
       </div>
       {!checked && allMatched && (
         <div className="flex justify-center">
-          <button type="button" onClick={() => setChecked(true)} className="rounded-lg bg-brand-600 px-6 py-3 text-body-sm font-medium text-white hover:bg-brand-700 transition-colors">Check Matches</button>
+          <button type="button" onClick={() => { setChecked(true); onStateChange?.(matches, true, correctCount); }} className="rounded-lg bg-brand-600 px-6 py-3 text-body-sm font-medium text-white hover:bg-brand-700 transition-colors">Check Matches</button>
         </div>
       )}
       {checked && (
         <div className="rounded-card border border-surface-200 bg-surface-50 p-5 text-center">
           <p className="text-heading-sm text-surface-900">{correctCount}/{pairs.length} correct</p>
           {correctCount < pairs.length && (
-            <button type="button" onClick={() => { setMatches({}); setChecked(false); }} className="mt-3 rounded-lg border border-surface-200 px-4 py-2 text-body-sm text-surface-600 hover:bg-surface-100 transition-colors">Try Again</button>
+            <button type="button" onClick={() => { setMatches({}); setChecked(false); onStateChange?.({}, false, 0); }} className="mt-3 rounded-lg border border-surface-200 px-4 py-2 text-body-sm text-surface-600 hover:bg-surface-100 transition-colors">Try Again</button>
           )}
         </div>
       )}
@@ -211,10 +227,28 @@ function DragDropExercise({ pairs }: { pairs: DragDropPair[] }) {
 
 // ─── Review Questions (reused from Foundation) ──────────────────
 
-function ReviewQuestions({ questions }: { questions: { question: string; options: string[]; correctIndex: number; explanation: string }[] }) {
-  const [answers, setAnswers] = useState<Record<number, number>>({});
-  const [showResults, setShowResults] = useState(false);
+function ReviewQuestions({ questions, initialAnswers, initialShowResults, onStateChange }: {
+  questions: { question: string; options: string[]; correctIndex: number; explanation: string }[];
+  initialAnswers?: Record<number, number>;
+  initialShowResults?: boolean;
+  onStateChange?: (answers: Record<number, number>, showResults: boolean, score: number) => void;
+}) {
+  const [answers, setAnswers] = useState<Record<number, number>>(initialAnswers ?? {});
+  const [showResults, setShowResults] = useState(initialShowResults ?? false);
   if (questions.length === 0) return null;
+  const score = questions.filter((q, i) => answers[i] === q.correctIndex).length;
+
+  function handleSelectAnswer(qi: number, oi: number) {
+    if (showResults) return;
+    const next = { ...answers, [qi]: oi };
+    setAnswers(next);
+    onStateChange?.(next, false, questions.filter((q, i) => next[i] === q.correctIndex).length);
+  }
+
+  function handleCheckAnswers() {
+    setShowResults(true);
+    onStateChange?.(answers, true, score);
+  }
   return (
     <div className="space-y-6">
       <div className="h-px bg-surface-200" />
@@ -240,7 +274,7 @@ function ReviewQuestions({ questions }: { questions: { question: string; options
                 else if (showResults && isSelected && !isCorrect) { border = "border-red-500"; bg = "bg-red-50"; }
                 return (
                   <button key={oi} type="button" disabled={showResults}
-                    onClick={() => setAnswers(prev => ({ ...prev, [qi]: oi }))}
+                    onClick={() => handleSelectAnswer(qi, oi)}
                     className={`w-full flex items-center gap-3 rounded-lg border px-4 py-2.5 text-left text-body-sm transition-colors ${border} ${bg} disabled:cursor-default`}>
                     <span className="shrink-0 flex h-6 w-6 items-center justify-center rounded-full border border-surface-300 text-caption font-medium text-surface-600">{letter}</span>
                     <span className="text-surface-700">{opt}</span>
@@ -256,7 +290,13 @@ function ReviewQuestions({ questions }: { questions: { question: string; options
       })}
       {!showResults && Object.keys(answers).length === questions.length && (
         <div className="flex justify-center">
-          <button type="button" onClick={() => setShowResults(true)} className="rounded-lg bg-brand-600 px-6 py-3 text-body-sm font-medium text-white hover:bg-brand-700 transition-colors">Check Answers</button>
+          <button type="button" onClick={handleCheckAnswers} className="rounded-lg bg-brand-600 px-6 py-3 text-body-sm font-medium text-white hover:bg-brand-700 transition-colors">Check Answers</button>
+        </div>
+      )}
+      {showResults && (
+        <div className="rounded-card border border-surface-200 bg-surface-50 p-5 text-center">
+          <p className="text-heading-sm text-surface-900">Review Score: {score}/{questions.length}</p>
+          <p className="text-body-sm text-surface-500 mt-1">{score === questions.length ? "All correct — great understanding!" : `${score}/${questions.length} correct. Review the explanations above.`}</p>
         </div>
       )}
     </div>
@@ -268,19 +308,63 @@ function ReviewQuestions({ questions }: { questions: { question: string; options
 
 export default function TrackLessonPage() {
   const params = useParams<{ lessonId: string }>();
-  const lesson = ALL_LESSONS.find(l => l.id === params.lessonId);
-  const [activeTab, setActiveTab] = useState<TabId>("learn");
-  const [codeValue, setCodeValue] = useState("");
-  const [codeOutput, setCodeOutput] = useState("");
-  const [practiceInput, setPracticeInput] = useState("");
-  const [deliverableInput, setDeliverableInput] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+  const store = useContentStore();
+  const progressStore = useLearnerProgressStore();
+  const lesson = store.getLessonById(params.lessonId);
+  const saved = progressStore.getProgress(params.lessonId);
 
-  // Initialize code editor with starter code
+  // Restore saved state or use defaults
+  const [activeTab, setActiveTab] = useState<TabId>(saved?.activeTab ?? "learn");
+  const [codeValue, setCodeValue] = useState(saved?.codeValue ?? "");
+  const [codeOutput, setCodeOutput] = useState(saved?.codeOutput ?? "");
+  const [codeRunning, setCodeRunning] = useState(false);
+  const [codeError, setCodeError] = useState<string | null>(null);
+  const [practiceInput, setPracticeInput] = useState(saved?.practiceInput ?? "");
+  const [deliverableInput, setDeliverableInput] = useState(saved?.deliverableInput ?? "");
+  const [submitted, setSubmitted] = useState(saved?.submitted ?? false);
+  const [saveIndicator, setSaveIndicator] = useState<"idle" | "saving" | "saved">("idle");
+
+  // MCQ, drag-drop, and review question state (lifted for progress persistence)
+  const [mcqAnswers, setMcqAnswers] = useState<Record<number, number>>(saved?.mcqAnswers ?? {});
+  const [mcqShowResults, setMcqShowResults] = useState(saved?.mcqShowResults ?? false);
+  const [mcqScore, setMcqScore] = useState<number>(0);
+  const [dragDropMatches, setDragDropMatches] = useState<Record<string, string>>(saved?.dragDropMatches ?? {});
+  const [dragDropChecked, setDragDropChecked] = useState(saved?.dragDropChecked ?? false);
+  const [reviewAnswers, setReviewAnswers] = useState<Record<number, number>>(saved?.reviewAnswers ?? {});
+  const [reviewShowResults, setReviewShowResults] = useState(saved?.reviewShowResults ?? false);
+
+  // Initialize code editor with starter code if no saved progress
   const starterCode = lesson?.starterCode ?? "";
-  if (lesson?.lessonType === "coding_lab" && !codeValue && starterCode) {
-    setCodeValue(starterCode);
-  }
+  useEffect(() => {
+    if (lesson?.lessonType === "coding_lab" && !codeValue && starterCode && !saved?.codeValue) {
+      setCodeValue(starterCode);
+    }
+  }, [lesson?.lessonType, starterCode, codeValue, saved?.codeValue]);
+
+  // Auto-save progress on changes (debounced)
+  useEffect(() => {
+    if (!lesson) return;
+    const timer = setTimeout(() => {
+      setSaveIndicator("saving");
+      progressStore.saveProgress(params.lessonId, {
+        activeTab,
+        codeValue: codeValue || undefined,
+        codeOutput: codeOutput || undefined,
+        practiceInput: practiceInput || undefined,
+        deliverableInput: deliverableInput || undefined,
+        submitted,
+        mcqAnswers: Object.keys(mcqAnswers).length > 0 ? mcqAnswers : undefined,
+        mcqShowResults: mcqShowResults || undefined,
+        dragDropMatches: Object.keys(dragDropMatches).length > 0 ? dragDropMatches : undefined,
+        dragDropChecked: dragDropChecked || undefined,
+        reviewAnswers: Object.keys(reviewAnswers).length > 0 ? reviewAnswers : undefined,
+        reviewShowResults: reviewShowResults || undefined,
+      });
+      setSaveIndicator("saved");
+      setTimeout(() => setSaveIndicator("idle"), 1500);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [activeTab, codeValue, codeOutput, practiceInput, deliverableInput, submitted, mcqAnswers, mcqShowResults, dragDropMatches, dragDropChecked, reviewAnswers, reviewShowResults, params.lessonId, lesson, progressStore]);
 
   if (!lesson) {
     return (
@@ -295,9 +379,28 @@ export default function TrackLessonPage() {
     );
   }
 
-  const handleRunCode = useCallback(() => {
-    setCodeOutput("# Code execution simulated\n# Connect Pyodide or backend sandbox for real execution\nOutput: [4, 8, 12]");
-  }, []);
+  const handleRunCode = useCallback(async () => {
+    if (codeRunning) return;
+    setCodeRunning(true);
+    setCodeError(null);
+    setCodeOutput("");
+
+    try {
+      const result = await runPython(codeValue);
+      if (result.error) {
+        setCodeError(result.error);
+        setCodeOutput(result.stderr || result.error);
+      } else {
+        setCodeOutput(result.stdout || "(no output)");
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Code execution failed";
+      setCodeError(msg);
+      setCodeOutput(`Error: ${msg}`);
+    } finally {
+      setCodeRunning(false);
+    }
+  }, [codeValue, codeRunning]);
 
   return (
     <div className="mx-auto max-w-3xl space-y-6 pb-12">
@@ -314,7 +417,15 @@ export default function TrackLessonPage() {
 
       {/* Header */}
       <div>
-        <h1 className="text-heading-lg text-surface-900">{lesson.title}</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-heading-lg text-surface-900">{lesson.title}</h1>
+          {saveIndicator !== "idle" && (
+            <span className="flex items-center gap-1.5 text-caption text-surface-400 animate-in fade-in">
+              {saveIndicator === "saving" && <><Loader2 className="w-3 h-3 animate-spin" /> Saving...</>}
+              {saveIndicator === "saved" && <><Save className="w-3 h-3 text-accent-500" /> Saved</>}
+            </span>
+          )}
+        </div>
         <div className="flex items-center gap-4 mt-2 flex-wrap">
           <span className="flex items-center gap-1 text-caption text-surface-500"><Clock className="w-3.5 h-3.5" />{lesson.duration}</span>
           <span className="inline-flex items-center gap-1 rounded-full bg-surface-100 px-2.5 py-0.5 text-caption font-medium text-surface-600">
@@ -348,32 +459,41 @@ export default function TrackLessonPage() {
       {/* ─── Learn Tab ─── */}
       {activeTab === "learn" && (
         <div className="space-y-6">
-          {/* AI Avatar Video Placeholder */}
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-surface-900 via-surface-800 to-brand-950 aspect-video flex items-center justify-center group cursor-pointer">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-brand-600/10 via-transparent to-transparent" />
-            <div className="relative flex flex-col items-center gap-3">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/20 group-hover:bg-white/20 group-hover:scale-110 transition-all">
-                <Play className="w-7 h-7 text-white ml-1" />
+          {/* Cloudflare Stream Player or Placeholder */}
+          {lesson.video_url ? (
+            <CloudflareStreamPlayer videoId={lesson.video_url} />
+          ) : (
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-surface-900 via-surface-800 to-brand-950 aspect-video flex items-center justify-center group cursor-pointer">
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-brand-600/10 via-transparent to-transparent" />
+              <div className="relative flex flex-col items-center gap-3">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm border border-white/20 group-hover:bg-white/20 group-hover:scale-110 transition-all">
+                  <Play className="w-7 h-7 text-white ml-1" />
+                </div>
+                <div className="text-center">
+                  <p className="text-body-sm font-medium text-white">AI Avatar Lesson</p>
+                  <p className="text-caption text-surface-300 mt-0.5">Video will be available when Cloudflare Stream is configured</p>
+                </div>
               </div>
-              <div className="text-center">
-                <p className="text-body-sm font-medium text-white">AI Avatar Lesson</p>
-                <p className="text-caption text-surface-300 mt-0.5">Video will be available when Cloudflare Stream is configured</p>
+              <div className="absolute bottom-3 left-3 flex items-center gap-1.5">
+                <Video className="w-3.5 h-3.5 text-surface-400" />
+                <span className="text-caption text-surface-400">{lesson.duration}</span>
+              </div>
+              <div className="absolute bottom-3 right-3">
+                <span className="rounded-full bg-white/10 px-2.5 py-1 text-[10px] font-medium text-surface-300 border border-white/10">Coming Soon</span>
               </div>
             </div>
-            <div className="absolute bottom-3 left-3 flex items-center gap-1.5">
-              <Video className="w-3.5 h-3.5 text-surface-400" />
-              <span className="text-caption text-surface-400">{lesson.duration}</span>
-            </div>
-            <div className="absolute bottom-3 right-3">
-              <span className="rounded-full bg-white/10 px-2.5 py-1 text-[10px] font-medium text-surface-300 border border-white/10">Coming Soon</span>
-            </div>
-          </div>
+          )}
 
           {/* Content sections */}
           <article>{lesson.content.map((section, i) => renderSection(section, i))}</article>
 
           {/* Review Questions */}
-          <ReviewQuestions questions={lesson.reviewQuestions} />
+          <ReviewQuestions
+            questions={lesson.reviewQuestions}
+            initialAnswers={reviewAnswers}
+            initialShowResults={reviewShowResults}
+            onStateChange={(answers, show) => { setReviewAnswers(answers); setReviewShowResults(show); }}
+          />
         </div>
       )}
 
@@ -407,18 +527,20 @@ export default function TrackLessonPage() {
                   <span className="text-body-sm font-medium text-surface-900">Code Editor</span>
                   <span className="rounded-full bg-brand-100 px-2 py-0.5 text-[10px] font-medium text-brand-700">{lesson.language ?? "python"}</span>
                 </div>
-                <button type="button" onClick={handleRunCode}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-accent-600 px-3 py-1.5 text-caption font-medium text-white hover:bg-accent-700 transition-colors">
-                  <Play className="w-3.5 h-3.5" /> Run
+                <button type="button" onClick={handleRunCode} disabled={codeRunning}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-accent-600 px-3 py-1.5 text-caption font-medium text-white hover:bg-accent-700 transition-colors disabled:opacity-60">
+                  {codeRunning ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5" />} {codeRunning ? "Running..." : "Run"}
                 </button>
               </div>
               <textarea value={codeValue} onChange={e => setCodeValue(e.target.value)}
                 spellCheck={false}
                 className="w-full min-h-[320px] bg-surface-900 px-4 py-3 font-mono text-body-sm text-green-400 outline-none resize-y" />
               {codeOutput && (
-                <div className="border-t border-surface-200 bg-surface-950 px-4 py-3">
-                  <p className="text-caption font-medium text-surface-400 mb-1">Output</p>
-                  <pre className="font-mono text-body-sm text-green-300 whitespace-pre-wrap">{codeOutput}</pre>
+                <div className={`border-t px-4 py-3 ${codeError ? "border-red-300 bg-red-950" : "border-surface-200 bg-surface-950"}`}>
+                  <p className={`text-caption font-medium mb-1 ${codeError ? "text-red-400" : "text-surface-400"}`}>
+                    {codeError ? "Error" : "Output"}
+                  </p>
+                  <pre className={`font-mono text-body-sm whitespace-pre-wrap ${codeError ? "text-red-300" : "text-green-300"}`}>{codeOutput}</pre>
                 </div>
               )}
             </div>
@@ -426,12 +548,22 @@ export default function TrackLessonPage() {
 
           {/* mcq: assessment */}
           {lesson.lessonType === "mcq" && lesson.mcqQuestions && (
-            <McqAssessment questions={lesson.mcqQuestions} />
+            <McqAssessment
+              questions={lesson.mcqQuestions}
+              initialAnswers={mcqAnswers}
+              initialShowResults={mcqShowResults}
+              onStateChange={(answers, show, score) => { setMcqAnswers(answers); setMcqShowResults(show); setMcqScore(score); }}
+            />
           )}
 
           {/* drag_drop: matching */}
           {lesson.lessonType === "drag_drop" && lesson.dragDropPairs && (
-            <DragDropExercise pairs={lesson.dragDropPairs} />
+            <DragDropExercise
+              pairs={lesson.dragDropPairs}
+              initialMatches={dragDropMatches}
+              initialChecked={dragDropChecked}
+              onStateChange={(m, c) => { setDragDropMatches(m); setDragDropChecked(c); }}
+            />
           )}
         </div>
       )}

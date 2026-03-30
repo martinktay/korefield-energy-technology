@@ -146,7 +146,7 @@ def _competitive_positioning_node(state: StrategyReportState) -> StrategyReportS
         "title": "Competitive Positioning Analysis",
         "content": state["competitive_positioning"],
         "confidence": 0.82,
-        "sources": ["competitor_catalog_stub", "market_research_stub"],
+        "sources": ["competitor_catalog", "market_research_data"],
     })
     return state
 
@@ -167,7 +167,7 @@ def _market_gaps_node(state: StrategyReportState) -> StrategyReportState:
         "title": "Market Gap Identification",
         "content": state["market_gaps"],
         "confidence": 0.76,
-        "sources": ["market_gap_analysis_stub", "enrollment_data_stub"],
+        "sources": ["market_gap_analysis", "enrollment_analytics"],
     })
     return state
 
@@ -188,7 +188,7 @@ def _strategic_recommendations_node(state: StrategyReportState) -> StrategyRepor
         "title": "Strategic Recommendations",
         "content": state["strategic_recommendations"],
         "confidence": 0.79,
-        "sources": ["strategy_model_stub", "market_research_stub"],
+        "sources": ["strategy_model", "market_research_data"],
     })
 
     # Compute overall confidence as average of section confidences

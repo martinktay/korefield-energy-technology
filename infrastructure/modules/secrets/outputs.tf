@@ -13,6 +13,11 @@ output "jwt_secret_arn" {
   value       = aws_secretsmanager_secret.jwt_secret.arn
 }
 
+output "ses_credentials_arn" {
+  description = "ARN of the SES credentials secret"
+  value       = aws_secretsmanager_secret.ses_credentials.arn
+}
+
 output "kms_key_arn" {
   description = "ARN of the KMS key used for secrets encryption"
   value       = aws_kms_key.secrets.arn

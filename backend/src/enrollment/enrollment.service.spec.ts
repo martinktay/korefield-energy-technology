@@ -8,12 +8,19 @@ import {
 import { EnrollmentService } from './enrollment.service';
 import { PrismaService } from '@common/prisma/prisma.service';
 import { CacheService } from '@common/cache/cache.service';
+import { EmailService } from '@email/email.service';
 
 // Minimal mock for CacheService
 const mockCache = {
   get: jest.fn(),
   set: jest.fn(),
   del: jest.fn(),
+};
+
+// Minimal mock for EmailService
+const mockEmailService = {
+  sendEnrollmentConfirmationEmail: jest.fn().mockResolvedValue(undefined),
+  sendPodAssignmentEmail: jest.fn().mockResolvedValue(undefined),
 };
 
 // Minimal mock for PrismaService
@@ -62,6 +69,7 @@ describe('EnrollmentService', () => {
         EnrollmentService,
         { provide: PrismaService, useValue: mockPrisma },
         { provide: CacheService, useValue: mockCache },
+        { provide: EmailService, useValue: mockEmailService },
       ],
     }).compile();
 
@@ -212,6 +220,73 @@ describe('EnrollmentService', () => {
       await expect(
         service.onboardLearner({ learner_id: 'LRN-abc123' }),
       ).rejects.toThrow(BadRequestException);
+    });
+  });
+
+  // ── PATCH /enrollment/learners/:id ──────────────────────────────
+
+  describe('updateLearner', () => {
+    const baseLearner = {
+      id: 'LRN-abc123',
+      user_id: 'USR-abc123',
+      project_interest: null,
+    };
+
+    it('should update project_interest and return the updated learner', async () => {
+      mockPrisma.learner.findUnique.mockResolvedValue(baseLearner);
+      mockPrisma.learner.update.mockResolvedValue({
+        ...baseLearner,
+        project_interest: 'A fraud detection system for mobile payments',
+      });
+
+      const result = await service.updateLearner('LRN-abc123', {
+        project_interest: 'A fraud detection system for mobile payments',
+      });
+
+      expect(result.id).toBe('LRN-abc123');
+      expect(result.project_interest).toBe('A fraud detection system for mobile payments');
+      expect(mockPrisma.learner.update).toHaveBeenCalledWith({
+        where: { id: 'LRN-abc123' },
+        data: { project_interest: 'A fraud detection system for mobile payments' },
+      });
+    });
+
+    it('should allow clearing project_interest by passing empty string', async () => {
+      mockPrisma.learner.findUnique.mockResolvedValue({
+        ...baseLearner,
+        project_interest: 'Old interest',
+      });
+      mockPrisma.learner.update.mockResolvedValue({
+        ...baseLearner,
+        project_interest: '',
+      });
+
+      const result = await service.updateLearner('LRN-abc123', {
+        project_interest: '',
+      });
+
+      expect(result.project_interest).toBe('');
+    });
+
+    it('should throw NotFoundException when learner does not exist', async () => {
+      mockPrisma.learner.findUnique.mockResolvedValue(null);
+
+      await expect(
+        service.updateLearner('LRN-missing', { project_interest: 'test' }),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should not update when project_interest is undefined (no-op body)', async () => {
+      mockPrisma.learner.findUnique.mockResolvedValue(baseLearner);
+      mockPrisma.learner.update.mockResolvedValue(baseLearner);
+
+      const result = await service.updateLearner('LRN-abc123', {});
+
+      expect(result.id).toBe('LRN-abc123');
+      expect(mockPrisma.learner.update).toHaveBeenCalledWith({
+        where: { id: 'LRN-abc123' },
+        data: {},
+      });
     });
   });
 

@@ -3,14 +3,16 @@ import { NotFoundException } from '@nestjs/common';
 import { ContentService } from './content.service';
 import { PrismaService } from '@common/prisma/prisma.service';
 import { CacheService } from '@common/cache/cache.service';
+import { CodeExecutionService } from './code-execution.service';
 jest.mock('@common/utils/generate-id', () => ({ generateId: jest.fn((prefix: string) => `${prefix}-test01`) }));
 const mockPrisma = { track: { findMany: jest.fn(), findUnique: jest.fn() }, level: { findUnique: jest.fn() }, module: { create: jest.fn(), findUnique: jest.fn(), update: jest.fn() }, lesson: { findUnique: jest.fn() }, contentVersion: { create: jest.fn() } };
 const mockCache = { get: jest.fn(), set: jest.fn(), del: jest.fn() };
+const mockCodeExecution = { executeCode: jest.fn(), executeWithTests: jest.fn() };
 describe('ContentService', () => {
   let service: ContentService;
   beforeEach(async () => {
     jest.clearAllMocks();
-    const module: TestingModule = await Test.createTestingModule({ providers: [ContentService, { provide: PrismaService, useValue: mockPrisma }, { provide: CacheService, useValue: mockCache }] }).compile();
+    const module: TestingModule = await Test.createTestingModule({ providers: [ContentService, { provide: PrismaService, useValue: mockPrisma }, { provide: CacheService, useValue: mockCache }, { provide: CodeExecutionService, useValue: mockCodeExecution }] }).compile();
     service = module.get<ContentService>(ContentService);
   });
   describe('getTrackCatalog', () => {
@@ -22,7 +24,7 @@ describe('ContentService', () => {
   describe('getTrackDetail', () => {
     const dbTrack = { id: 'TRK-001', name: 'AI Eng', description: 'Full', status: 'available', estimated_duration: '6m', levels: [{ id: 'LVL-001', tier: 'Beginner', sequence: 1, modules: [{ id: 'MOD-001', title: 'Python', sequence: 1, published: true }, { id: 'MOD-002', title: 'APIs', sequence: 2, published: true }] }, { id: 'LVL-002', tier: 'Intermediate', sequence: 2, modules: [{ id: 'MOD-003', title: 'RAG', sequence: 1, published: true }] }, { id: 'LVL-003', tier: 'Advanced', sequence: 3, modules: [{ id: 'MOD-004', title: 'Agents', sequence: 1, published: false }] }] };
     it('returns detail from cache', async () => { mockCache.get.mockResolvedValue({ id: 'c' }); expect(await service.getTrackDetail('TRK-001')).toEqual({ id: 'c' }); });
-    it('fetches from DB on miss', async () => { mockCache.get.mockResolvedValue(null); mockPrisma.track.findUnique.mockResolvedValue(dbTrack); const r = (await service.getTrackDetail('TRK-001')) as any; expect(r.id).toBe('TRK-001'); expect(r.prerequisites).toContain('Foundation School completion required'); expect(r.curriculum).toHaveLength(3); expect(mockCache.set).toHaveBeenCalledWith('track:TRK-001:detail', expect.any(Object), 900); });
+    it('fetches from DB on miss', async () => { mockCache.get.mockResolvedValue(null); mockPrisma.track.findUnique.mockResolvedValue(dbTrack); const r = (await service.getTrackDetail('TRK-001')) as any; expect(r.id).toBe('TRK-001'); expect(r.prerequisites).toContain('AI Foundation School completion required'); expect(r.curriculum).toHaveLength(3); expect(mockCache.set).toHaveBeenCalledWith('track:TRK-001:detail', expect.any(Object), 900); });
     it('throws NotFoundException when not found', async () => { mockCache.get.mockResolvedValue(null); mockPrisma.track.findUnique.mockResolvedValue(null); await expect(service.getTrackDetail('TRK-x')).rejects.toThrow(NotFoundException); });
     it('includes modules per level', async () => { mockCache.get.mockResolvedValue(null); mockPrisma.track.findUnique.mockResolvedValue(dbTrack); const r = (await service.getTrackDetail('TRK-001')) as any; expect(r.curriculum[0].modules).toHaveLength(2); });
   });

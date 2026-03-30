@@ -5,7 +5,7 @@
  * content versioning, lab session lifecycle, and coding exercise execution.
  * High-read endpoints (catalog, track detail, curriculum) are cached via CacheService.
  */
-import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, ConflictException, Logger } from '@nestjs/common';
 import { PrismaService } from '@common/prisma/prisma.service';
 import { CacheService } from '@common/cache/cache.service';
 import { generateId } from '@common/utils/generate-id';
@@ -246,9 +246,11 @@ export class ContentService {
   }
 
   /**
-   * PUT /content/modules/:moduleId — update module with content versioning.
-   * If the module is published, creates a ContentVersion snapshot before updating
-   * so in-progress learners continue seeing the old version.
+   * PUT /content/modules/:moduleId — update module with content versioning
+   * and optimistic locking. If the module is published, creates a ContentVersion
+   * snapshot before updating so in-progress learners continue seeing the old version.
+   * When a `version` field is provided in the DTO, compares it against the DB record;
+   * returns HTTP 409 on mismatch with the current server-side record.
    */
   async updateModule(moduleId: string, dto: UpdateModuleDto) {
     const existing = await this.prisma.module.findUnique({
@@ -269,6 +271,14 @@ export class ContentService {
 
     if (!existing) {
       throw new NotFoundException(`Module ${moduleId} not found`);
+    }
+
+    // Optimistic locking: reject if client version doesn't match DB version
+    if (dto.version !== undefined && dto.version !== existing.version) {
+      throw new ConflictException({
+        message: `Version conflict: expected ${dto.version}, server has ${existing.version}`,
+        serverRecord: existing,
+      });
     }
 
     // If the module is published, snapshot current state before updating
@@ -383,12 +393,23 @@ export class ContentService {
   }
 
   /**
-   * PUT /content/lessons/:lessonId — update a lesson.
+   * PUT /content/lessons/:lessonId — update a lesson with optimistic locking.
+   * When a `version` field is provided, compares against the DB record version;
+   * returns HTTP 409 on mismatch with the current server-side record.
+   * On success, increments the lesson version by 1.
    */
   async updateLesson(lessonId: string, dto: UpdateLessonDto) {
     const existing = await this.prisma.lesson.findUnique({ where: { id: lessonId } });
     if (!existing) {
       throw new NotFoundException(`Lesson ${lessonId} not found`);
+    }
+
+    // Optimistic locking: reject if client version doesn't match DB version
+    if (dto.version !== undefined && dto.version !== existing.version) {
+      throw new ConflictException({
+        message: `Version conflict: expected ${dto.version}, server has ${existing.version}`,
+        serverRecord: existing,
+      });
     }
 
     const updated = await this.prisma.lesson.update({
@@ -401,6 +422,7 @@ export class ContentService {
         ...(dto.video_url !== undefined && { video_url: dto.video_url }),
         ...(dto.file_url !== undefined && { file_url: dto.file_url }),
         ...(dto.file_name !== undefined && { file_name: dto.file_name }),
+        version: existing.version + 1,
       },
     });
 
@@ -473,7 +495,7 @@ export class ContentService {
         title: dto.title,
         type: dto.type as any,
         max_score: dto.max_score,
-        rubric: dto.rubric ?? {},
+        rubric: (dto.rubric ?? {}) as any,
       },
     });
 
@@ -482,7 +504,10 @@ export class ContentService {
   }
 
   /**
-   * PUT /content/assessments/:assessmentId — update an assessment.
+   * PUT /content/assessments/:assessmentId — update an assessment with optimistic locking.
+   * When a `version` field is provided, compares against the DB record version;
+   * returns HTTP 409 on mismatch with the current server-side record.
+   * On success, increments the assessment version by 1.
    */
   async updateAssessment(assessmentId: string, dto: UpdateAssessmentDto) {
     const existing = await this.prisma.assessment.findUnique({ where: { id: assessmentId } });
@@ -490,17 +515,28 @@ export class ContentService {
       throw new NotFoundException(`Assessment ${assessmentId} not found`);
     }
 
+    // Optimistic locking: reject if client version doesn't match DB version
+    if (dto.version !== undefined && dto.version !== existing.version) {
+      throw new ConflictException({
+        message: `Version conflict: expected ${dto.version}, server has ${existing.version}`,
+        serverRecord: existing,
+      });
+    }
+
+    const updateData: Record<string, unknown> = {
+      version: existing.version + 1,
+    };
+    if (dto.title !== undefined) updateData.title = dto.title;
+    if (dto.type !== undefined) updateData.type = dto.type;
+    if (dto.max_score !== undefined) updateData.max_score = dto.max_score;
+    if (dto.rubric !== undefined) updateData.rubric = dto.rubric;
+
     const updated = await this.prisma.assessment.update({
       where: { id: assessmentId },
-      data: {
-        ...(dto.title !== undefined && { title: dto.title }),
-        ...(dto.type !== undefined && { type: dto.type as any }),
-        ...(dto.max_score !== undefined && { max_score: dto.max_score }),
-        ...(dto.rubric !== undefined && { rubric: dto.rubric }),
-      },
+      data: updateData as any,
     });
 
-    this.logger.log(`Assessment ${assessmentId} updated`);
+    this.logger.log(`Assessment ${assessmentId} updated to v${existing.version + 1}`);
     return updated;
   }
 

@@ -146,7 +146,7 @@ def _feature_prioritization_node(state: ProductReportState) -> ProductReportStat
         "title": "Feature Prioritization Analysis",
         "content": state["feature_prioritization"],
         "confidence": 0.81,
-        "sources": ["product_backlog_stub", "user_feedback_stub"],
+        "sources": ["product_backlog", "user_feedback"],
     })
     return state
 
@@ -168,7 +168,7 @@ def _user_journey_optimization_node(state: ProductReportState) -> ProductReportS
         "title": "User Journey Optimization",
         "content": state["user_journey_optimization"],
         "confidence": 0.77,
-        "sources": ["journey_analytics_stub", "dropout_data_stub"],
+        "sources": ["journey_analytics", "dropout_analytics"],
     })
 
     # Compute overall confidence as average of section confidences

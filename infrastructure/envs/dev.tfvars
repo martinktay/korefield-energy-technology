@@ -49,5 +49,11 @@ log_retention_days = 7
 # Secrets
 secrets_rotation_days = 90
 
+# ECS container images
+frontend_image     = "123456789012.dkr.ecr.eu-west-1.amazonaws.com/korefield-frontend:latest"
+backend_image      = "123456789012.dkr.ecr.eu-west-1.amazonaws.com/korefield-backend:latest"
+ai_services_image  = "123456789012.dkr.ecr.eu-west-1.amazonaws.com/korefield-ai-services:latest"
+workers_image      = "123456789012.dkr.ecr.eu-west-1.amazonaws.com/korefield-workers:latest"
+
 # Budget
 budget_monthly_limit = "500"

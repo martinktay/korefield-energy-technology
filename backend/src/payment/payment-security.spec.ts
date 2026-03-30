@@ -1,3 +1,9 @@
+/**
+ * @file payment-security.spec.ts
+ * Tests for payment security components: Paystack webhook signature
+ * verification (HMAC-SHA512), payment state machine transitions,
+ * fraud monitoring, and gateway PCI DSS compliance.
+ */
 import { createHmac } from 'crypto';
 import { UnauthorizedException } from '@nestjs/common';
 import { ExecutionContext } from '@nestjs/common';
@@ -6,19 +12,19 @@ import { PaymentStateMachine } from './payment-state-machine';
 import { FraudMonitorService } from './fraud-monitor.service';
 import { PaymentGatewayService } from './payment-gateway.service';
 
-// ── WebhookGuard Tests ──────────────────────────────────────────
+// ── WebhookGuard Tests (Paystack HMAC-SHA512) ───────────────────
 
 describe('WebhookGuard', () => {
   let guard: WebhookGuard;
-  const TEST_SECRET = 'test-webhook-secret-key';
+  const TEST_SECRET = 'test-paystack-secret-key';
 
   beforeEach(() => {
     guard = new WebhookGuard();
-    process.env.PAYMENT_WEBHOOK_SECRET = TEST_SECRET;
+    process.env.PAYSTACK_SECRET_KEY = TEST_SECRET;
   });
 
   afterEach(() => {
-    delete process.env.PAYMENT_WEBHOOK_SECRET;
+    delete process.env.PAYSTACK_SECRET_KEY;
   });
 
   function createMockContext(
@@ -33,51 +39,37 @@ describe('WebhookGuard', () => {
   }
 
   function signPayload(payload: string, secret: string): string {
-    return createHmac('sha256', secret).update(payload).digest('hex');
+    return createHmac('sha512', secret).update(payload).digest('hex');
   }
 
-  it('should accept a valid HMAC-SHA256 signature', () => {
-    const body = { event_type: 'payment.succeeded', amount: 100 };
+  it('should accept a valid Paystack HMAC-SHA512 signature', () => {
+    const body = { event: 'charge.success', data: { reference: 'ref_123' } };
     const bodyStr = JSON.stringify(body);
     const signature = signPayload(bodyStr, TEST_SECRET);
-    const ctx = createMockContext({ 'x-webhook-signature': signature }, body);
+    const ctx = createMockContext({ 'x-paystack-signature': signature }, body);
     expect(guard.canActivate(ctx)).toBe(true);
   });
 
   it('should reject an invalid signature', () => {
-    const body = { event_type: 'payment.succeeded' };
+    const body = { event: 'charge.success' };
     const ctx = createMockContext(
-      { 'x-webhook-signature': 'deadbeef'.repeat(8) },
+      { 'x-paystack-signature': 'deadbeef'.repeat(16) },
       body,
     );
     expect(() => guard.canActivate(ctx)).toThrow(UnauthorizedException);
   });
 
-
   it('should reject when signature header is missing', () => {
-    const body = { event_type: 'payment.succeeded' };
+    const body = { event: 'charge.success' };
     const ctx = createMockContext({}, body);
     expect(() => guard.canActivate(ctx)).toThrow(UnauthorizedException);
   });
 
-  it('should reject when webhook secret is not configured', () => {
-    delete process.env.PAYMENT_WEBHOOK_SECRET;
-    const body = { event_type: 'payment.succeeded' };
-    const ctx = createMockContext({ 'x-webhook-signature': 'abc123' }, body);
+  it('should reject when Paystack secret key is not configured', () => {
+    delete process.env.PAYSTACK_SECRET_KEY;
+    const body = { event: 'charge.success' };
+    const ctx = createMockContext({ 'x-paystack-signature': 'abc123' }, body);
     expect(() => guard.canActivate(ctx)).toThrow(UnauthorizedException);
-  });
-
-  it('should include timestamp in signature verification when present', () => {
-    const body = { event_type: 'payment.succeeded' };
-    const bodyStr = JSON.stringify(body);
-    const timestamp = Date.now().toString();
-    const payload = `${timestamp}.${bodyStr}`;
-    const signature = signPayload(payload, TEST_SECRET);
-    const ctx = createMockContext(
-      { 'x-webhook-signature': signature, 'x-webhook-timestamp': timestamp },
-      body,
-    );
-    expect(guard.canActivate(ctx)).toBe(true);
   });
 });
 
@@ -129,7 +121,6 @@ describe('PaymentStateMachine', () => {
   });
 });
 
-
 // ── FraudMonitorService Tests ───────────────────────────────────
 
 describe('FraudMonitorService', () => {
@@ -140,7 +131,6 @@ describe('FraudMonitorService', () => {
   });
 
   it('should flag unusual volume after exceeding threshold', () => {
-    // Record 6 attempts in quick succession
     for (let i = 0; i < 6; i++) {
       service.recordAttempt('USR-abc123', true);
     }
@@ -167,38 +157,45 @@ describe('FraudMonitorService', () => {
   });
 });
 
-// ── PaymentGatewayService Tests ─────────────────────────────────
+// ── PaymentGatewayService Tests (PCI DSS) ───────────────────────
 
 describe('PaymentGatewayService', () => {
   let service: PaymentGatewayService;
 
   beforeEach(() => {
     service = new PaymentGatewayService();
+    process.env.PAYSTACK_SECRET_KEY = 'sk_test_abc123';
   });
 
-  it('should tokenize card data and return a token (not raw card)', async () => {
-    const result = await service.tokenizeCard({
-      card_number: '4111111111111111',
-      expiry_month: 12,
-      expiry_year: 2028,
-      cvv: '123',
-    });
-    expect(result.token).toBeDefined();
-    expect(result.token).not.toContain('4111');
-    expect(result.last_four).toBe('1111');
-    expect(result.card_brand).toBe('visa');
+  afterEach(() => {
+    delete process.env.PAYSTACK_SECRET_KEY;
   });
 
-  it('should charge a tokenized card', async () => {
-    const tokenResult = await service.tokenizeCard({
-      card_number: '4111111111111111',
-      expiry_month: 12,
-      expiry_year: 2028,
-      cvv: '123',
-    });
-    const chargeResult = await service.chargeToken(tokenResult.token, 600, 'USD');
-    expect(chargeResult.status).toBe('succeeded');
-    expect(chargeResult.charge_id).toBeDefined();
-    expect(chargeResult.amount).toBe(600);
+  it('should extract only safe card data (authorization_code + last4)', () => {
+    const authorization = {
+      authorization_code: 'AUTH_abc123',
+      last4: '1234',
+      card_type: 'visa',
+      bin: '411111',
+      exp_month: '12',
+      exp_year: '2028',
+    };
+    const safe = service.extractSafeCardData(authorization);
+    expect(safe.authorization_code).toBe('AUTH_abc123');
+    expect(safe.last4).toBe('1234');
+    expect(Object.keys(safe)).toEqual(['authorization_code', 'last4']);
+  });
+
+  it('should verify a valid Paystack webhook signature', () => {
+    const body = '{"event":"charge.success"}';
+    const signature = createHmac('sha512', 'sk_test_abc123')
+      .update(body)
+      .digest('hex');
+    expect(service.verifyWebhook(signature, body)).toBe(true);
+  });
+
+  it('should reject an invalid webhook signature', () => {
+    const body = '{"event":"charge.success"}';
+    expect(service.verifyWebhook('invalid_signature', body)).toBe(false);
   });
 });

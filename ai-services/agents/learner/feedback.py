@@ -24,6 +24,7 @@ from agents.learner.guardrails import (
     filter_output,
     validate_input,
 )
+from agents.llm_factory import LLMNotConfiguredError, invoke_llm
 from config import settings
 
 logger = logging.getLogger("ai_services")
@@ -111,35 +112,78 @@ async def analyze_submission(request: FeedbackRequest) -> FeedbackResponse:
     try:
         validate_input(request.submission_content)
 
-        # Stub feedback generation — real integration requires LLM API keys
+        # Build prompt with submission content and rubric
+        rubric_text = ""
+        if request.rubric:
+            criteria = request.rubric.get("criteria", [])
+            rubric_text = f"Rubric criteria: {', '.join(str(c) for c in criteria)}\n"
+
+        prompt = (
+            f"You are an assignment feedback agent for KoreField Academy.\n\n"
+            f"Analyze the following learner submission and provide structured feedback.\n\n"
+            f"Submission:\n{request.submission_content}\n\n"
+            f"{rubric_text}"
+            f"Respond as JSON with keys:\n"
+            f'- "strengths": list of {{"area": str, "description": str}}\n'
+            f'- "improvements": list of {{"area": str, "suggestion": str, "priority": "high"|"medium"|"low"}}\n'
+            f'- "rubric_alignment": list of {{"criterion": str, "score": 0.0-1.0, "notes": str}}\n'
+            f'- "overall_score": float 0.0-1.0\n'
+            f'- "confidence": "high"|"medium"|"low"'
+        )
+
+        try:
+            raw_text = await invoke_llm(prompt, timeout=60)
+        except LLMNotConfiguredError:
+            raise HTTPException(status_code=503, detail="LLM service not configured.")
+        except Exception as llm_exc:
+            logger.error("feedback_llm_error", extra={"error": str(llm_exc)})
+            raise HTTPException(status_code=503, detail="LLM service temporarily unavailable.")
+
+        # Parse structured feedback from LLM response — fall back to defaults
+        import json as _json
+
+        try:
+            parsed = _json.loads(raw_text)
+        except (ValueError, TypeError):
+            parsed = {}
+
         strengths = [
-            FeedbackStrength(
-                area="Structure",
-                description="Submission demonstrates clear organization and logical flow.",
-            )
-        ]
+            FeedbackStrength(area=s.get("area", "General"), description=filter_output(s.get("description", "")))
+            for s in parsed.get("strengths", [])
+        ] or [FeedbackStrength(area="General", description=filter_output(raw_text[:200]))]
+
         improvements = [
             FeedbackImprovement(
-                area="Depth",
-                suggestion="Consider providing more detailed analysis with supporting examples.",
-                priority="medium",
+                area=i.get("area", "General"),
+                suggestion=filter_output(i.get("suggestion", "")),
+                priority=i.get("priority", "medium"),
             )
-        ]
+            for i in parsed.get("improvements", [])
+        ] or [FeedbackImprovement(area="General", suggestion="Review submission for improvements.", priority="medium")]
 
         # Rubric alignment
         rubric_alignment: list[RubricAlignment] = []
-        if request.rubric:
-            for criterion in request.rubric.get("criteria", ["completeness", "accuracy"]):
-                rubric_alignment.append(
-                    RubricAlignment(criterion=str(criterion), score=0.7, notes="Stub evaluation")
-                )
-        else:
+        for ra in parsed.get("rubric_alignment", []):
             rubric_alignment.append(
-                RubricAlignment(criterion="overall_quality", score=0.7, notes="No rubric provided; general assessment")
+                RubricAlignment(
+                    criterion=str(ra.get("criterion", "overall")),
+                    score=float(ra.get("score", 0.7)),
+                    notes=filter_output(str(ra.get("notes", ""))),
+                )
             )
+        if not rubric_alignment:
+            if request.rubric:
+                for criterion in request.rubric.get("criteria", ["completeness", "accuracy"]):
+                    rubric_alignment.append(
+                        RubricAlignment(criterion=str(criterion), score=0.7, notes="LLM evaluation")
+                    )
+            else:
+                rubric_alignment.append(
+                    RubricAlignment(criterion="overall_quality", score=0.7, notes="No rubric provided; general assessment")
+                )
 
-        overall_score = 0.7
-        confidence = "medium"
+        overall_score = float(parsed.get("overall_score", 0.7))
+        confidence = parsed.get("confidence", "medium")
 
         processing_time_ms = round((time.time() - start_time) * 1000, 2)
 

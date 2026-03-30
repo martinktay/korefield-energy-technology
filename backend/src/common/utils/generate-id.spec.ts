@@ -48,13 +48,13 @@ describe('generateCertVerificationCode', () => {
 });
 
 describe('ENTITY_PREFIXES', () => {
-  it('contains all 34 required prefixes', () => {
+  it('contains all 37 required prefixes', () => {
     const expected = [
       'USR', 'LRN', 'TRK', 'LVL', 'MOD', 'LSN', 'ASM', 'LAB',
       'ENR', 'POD', 'PDM', 'WTL', 'FND', 'PGT', 'GTA', 'PAY',
       'IST', 'PRC', 'CMP', 'SCH', 'CPS', 'DEF', 'CRT', 'CEL',
       'SUB', 'CEX', 'CVR', 'AWE', 'AQR', 'PMV', 'DRS', 'SES',
-      'ROL', 'CBN',
+      'ROL', 'CBN', 'EML', 'EPR', 'FIL',
     ];
     expect([...ENTITY_PREFIXES]).toEqual(expect.arrayContaining(expected));
     expect(ENTITY_PREFIXES.length).toBe(expected.length);

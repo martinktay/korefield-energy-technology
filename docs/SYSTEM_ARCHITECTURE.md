@@ -69,3 +69,45 @@ Three isolated environments: dev, staging, production
 - Super Admin dashboards use pre-aggregated metrics, not live queries
 - Video content served from Cloudflare Stream — never proxied through AWS
 - All entities use domain-prefixed custom IDs (never auto-increment or raw UUIDs)
+
+
+## AI Cost Metering (Cohort-Level)
+
+Every LLM invocation is tracked for cohort-level cost attribution and optimization:
+
+| Metric | Source | Storage | Aggregation |
+|--------|--------|---------|-------------|
+| Token count (input + output) | LLM response metadata | AWE-* record | Daily per-cohort rollup |
+| Model used | llm_factory.py | AWE-* record | Per-agent breakdown |
+| Latency (ms) | Agent telemetry | AWE-* record | P50/P95/P99 per agent |
+| Estimated cost ($) | Token count × model pricing | AWE-* record | Daily/weekly per cohort |
+| Cohort ID | Enrollment → cohort mapping | AWE-* record | Per-cohort totals |
+| Cache hit/miss | Redis cache layer | CloudWatch metric | Hourly per cohort |
+| Circuit breaker state | circuit_breaker.py | CloudWatch metric | Real-time |
+
+### Cohort Cost Attribution Flow
+
+```
+LLM Call → llm_factory.invoke_llm() → circuit_breaker.call()
+    ↓
+AWE-* record created with:
+  - agent_type, workflow_type
+  - learner_id, cohort_id (derived from enrollment)
+  - token_count_input, token_count_output
+  - model_name, latency_ms
+  - estimated_cost_usd
+    ↓
+Daily aggregation worker (analytics queue):
+  - SUM(estimated_cost_usd) GROUP BY cohort_id → per-cohort daily cost
+  - SUM(estimated_cost_usd) GROUP BY cohort_id, learner_id → per-learner within cohort
+  - SUM(estimated_cost_usd) GROUP BY agent_type → per-agent daily cost
+  - Compare actual vs budgeted per cohort → alert if >120% budget
+    ↓
+Super Admin Cohort Economics Dashboard:
+  - Cohort revenue vs AI cost vs gross margin
+  - AI cost per active learner within cohort
+  - Cohort AI budget utilization (actual/budgeted %)
+  - Cache hit rate trends (higher = better efficiency)
+  - Foundation → Cohort conversion cost (Foundation AI spend / conversions)
+  - Week-over-week AI consumption curve per cohort
+```

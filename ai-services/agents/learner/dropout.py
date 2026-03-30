@@ -12,24 +12,24 @@ Requirements: 21.8, 21.9, 29.4, 29.5
 
 from __future__ import annotations
 
+import json
 import logging
 import time
 import uuid
 from typing import Any, TypedDict
 
+import asyncpg
 from fastapi import APIRouter, HTTPException
 from langgraph.graph import END, StateGraph
 from pydantic import BaseModel, Field
 
 from agents.learner.guardrails import filter_output, validate_input
+from agents.llm_factory import LLMNotConfiguredError, get_llm, invoke_llm
 from config import settings
 
 logger = logging.getLogger("ai_services")
 
 router = APIRouter(prefix="/ai/dropout", tags=["dropout"])
-
-# In-memory store for DRS-* records (production would use PostgreSQL)
-_risk_store: dict[str, dict[str, Any]] = {}
 
 # Risk threshold for triggering intervention
 _RISK_THRESHOLD = 0.7
@@ -136,7 +136,7 @@ def _evaluate_risk_node(state: InterventionState) -> InterventionState:
 
 
 def _generate_recommendation_node(state: InterventionState) -> InterventionState:
-    """Node 2: Generate re-engagement recommendation."""
+    """Node 2: Generate re-engagement recommendation via LLM."""
     risk_level = state["risk_level"]
     signals = state["signals"]
 
@@ -144,12 +144,36 @@ def _generate_recommendation_node(state: InterventionState) -> InterventionState
     weak_areas = sorted(signals.items(), key=lambda x: x[1])
     focus = weak_areas[0][0] if weak_areas else "general engagement"
 
-    recommendation = filter_output(
-        f"Re-engagement recommendation for {state['learner_id']}: "
-        f"Focus on improving {focus}. Risk level: {risk_level}. "
-        f"Suggested actions: schedule 1-on-1 with assessor, "
-        f"review missed submissions, increase pod collaboration."
+    prompt = (
+        f"You are a dropout intervention agent for KoreField Academy.\n\n"
+        f"Learner {state['learner_id']} has risk level: {risk_level}.\n"
+        f"Weakest area: {focus}.\n"
+        f"Signals: {signals}\n\n"
+        f"Provide a concise re-engagement recommendation (2-3 sentences) "
+        f"with specific actions the assessor should take."
     )
+
+    try:
+        import asyncio
+
+        llm = get_llm(timeout=30)
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            import concurrent.futures
+            with concurrent.futures.ThreadPoolExecutor() as pool:
+                response = pool.submit(lambda: asyncio.run(llm.ainvoke(prompt))).result()
+        else:
+            response = loop.run_until_complete(llm.ainvoke(prompt))
+        recommendation = filter_output(response.content)
+    except Exception:
+        # Fallback to rule-based recommendation if LLM fails
+        recommendation = filter_output(
+            f"Re-engagement recommendation for {state['learner_id']}: "
+            f"Focus on improving {focus}. Risk level: {risk_level}. "
+            f"Suggested actions: schedule 1-on-1 with assessor, "
+            f"review missed submissions, increase pod collaboration."
+        )
+
     state["recommendation"] = recommendation
     state["step_count"] = state.get("step_count", 0) + 1
     return state
@@ -255,17 +279,47 @@ async def evaluate_dropout_risk(request: DropoutEvaluateRequest) -> DropoutRiskR
             intervention_triggered = True
             intervention_recommendation = result.get("recommendation")
 
-        # Store DRS-* record
+        # Store DRS-* record in PostgreSQL
         record_id = f"DRS-{uuid.uuid4().hex[:8]}"
-        _risk_store[request.learner_id] = {
-            "record_id": record_id,
-            "learner_id": request.learner_id,
-            "risk_score": risk_score,
-            "risk_level": risk_lvl,
-            "signals": signals_summary,
-            "intervention_triggered": intervention_triggered,
-            "computed_at": time.time(),
-        }
+        try:
+            conn = await asyncpg.connect(settings.database_url)
+            try:
+                await conn.execute(
+                    """
+                    INSERT INTO dropout_risk_scores
+                        (record_id, learner_id, enrollment_id, risk_score,
+                         risk_level, signals, intervention_triggered, computed_at)
+                    VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7, NOW())
+                    """,
+                    record_id,
+                    request.learner_id,
+                    request.enrollment_id,
+                    risk_score,
+                    risk_lvl,
+                    json.dumps(signals_summary),
+                    intervention_triggered,
+                )
+            finally:
+                await conn.close()
+        except Exception as db_exc:
+            logger.error("dropout_db_write_failed", extra={"error": str(db_exc)})
+            # Return HTTP 500 but include computed risk score in response body
+            duration_ms = round((time.time() - start_time) * 1000, 2)
+            return DropoutRiskResponse(
+                record_id=record_id,
+                learner_id=request.learner_id,
+                risk_score=risk_score,
+                risk_level=risk_lvl,
+                intervention_triggered=intervention_triggered,
+                intervention_recommendation=intervention_recommendation,
+                signals_summary=signals_summary,
+                telemetry={
+                    "workflow": "dropout_evaluate",
+                    "status": "db_write_failed",
+                    "duration_ms": duration_ms,
+                    "error": str(db_exc),
+                },
+            )
 
         duration_ms = round((time.time() - start_time) * 1000, 2)
         telemetry = {
@@ -297,20 +351,43 @@ async def evaluate_dropout_risk(request: DropoutEvaluateRequest) -> DropoutRiskR
 
 @router.get("/risk/{learner_id}", response_model=DropoutRiskResponse)
 async def get_risk_score(learner_id: str) -> DropoutRiskResponse:
-    """Return the current risk score for a learner."""
+    """Return the most recent risk score for a learner from PostgreSQL."""
     if not learner_id.startswith("LRN-"):
         raise HTTPException(status_code=400, detail="Invalid learner ID format. Expected LRN-*.")
 
-    record = _risk_store.get(learner_id)
-    if not record:
+    try:
+        conn = await asyncpg.connect(settings.database_url)
+        try:
+            row = await conn.fetchrow(
+                """
+                SELECT record_id, learner_id, enrollment_id, risk_score,
+                       risk_level, signals, intervention_triggered, computed_at
+                FROM dropout_risk_scores
+                WHERE learner_id = $1
+                ORDER BY computed_at DESC
+                LIMIT 1
+                """,
+                learner_id,
+            )
+        finally:
+            await conn.close()
+    except Exception as db_exc:
+        logger.error("dropout_db_read_failed", extra={"error": str(db_exc)})
+        raise HTTPException(status_code=500, detail="Failed to retrieve risk score.")
+
+    if not row:
         raise HTTPException(status_code=404, detail=f"No risk score found for {learner_id}.")
 
+    signals = row["signals"]
+    if isinstance(signals, str):
+        signals = json.loads(signals)
+
     return DropoutRiskResponse(
-        record_id=record["record_id"],
-        learner_id=record["learner_id"],
-        risk_score=record["risk_score"],
-        risk_level=record["risk_level"],
-        intervention_triggered=record["intervention_triggered"],
-        signals_summary=record["signals"],
+        record_id=row["record_id"],
+        learner_id=row["learner_id"],
+        risk_score=row["risk_score"],
+        risk_level=row["risk_level"],
+        intervention_triggered=row["intervention_triggered"],
+        signals_summary=signals,
         telemetry={"workflow": "dropout_risk_lookup", "status": "completed"},
     )

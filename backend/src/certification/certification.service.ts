@@ -22,6 +22,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { PrismaService } from '@common/prisma/prisma.service';
+import { EmailService } from '@email/email.service';
 import { generateId, generateCertVerificationCode } from '@common/utils/generate-id';
 import { UnlockCapstoneDto } from './dto/unlock-capstone.dto';
 import { SubmitCapstoneDto } from './dto/submit-capstone.dto';
@@ -40,7 +41,10 @@ const RESUBMISSION_WINDOW_DAYS = 30;
 export class CertificationService {
   private readonly logger = new Logger(CertificationService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly emailService: EmailService,
+  ) {}
 
   /**
    * Unlock a capstone for a learner on a track.
@@ -759,6 +763,25 @@ export class CertificationService {
     this.logger.log(
       `Certificate ${certId} issued for learner ${dto.learner_id} on track ${dto.track_id}`,
     );
+
+    // Fire-and-forget certificate issued email
+    try {
+      const frontendUrl = process.env.FRONTEND_URL ?? 'http://localhost:3000';
+      await this.emailService.sendCertificateIssuedEmail(
+        learner.user.email,
+        {
+          trackName: track.name,
+          verificationCode: verificationCode,
+          certificateUrl: `${frontendUrl}/learner/certificates`,
+          issueDate: certificate.issued_at.toISOString(),
+        },
+        learner.user.id,
+      );
+    } catch (error) {
+      this.logger.error(
+        `Failed to queue certificate issued email for certificate ${certId}: ${(error as Error).message}`,
+      );
+    }
 
     return {
       id: certificate.id,

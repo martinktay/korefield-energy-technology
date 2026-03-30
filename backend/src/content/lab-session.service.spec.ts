@@ -3,6 +3,7 @@ import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { ContentService } from './content.service';
 import { PrismaService } from '@common/prisma/prisma.service';
 import { CacheService } from '@common/cache/cache.service';
+import { CodeExecutionService } from './code-execution.service';
 
 const mockPrisma = {
   track: { findMany: jest.fn(), findUnique: jest.fn() },
@@ -22,6 +23,11 @@ const mockCache = {
   del: jest.fn(),
 };
 
+const mockCodeExecution = {
+  executeCode: jest.fn(),
+  executeWithTests: jest.fn(),
+};
+
 describe('ContentService — Lab Session Management', () => {
   let service: ContentService;
 
@@ -33,6 +39,7 @@ describe('ContentService — Lab Session Management', () => {
         ContentService,
         { provide: PrismaService, useValue: mockPrisma },
         { provide: CacheService, useValue: mockCache },
+        { provide: CodeExecutionService, useValue: mockCodeExecution },
       ],
     }).compile();
 

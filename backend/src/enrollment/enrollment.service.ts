@@ -21,6 +21,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '@common/prisma/prisma.service';
 import { CacheService } from '@common/cache/cache.service';
+import { EmailService } from '@email/email.service';
 import { generateId } from '@common/utils/generate-id';
 import { PodMemberRole } from '@prisma/client';
 import { RegisterLearnerDto } from './dto/register-learner.dto';
@@ -31,6 +32,7 @@ import { JoinWaitlistDto } from './dto/join-waitlist.dto';
 import { AssignPodDto } from './dto/assign-pod.dto';
 import { ActivatePodDto } from './dto/activate-pod.dto';
 import { EvaluateGateDto } from './dto/evaluate-gate.dto';
+import { UpdateLearnerDto } from './dto/update-learner.dto';
 
 const FOUNDATION_MODULES = [
   'AI Literacy',
@@ -103,6 +105,7 @@ export class EnrollmentService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly cache: CacheService,
+    private readonly emailService: EmailService,
   ) {}
 
   /**
@@ -215,6 +218,33 @@ export class EnrollmentService {
       onboarding_complete: updatedLearner.onboarding_complete,
       foundation_progress_id: foundationId,
       recommended_tracks: recommendedTracks,
+    };
+  }
+
+  /**
+   * Update mutable learner profile fields (e.g. project_interest).
+   * Used by PATCH /enrollment/learners/:id.
+   */
+  async updateLearner(learnerId: string, dto: UpdateLearnerDto) {
+    const learner = await this.prisma.learner.findUnique({
+      where: { id: learnerId },
+    });
+
+    if (!learner) {
+      throw new NotFoundException(`Learner ${learnerId} not found`);
+    }
+
+    const updated = await this.prisma.learner.update({
+      where: { id: learnerId },
+      data: {
+        ...(dto.project_interest !== undefined && { project_interest: dto.project_interest }),
+      },
+    });
+
+    return {
+      id: updated.id,
+      user_id: updated.user_id,
+      project_interest: updated.project_interest,
     };
   }
 
@@ -469,6 +499,29 @@ export class EnrollmentService {
     this.logger.log(
       `Learner ${dto.learner_id} enrolled in track ${trackId} (${track.name}), enrollment ${enrollmentId}`,
     );
+
+    // Fire-and-forget enrollment confirmation email
+    try {
+      const learner = await this.prisma.learner.findUnique({
+        where: { id: dto.learner_id },
+        include: { user: true },
+      });
+      if (learner) {
+        await this.emailService.sendEnrollmentConfirmationEmail(
+          learner.user.email,
+          {
+            trackName: track.name,
+            enrollmentDate: enrollment.enrolled_at.toISOString(),
+            trackDashboardUrl: `${process.env.FRONTEND_URL ?? 'http://localhost:3000'}/learner`,
+          },
+          learner.user.id,
+        );
+      }
+    } catch (error) {
+      this.logger.error(
+        `Failed to queue enrollment confirmation email for enrollment ${enrollmentId}: ${(error as Error).message}`,
+      );
+    }
 
     return {
       id: enrollment.id,
@@ -733,6 +786,30 @@ export class EnrollmentService {
     this.logger.log(
       `Learner ${dto.learner_id} assigned to pod ${targetPod!.id} as ${role}`,
     );
+
+    // Fire-and-forget pod assignment email
+    try {
+      const learnerWithUser = await this.prisma.learner.findUnique({
+        where: { id: dto.learner_id },
+        include: { user: true },
+      });
+      if (learnerWithUser) {
+        await this.emailService.sendPodAssignmentEmail(
+          learnerWithUser.user.email,
+          {
+            podId: targetPod!.id,
+            assignedRole: role,
+            trackName: track.name,
+            podPageUrl: `${process.env.FRONTEND_URL ?? 'http://localhost:3000'}/learner/pods`,
+          },
+          learnerWithUser.user.id,
+        );
+      }
+    } catch (error) {
+      this.logger.error(
+        `Failed to queue pod assignment email for learner ${dto.learner_id}: ${(error as Error).message}`,
+      );
+    }
 
     return {
       pod_id: targetPod!.id,

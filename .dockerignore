@@ -1,0 +1,53 @@
+# KoreField Academy — Root .dockerignore
+# Prevents unnecessary files from entering Docker build context.
+
+# Dependencies (installed inside container)
+node_modules/
+.venv/
+
+# Build outputs
+dist/
+.next/
+out/
+
+# Version control
+.git/
+.github/
+
+# Environment files (injected at runtime)
+.env
+.env.local
+.env.*.local
+
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Test artifacts
+coverage/
+playwright-report/
+test-results/
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Terraform state
+.terraform/
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl
+
+# Docs (not needed in images)
+docs/
+*.md
+!README.md
+
+# Logs
+*.log

@@ -81,3 +81,24 @@ resource "aws_secretsmanager_secret_rotation" "jwt_secret" {
     ignore_changes = [rotation_lambda_arn]
   }
 }
+
+# --- SES credentials ---
+
+resource "aws_secretsmanager_secret" "ses_credentials" {
+  name       = "${local.prefix}/ses-credentials"
+  kms_key_id = aws_kms_key.secrets.arn
+  tags       = merge(local.common_tags, { Name = "${local.prefix}-ses-credentials", SecretType = "ses" })
+}
+
+resource "aws_secretsmanager_secret_rotation" "ses_credentials" {
+  secret_id           = aws_secretsmanager_secret.ses_credentials.id
+  rotation_lambda_arn = "" # Placeholder — rotation Lambda ARN to be configured
+
+  rotation_rules {
+    automatically_after_days = var.rotation_days
+  }
+
+  lifecycle {
+    ignore_changes = [rotation_lambda_arn]
+  }
+}

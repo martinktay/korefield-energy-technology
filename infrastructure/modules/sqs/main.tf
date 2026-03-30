@@ -134,3 +134,26 @@ resource "aws_sqs_queue" "payment_events" {
 
   tags = merge(local.common_tags, { Name = "${local.prefix}-payment-events", Queue = "payment-events" })
 }
+
+# --- email ---
+
+resource "aws_sqs_queue" "email_dlq" {
+  name                      = "${local.prefix}-email-dlq"
+  message_retention_seconds = 1209600 # 14 days
+  kms_master_key_id         = aws_kms_key.sqs.id
+  tags                      = merge(local.common_tags, { Name = "${local.prefix}-email-dlq", Queue = "email-dlq" })
+}
+
+resource "aws_sqs_queue" "email" {
+  name                       = "${local.prefix}-email"
+  visibility_timeout_seconds = var.visibility_timeout_seconds
+  message_retention_seconds  = var.message_retention_seconds
+  kms_master_key_id          = aws_kms_key.sqs.id
+
+  redrive_policy = jsonencode({
+    deadLetterTargetArn = aws_sqs_queue.email_dlq.arn
+    maxReceiveCount     = var.max_receive_count
+  })
+
+  tags = merge(local.common_tags, { Name = "${local.prefix}-email", Queue = "email" })
+}

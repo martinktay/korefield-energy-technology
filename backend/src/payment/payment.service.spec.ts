@@ -3,11 +3,16 @@ import { NotFoundException, BadRequestException, ConflictException } from '@nest
 import { PaymentService } from './payment.service';
 import { PrismaService } from '@common/prisma/prisma.service';
 import { CacheService } from '@common/cache/cache.service';
+import { EmailService } from '@email/email.service';
 
 const mockCache = {
   get: jest.fn(),
   set: jest.fn(),
   del: jest.fn(),
+};
+
+const mockEmailService = {
+  sendPaymentConfirmationEmail: jest.fn().mockResolvedValue(undefined),
 };
 
 const mockPrisma = {
@@ -54,6 +59,7 @@ describe('PaymentService', () => {
         PaymentService,
         { provide: PrismaService, useValue: mockPrisma },
         { provide: CacheService, useValue: mockCache },
+        { provide: EmailService, useValue: mockEmailService },
       ],
     }).compile();
 

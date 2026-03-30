@@ -13,7 +13,9 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { PrismaService } from '@common/prisma/prisma.service';
+import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
 import { CacheService } from '@common/cache/cache.service';
+import { EmailService } from '@email/email.service';
 import { generateId } from '@common/utils/generate-id';
 import {
   getCurrencyForCountry,
@@ -76,10 +78,17 @@ const PLAN_SPLITS: Record<string, { percentage: number; label: string }[]> = {
 export class PaymentService {
   private readonly logger = new Logger(PaymentService.name);
 
+  private readonly sqsClient: SQSClient;
+  private readonly paymentEventsQueueUrl: string;
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly cache: CacheService,
-  ) {}
+    private readonly emailService: EmailService,
+  ) {
+    this.sqsClient = new SQSClient({});
+    this.paymentEventsQueueUrl = process.env.PAYMENT_EVENTS_QUEUE_URL ?? '';
+  }
 
   /**
    * Compute the final pricing for a track given country, plan, and learner.
@@ -617,8 +626,9 @@ export class PaymentService {
 
   /**
    * Mark an installment as paid and restore access if previously paused.
+   * Optionally stores the Paystack transaction reference.
    */
-  async markInstallmentPaid(installmentId: string) {
+  async markInstallmentPaid(installmentId: string, paystackReference?: string) {
     const installment = await this.prisma.installment.findUnique({
       where: { id: installmentId },
       include: { plan: { include: { installments: true } } },
@@ -637,6 +647,7 @@ export class PaymentService {
       data: {
         status: 'paid',
         paid_at: new Date(),
+        ...(paystackReference && { paystack_reference: paystackReference }),
       },
     });
 
@@ -655,6 +666,35 @@ export class PaymentService {
 
     this.logger.log(`Installment ${installmentId} marked as paid`);
 
+    // Fire-and-forget payment confirmation email
+    try {
+      const enrollment = await this.prisma.enrollment.findUnique({
+        where: { id: installment.plan.enrollment_id },
+        include: {
+          learner: { include: { user: true } },
+          track: true,
+        },
+      });
+      if (enrollment) {
+        await this.emailService.sendPaymentConfirmationEmail(
+          enrollment.learner.user.email,
+          {
+            amount: installment.amount,
+            currency: installment.plan.currency,
+            trackName: enrollment.track.name,
+            paymentPlanType: installment.plan.plan_type,
+            installmentSequence: installment.sequence,
+            paymentDate: new Date().toISOString(),
+          },
+          enrollment.learner.user.id,
+        );
+      }
+    } catch (error) {
+      this.logger.error(
+        `Failed to queue payment confirmation email for installment ${installmentId}: ${(error as Error).message}`,
+      );
+    }
+
     return {
       ...updated,
       access_restored: installment.status === 'overdue',
@@ -663,12 +703,26 @@ export class PaymentService {
   }
 
   /**
-   * Stub: Enqueue a payment event to the payment-events SQS queue.
-   * Real SQS integration comes with workers.
+   * Enqueue a payment event to the payment-events SQS queue.
+   * Used for scheduled installment processing and grace period checks.
    */
   enqueuePaymentEvent(message: Record<string, unknown>): void {
-    this.logger.log(
-      `[SQS STUB] Enqueuing to payment-events: ${JSON.stringify(message)}`,
-    );
+    if (!this.paymentEventsQueueUrl) {
+      this.logger.warn('[PaymentService] PAYMENT_EVENTS_QUEUE_URL not configured — skipping enqueue');
+      return;
+    }
+    this.sqsClient
+      .send(
+        new SendMessageCommand({
+          QueueUrl: this.paymentEventsQueueUrl,
+          MessageBody: JSON.stringify(message),
+        }),
+      )
+      .then(() => {
+        this.logger.log(`Payment event enqueued: ${JSON.stringify(message)}`);
+      })
+      .catch((err: Error) => {
+        this.logger.error(`Failed to enqueue payment event: ${err.message}`);
+      });
   }
 }

@@ -1,3 +1,4 @@
+"use client";
 /**
  * @file learner/lessons/page.tsx
  * Lessons hub — modules grouped by track, each lesson tagged as either
@@ -7,137 +8,69 @@
  * "Up Next" highlights the first incomplete lesson.
  * Completion counts feed into progress metrics.
  */
-"use client";
 
 import { useState, useMemo } from "react";
-import { Bot, Code, CheckCircle2, Play, Clock, ChevronDown, ChevronRight } from "lucide-react";
+import { Bot, Code, CheckCircle2, Play, ChevronDown, ChevronRight } from "lucide-react";
 import Link from "next/link";
-
-type LessonType = "video" | "lab" | "quiz";
-
-interface Lesson {
-  id: string;
-  title: string;
-  type: LessonType;
-  duration: string;
-  completed: boolean;
-}
-
-interface ModuleGroup {
-  id: string;
-  name: string;
-  lessons: Lesson[];
-}
-
-interface TrackSection {
-  track: string;
-  level: string;
-  modules: ModuleGroup[];
-}
-
-const INITIAL_DATA: TrackSection[] = [
-  {
-    track: "AI Foundation School",
-    level: "Required",
-    modules: [
-      {
-        id: "MOD-F01", name: "AI Literacy",
-        lessons: [
-          { id: "LSN-F01-01", title: "What is Artificial Intelligence?", type: "video", duration: "18 min", completed: true },
-          { id: "LSN-F01-02", title: "History and Evolution of AI", type: "video", duration: "22 min", completed: true },
-          { id: "LSN-F01-03", title: "AI in Everyday Life", type: "video", duration: "15 min", completed: false },
-        ],
-      },
-      {
-        id: "MOD-F02", name: "Prompt Engineering",
-        lessons: [
-          { id: "LSN-F02-01", title: "Introduction to Prompts", type: "video", duration: "20 min", completed: false },
-          { id: "LSN-F02-02", title: "Crafting Effective Prompts", type: "lab", duration: "30 min", completed: false },
-          { id: "LSN-F02-03", title: "Advanced Prompt Techniques", type: "lab", duration: "35 min", completed: false },
-        ],
-      },
-    ],
-  },
-  {
-    track: "AI Engineering and Intelligent Systems",
-    level: "Beginner",
-    modules: [
-      {
-        id: "MOD-aie-01", name: "Python for AI",
-        lessons: [
-          { id: "LSN-aie-101", title: "Variables, Types, and Data Structures", type: "video", duration: "25 min", completed: true },
-          { id: "LSN-aie-102", title: "Functions, Loops, and List Comprehensions", type: "lab", duration: "35 min", completed: false },
-          { id: "LSN-aie-103", title: "Python for AI — Module Assessment", type: "quiz", duration: "15 min", completed: false },
-        ],
-      },
-      {
-        id: "MOD-aie-02", name: "Data Structures for AI",
-        lessons: [
-          { id: "LSN-aie-201", title: "NumPy Arrays and Vectorized Operations", type: "lab", duration: "40 min", completed: false },
-          { id: "LSN-aie-202", title: "Pandas DataFrames for Data Wrangling", type: "video", duration: "30 min", completed: false },
-          { id: "LSN-aie-203", title: "Data Structures — Matching Exercise", type: "quiz", duration: "10 min", completed: false },
-        ],
-      },
-      {
-        id: "MOD-aie-03", name: "REST APIs and HTTP",
-        lessons: [
-          { id: "LSN-aie-301", title: "HTTP Methods, Status Codes, and API Design", type: "video", duration: "25 min", completed: false },
-          { id: "LSN-aie-302", title: "Building a FastAPI Prediction Endpoint", type: "lab", duration: "40 min", completed: false },
-          { id: "LSN-aie-303", title: "REST APIs — Module Assessment", type: "quiz", duration: "15 min", completed: false },
-        ],
-      },
-      {
-        id: "MOD-aie-04", name: "Prompt Engineering",
-        lessons: [
-          { id: "LSN-aie-401", title: "Prompt Patterns and Chain-of-Thought", type: "video", duration: "30 min", completed: false },
-          { id: "LSN-aie-402", title: "Building a Prompt Testing Pipeline", type: "lab", duration: "35 min", completed: false },
-        ],
-      },
-      {
-        id: "MOD-aie-05", name: "Model API Integration",
-        lessons: [
-          { id: "LSN-aie-501", title: "Calling LLM APIs with Python", type: "lab", duration: "35 min", completed: false },
-          { id: "LSN-aie-502", title: "Model APIs — Matching Exercise", type: "quiz", duration: "10 min", completed: false },
-        ],
-      },
-      {
-        id: "MOD-aie-06", name: "Cloud Basics for AI",
-        lessons: [
-          { id: "LSN-aie-601", title: "Cloud Architecture for AI Workloads", type: "video", duration: "30 min", completed: false },
-          { id: "LSN-aie-602", title: "Beginner Level — Final Assessment", type: "quiz", duration: "20 min", completed: false },
-        ],
-      },
-    ],
-  },
-];
+import { useContentStore } from "@/stores/content-store";
 
 export default function LessonsPage() {
-  const [data, setData] = useState(INITIAL_DATA);
-  const [expandedModules, setExpandedModules] = useState<Set<string>>(() => {
-    // Auto-expand modules that have incomplete lessons
-    const expanded = new Set<string>();
-    data.forEach((t) => t.modules.forEach((m) => {
-      if (m.lessons.some((l) => !l.completed)) expanded.add(m.id);
+  const store = useContentStore();
+  const allModules = store.getAllModules();
+
+  // Derive track sections from the store's module views
+  const trackSections = useMemo(() => {
+    const trackMap = new Map<string, { level: string; modules: typeof allModules }>();
+    for (const mod of allModules) {
+      let entry = trackMap.get(mod.trackName);
+      if (!entry) {
+        entry = { level: mod.levelTier, modules: [] };
+        trackMap.set(mod.trackName, entry);
+      }
+      entry.modules.push(mod);
+    }
+    return Array.from(trackMap.entries()).map(([track, data]) => ({
+      track,
+      level: data.level,
+      modules: data.modules,
     }));
+  }, [allModules]);
+
+  // Local completion state keyed by lesson ID
+  const [completed, setCompleted] = useState<Set<string>>(() => new Set());
+
+  // Auto-expand modules that have incomplete lessons
+  const [expandedModules, setExpandedModules] = useState<Set<string>>(() => {
+    const expanded = new Set<string>();
+    for (const section of trackSections) {
+      for (const mod of section.modules) {
+        if (mod.lessons.some((l) => !completed.has(l.id))) expanded.add(mod.id);
+      }
+    }
     return expanded;
   });
 
+  // Flatten all lessons for stats and "Up Next"
+  const allLessons = useMemo(
+    () => trackSections.flatMap((t) => t.modules.flatMap((m) => m.lessons)),
+    [trackSections],
+  );
+
   // Find the first incomplete lesson across all tracks (the "Up Next")
   const upNextId = useMemo(() => {
-    for (const track of data) {
-      for (const mod of track.modules) {
-        const next = mod.lessons.find((l) => !l.completed);
+    for (const section of trackSections) {
+      for (const mod of section.modules) {
+        const next = mod.lessons.find((l) => !completed.has(l.id));
         if (next) return next.id;
       }
     }
     return null;
-  }, [data]);
+  }, [trackSections, completed]);
 
   // Overall stats
-  const allLessons = data.flatMap((t) => t.modules.flatMap((m) => m.lessons));
-  const totalCompleted = allLessons.filter((l) => l.completed).length;
+  const totalCompleted = allLessons.filter((l) => completed.has(l.id)).length;
   const totalLessons = allLessons.length;
-  const progressPct = Math.round((totalCompleted / totalLessons) * 100);
+  const progressPct = totalLessons > 0 ? Math.round((totalCompleted / totalLessons) * 100) : 0;
 
   function toggleModule(moduleId: string) {
     setExpandedModules((prev) => {
@@ -148,17 +81,14 @@ export default function LessonsPage() {
   }
 
   function markComplete(lessonId: string) {
-    setData((prev) =>
-      prev.map((track) => ({
-        ...track,
-        modules: track.modules.map((mod) => ({
-          ...mod,
-          lessons: mod.lessons.map((l) =>
-            l.id === lessonId ? { ...l, completed: true } : l
-          ),
-        })),
-      }))
-    );
+    setCompleted((prev) => new Set(prev).add(lessonId));
+  }
+
+  /** Map store lessonType to a display category for the UI */
+  function lessonDisplayType(lessonType: string): "video" | "lab" | "quiz" {
+    if (lessonType === "video_text") return "video";
+    if (lessonType === "coding_lab") return "lab";
+    return "quiz";
   }
 
   return (
@@ -186,16 +116,17 @@ export default function LessonsPage() {
       {upNextId && (() => {
         const lesson = allLessons.find((l) => l.id === upNextId);
         if (!lesson) return null;
+        const displayType = lessonDisplayType(lesson.lessonType);
         return (
-          <Link href={`/learner/lessons/${lesson.id}?mode=${lesson.type}`} className="flex items-center gap-4 rounded-card border border-brand-200 bg-brand-50 p-4 shadow-card hover:border-brand-300 transition-colors">
-            <div className={`flex h-12 w-12 items-center justify-center rounded-xl shrink-0 ${lesson.type === "video" ? "bg-brand-600" : "bg-accent-600"}`}>
-              {lesson.type === "video" ? <Play className="w-6 h-6 text-white" /> : <Code className="w-6 h-6 text-white" />}
+          <Link href={`/learner/lessons/${lesson.id}?mode=${displayType}`} className="flex items-center gap-4 rounded-card border border-brand-200 bg-brand-50 p-4 shadow-card hover:border-brand-300 transition-colors">
+            <div className={`flex h-12 w-12 items-center justify-center rounded-xl shrink-0 ${displayType === "video" ? "bg-brand-600" : "bg-accent-600"}`}>
+              {displayType === "video" ? <Play className="w-6 h-6 text-white" /> : <Code className="w-6 h-6 text-white" />}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-caption font-medium text-brand-600 uppercase tracking-wide">Up Next</p>
               <p className="text-body-sm font-medium text-surface-900 truncate">{lesson.title}</p>
               <p className="text-caption text-surface-500">
-                {lesson.type === "video" ? "Video Tutorial" : "Coding Lab"} · {lesson.duration}
+                {displayType === "video" ? "Video Tutorial" : "Coding Lab"}
               </p>
             </div>
             <span className="text-body-sm font-medium text-brand-600 shrink-0">Continue →</span>
@@ -204,9 +135,10 @@ export default function LessonsPage() {
       })()}
 
       {/* Track sections */}
-      {data.map((track) => {
-        const trackCompleted = track.modules.flatMap((m) => m.lessons).filter((l) => l.completed).length;
-        const trackTotal = track.modules.flatMap((m) => m.lessons).length;
+      {trackSections.map((track) => {
+        const trackLessons = track.modules.flatMap((m) => m.lessons);
+        const trackCompleted = trackLessons.filter((l) => completed.has(l.id)).length;
+        const trackTotal = trackLessons.length;
 
         return (
           <section key={track.track} className="space-y-3">
@@ -221,7 +153,7 @@ export default function LessonsPage() {
             </div>
 
             {track.modules.map((mod) => {
-              const modCompleted = mod.lessons.filter((l) => l.completed).length;
+              const modCompleted = mod.lessons.filter((l) => completed.has(l.id)).length;
               const isExpanded = expandedModules.has(mod.id);
 
               return (
@@ -233,7 +165,7 @@ export default function LessonsPage() {
                       <p className="text-body-sm font-medium text-surface-900">{mod.name}</p>
                       <p className="text-caption text-surface-400">{modCompleted}/{mod.lessons.length} completed</p>
                     </div>
-                    {modCompleted === mod.lessons.length && (
+                    {modCompleted === mod.lessons.length && mod.lessons.length > 0 && (
                       <CheckCircle2 className="w-5 h-5 text-accent-500 shrink-0" />
                     )}
                   </button>
@@ -243,19 +175,21 @@ export default function LessonsPage() {
                     <ul className="border-t border-surface-200 divide-y divide-surface-100">
                       {mod.lessons.map((lesson) => {
                         const isUpNext = lesson.id === upNextId;
+                        const isCompleted = completed.has(lesson.id);
+                        const displayType = lessonDisplayType(lesson.lessonType);
                         return (
                           <li key={lesson.id} className={`flex items-center gap-3 px-4 py-3 ${isUpNext ? "bg-brand-50/50" : ""}`}>
                             {/* Type icon */}
                             <div className={`flex h-9 w-9 items-center justify-center rounded-lg shrink-0 ${
-                              lesson.completed
+                              isCompleted
                                 ? "bg-accent-100"
-                                : lesson.type === "video"
+                                : displayType === "video"
                                 ? "bg-brand-100"
                                 : "bg-purple-100"
                             }`}>
-                              {lesson.completed ? (
+                              {isCompleted ? (
                                 <CheckCircle2 className="w-4 h-4 text-accent-600" />
-                              ) : lesson.type === "video" ? (
+                              ) : displayType === "video" ? (
                                 <Bot className="w-4 h-4 text-brand-600" />
                               ) : (
                                 <Code className="w-4 h-4 text-purple-600" />
@@ -263,24 +197,22 @@ export default function LessonsPage() {
                             </div>
 
                             {/* Lesson info */}
-                            <Link href={`/learner/lessons/${lesson.id}?mode=${lesson.type}`} className="flex-1 min-w-0 group">
+                            <Link href={`/learner/lessons/${lesson.id}?mode=${displayType}`} className="flex-1 min-w-0 group">
                               <div className="flex items-center gap-2">
-                                <p className={`text-body-sm group-hover:text-brand-600 transition-colors truncate ${lesson.completed ? "text-surface-500" : "text-surface-900 font-medium"}`}>
+                                <p className={`text-body-sm group-hover:text-brand-600 transition-colors truncate ${isCompleted ? "text-surface-500" : "text-surface-900 font-medium"}`}>
                                   {lesson.title}
                                 </p>
                                 {isUpNext && <span className="shrink-0 rounded-full bg-brand-600 px-2 py-0.5 text-[10px] font-bold text-white uppercase">Up Next</span>}
                               </div>
                               <div className="flex items-center gap-2 text-caption text-surface-400 mt-0.5">
-                                <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-medium ${lesson.type === "video" ? "bg-brand-50 text-brand-600" : "bg-purple-50 text-purple-600"}`}>
-                                  {lesson.type === "video" ? "VIDEO" : "LAB"}
+                                <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-medium ${displayType === "video" ? "bg-brand-50 text-brand-600" : "bg-purple-50 text-purple-600"}`}>
+                                  {displayType === "video" ? "VIDEO" : "LAB"}
                                 </span>
-                                <Clock className="w-3 h-3" />
-                                <span>{lesson.duration}</span>
                               </div>
                             </Link>
 
                             {/* Action */}
-                            {lesson.completed ? (
+                            {isCompleted ? (
                               <span className="text-caption text-accent-600 shrink-0">Completed</span>
                             ) : (
                               <button

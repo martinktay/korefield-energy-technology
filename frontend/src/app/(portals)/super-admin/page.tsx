@@ -158,14 +158,17 @@ export default function SuperAdminDashboard() {
         {/* Revenue Trend (bar chart) */}
         <div className="mt-4 rounded-xl border border-surface-200 bg-surface-0 p-5 shadow-card">
           <p className="text-body-sm font-medium text-surface-900 mb-4">Revenue Trend (6 months)</p>
-          <div className="flex items-end gap-3 h-40">
-            {revenueTrend.map((r) => (
-              <div key={r.period} className="flex-1 flex flex-col items-center gap-1">
-                <span className="text-caption text-surface-500">${(r.revenue / 1000).toFixed(1)}k</span>
-                <div className="w-full rounded-t-lg bg-brand-500 transition-all" style={{ height: `${(r.revenue / maxRevenue) * 100}%` }} />
-                <span className="text-[10px] text-surface-400">{r.period.split(" ")[0]}</span>
-              </div>
-            ))}
+          <div className="flex items-end gap-3" style={{ height: 160 }}>
+            {revenueTrend.map((r) => {
+              const barHeight = Math.max(4, (r.revenue / maxRevenue) * 140);
+              return (
+                <div key={r.period} className="flex-1 flex flex-col items-center justify-end h-full">
+                  <span className="text-caption text-surface-500 mb-1">${(r.revenue / 1000).toFixed(1)}k</span>
+                  <div className="w-full rounded-t-lg bg-brand-500 transition-all" style={{ height: barHeight }} />
+                  <span className="text-[10px] text-surface-400 mt-1">{r.period.split(" ")[0]}</span>
+                </div>
+              );
+            })}
           </div>
         </div>
 

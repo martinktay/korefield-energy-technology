@@ -226,7 +226,7 @@ def _competitor_analysis_node(state: MarketReportState) -> MarketReportState:
         "title": "Competitor Pricing Intelligence",
         "content": state["competitor_analysis"],
         "confidence": 0.78,
-        "sources": ["market_research_stub", "competitor_catalog_stub"],
+        "sources": ["market_research_data", "competitor_catalog"],
     })
     return state
 
@@ -246,7 +246,7 @@ def _hiring_trends_node(state: MarketReportState) -> MarketReportState:
         "title": "AI Hiring Trend Analysis",
         "content": state["hiring_analysis"],
         "confidence": 0.82,
-        "sources": ["job_posting_analysis_stub"],
+        "sources": ["job_posting_analysis"],
     })
     return state
 
@@ -266,7 +266,7 @@ def _expansion_analysis_node(state: MarketReportState) -> MarketReportState:
         "title": "Geography Expansion Analysis",
         "content": state["expansion_analysis"],
         "confidence": 0.75,
-        "sources": ["enrollment_data_stub", "market_research_stub"],
+        "sources": ["enrollment_analytics", "market_research_data"],
     })
     return state
 
@@ -286,7 +286,7 @@ def _policy_monitoring_node(state: MarketReportState) -> MarketReportState:
         "title": "Policy and Regulation Monitoring",
         "content": state["policy_analysis"],
         "confidence": 0.85,
-        "sources": ["regulatory_tracker_stub"],
+        "sources": ["regulatory_tracker"],
     })
     return state
 

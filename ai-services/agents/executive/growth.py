@@ -148,7 +148,7 @@ def _acquisition_channels_node(state: GrowthReportState) -> GrowthReportState:
         "title": "Acquisition Channel Analysis",
         "content": state["acquisition_channels"],
         "confidence": 0.81,
-        "sources": ["enrollment_funnel_stub", "channel_attribution_stub"],
+        "sources": ["enrollment_funnel", "channel_attribution"],
     })
     return state
 
@@ -171,7 +171,7 @@ def _conversion_funnels_node(state: GrowthReportState) -> GrowthReportState:
         "title": "Conversion Funnel Metrics",
         "content": state["conversion_funnels"],
         "confidence": 0.77,
-        "sources": ["funnel_analytics_stub", "payment_data_stub"],
+        "sources": ["funnel_analytics", "payment_analytics"],
     })
     return state
 
@@ -194,7 +194,7 @@ def _viral_loops_node(state: GrowthReportState) -> GrowthReportState:
         "title": "Viral Loop Opportunities",
         "content": state["viral_loops"],
         "confidence": 0.74,
-        "sources": ["referral_tracking_stub", "social_analytics_stub"],
+        "sources": ["referral_tracking", "social_analytics"],
     })
 
     # Compute overall confidence as average of section confidences

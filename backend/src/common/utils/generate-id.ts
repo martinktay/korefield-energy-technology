@@ -41,6 +41,9 @@ export const ENTITY_PREFIXES = [
   'SES', // Session
   'ROL', // Role
   'CBN', // Country Band
+  'EML', // Email Log
+  'EPR', // Email Preference
+  'FIL', // File Upload
 ] as const;
 
 export type EntityPrefix = (typeof ENTITY_PREFIXES)[number];

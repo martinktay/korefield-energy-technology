@@ -118,6 +118,7 @@ model Learner {
   country                 String?
   professional_background String?
   learning_goals          String?
+  project_interest        String?
   onboarding_complete     Boolean  @default(false)
   created_at              DateTime @default(now())
   updated_at              DateTime @updatedAt
@@ -133,6 +134,7 @@ model Learner {
   capstones           Capstone[]
   certificates        Certificate[]
   certification_eligibilities CertificationEligibility[]
+  lesson_progress     LearnerLessonProgress[]
 
   @@index([user_id])
   @@map("learners")
@@ -362,14 +364,15 @@ model PaymentPlan {
 }
 
 model Installment {
-  id               String            @id @default("")
-  plan_id          String
-  sequence         Int
-  amount           Float
-  due_date         DateTime
-  paid_at          DateTime?
-  status           InstallmentStatus @default(pending)
-  grace_period_end DateTime?
+  id                 String            @id @default("")
+  plan_id            String
+  sequence           Int
+  amount             Float
+  due_date           DateTime
+  paid_at            DateTime?
+  status             InstallmentStatus @default(pending)
+  grace_period_end   DateTime?
+  paystack_reference String?
 
   plan PaymentPlan @relation(fields: [plan_id], references: [id], onDelete: Cascade)
 
@@ -501,6 +504,7 @@ model Lesson {
 
   module            Module           @relation(fields: [module_id], references: [id], onDelete: Cascade)
   coding_exercises  CodingExercise[]
+  lesson_progress   LearnerLessonProgress[]
 
   @@index([module_id])
   @@map("lessons")
@@ -513,6 +517,7 @@ model Assessment {
   rubric     Json           @default("{}")
   max_score  Float
   type       AssessmentType
+  version    Int            @default(1)
   created_at DateTime       @default(now())
   updated_at DateTime       @updatedAt
 
@@ -806,4 +811,62 @@ model Application {
   @@index([status])
   @@index([applicant_email])
   @@map("applications")
+}
+
+// ─── Email Domain ───────────────────────────────────────────────
+
+model EmailLog {
+  id              String   @id @default("")
+  user_id         String?
+  email_type      String
+  recipient       String
+  subject         String
+  status          String   @default("pending")
+  ses_message_id  String?
+  error_message   String?
+  attempt_number  Int      @default(1)
+  correlation_id  String
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  @@index([user_id])
+  @@index([email_type])
+  @@index([created_at])
+  @@index([correlation_id])
+  @@map("email_logs")
+}
+
+model EmailPreference {
+  id                     String    @id @default("")
+  user_id                String    @unique
+  marketing_opted_out    Boolean   @default(false)
+  marketing_opted_out_at DateTime?
+  created_at             DateTime  @default(now())
+  updated_at             DateTime  @updatedAt
+
+  @@index([user_id])
+  @@map("email_preferences")
+}
+
+// ─── Learner Progress Domain ────────────────────────────────────
+
+model LearnerLessonProgress {
+  id                String   @id @default("")
+  learner_id        String
+  lesson_id         String
+  active_tab        String   @default("learn")
+  code_value        String?
+  practice_input    String?
+  deliverable_input String?
+  submitted         Boolean  @default(false)
+  mcq_answers       Json     @default("{}")
+  mcq_score         Float?
+  updated_at        DateTime @default(now())
+
+  learner Learner @relation(fields: [learner_id], references: [id], onDelete: Cascade)
+  lesson  Lesson  @relation(fields: [lesson_id], references: [id], onDelete: Cascade)
+
+  @@unique([learner_id, lesson_id])
+  @@index([learner_id])
+  @@map("learner_lesson_progress")
 }

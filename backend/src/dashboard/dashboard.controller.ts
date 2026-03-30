@@ -3,7 +3,7 @@
  * REST controller exposing aggregated dashboard endpoints for all portal types.
  * All endpoints require JWT auth. Admin/SuperAdmin endpoints require RBAC guards.
  */
-import { Controller, Get, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, UseGuards, Request, Query } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RbacGuard } from '@common/guards/rbac.guard';
 import { Roles } from '@common/decorators/roles.decorator';
@@ -82,6 +82,14 @@ export class DashboardController {
   @Get('super-admin/enrollments')
   async getSuperAdminEnrollments() {
     return this.dashboardService.getSuperAdminEnrollments();
+  }
+
+  /** GET /dashboard/cohort-economics — Pre-aggregated cohort economics metrics for Super Admin. */
+  @UseGuards(AuthGuard('jwt'), RbacGuard)
+  @Roles('SuperAdmin')
+  @Get('cohort-economics')
+  async getCohortEconomics(@Query('cohort_id') cohortId?: string) {
+    return this.dashboardService.getCohortEconomics(cohortId);
   }
 
   // ── Instructor Endpoint ───────────────────────────────────────

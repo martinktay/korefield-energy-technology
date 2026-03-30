@@ -5,10 +5,12 @@
  * certificate issuance with KFCERT verification codes, and revocation.
  */
 import { Module } from '@nestjs/common';
+import { EmailModule } from '@email/email.module';
 import { CertificationController } from './certification.controller';
 import { CertificationService } from './certification.service';
 
 @Module({
+  imports: [EmailModule],
   controllers: [CertificationController],
   providers: [CertificationService],
   exports: [CertificationService],

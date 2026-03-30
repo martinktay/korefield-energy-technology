@@ -317,6 +317,67 @@ export class DashboardService {
   }
 
 
+  // ── Cohort Economics ────────────────────────────────────────────
+
+  /**
+   * Fetch pre-aggregated cohort economics snapshots.
+   * Reads from the cohort_economics_snapshots table populated by the Analytics Worker.
+   * Supports optional cohort_id filter. Returns empty array with indicator when no data exists.
+   */
+  async getCohortEconomics(cohortId?: string) {
+    try {
+      const whereClause = cohortId
+        ? `WHERE cohort_id = '${cohortId.replace(/'/g, "''")}'`
+        : '';
+
+      const snapshots: Array<{
+        id: string;
+        cohort_id: string;
+        snapshot_date: Date;
+        total_revenue: number;
+        total_ai_cost: number;
+        gross_margin: number;
+        gross_margin_pct: number;
+        active_learners: number;
+        ai_cost_per_learner: number;
+        cache_hit_rate: number;
+        completion_rate: number;
+        conversion_rate: number;
+        created_at: Date;
+        updated_at: Date;
+      }> = await this.prisma.$queryRawUnsafe(`
+        SELECT * FROM cohort_economics_snapshots
+        ${whereClause}
+        ORDER BY snapshot_date DESC, cohort_id ASC
+      `);
+
+      if (snapshots.length === 0) {
+        return { data: [], status: 'pending', message: 'Data pending' };
+      }
+
+      return {
+        data: snapshots.map((s) => ({
+          id: s.id,
+          cohortId: s.cohort_id,
+          snapshotDate: s.snapshot_date,
+          totalRevenue: Number(s.total_revenue),
+          totalAiCost: Number(s.total_ai_cost),
+          grossMargin: Number(s.gross_margin),
+          grossMarginPct: Number(s.gross_margin_pct),
+          activeLearners: Number(s.active_learners),
+          aiCostPerLearner: Number(s.ai_cost_per_learner),
+          cacheHitRate: Number(s.cache_hit_rate),
+          completionRate: Number(s.completion_rate),
+          conversionRate: Number(s.conversion_rate),
+        })),
+        status: 'ready',
+      };
+    } catch {
+      // Table may not exist yet if migration hasn't run
+      return { data: [], status: 'pending', message: 'Data pending' };
+    }
+  }
+
   // ── Instructor Dashboard ──────────────────────────────────────
 
   async getInstructorDashboard(instructorId: string) {

@@ -39,6 +39,8 @@ export interface TrackLesson {
   practicePrompt?: string;
   /** Deliverable description for Apply tab */
   deliverable: string;
+  /** Cloudflare Stream video ID (null when video not yet available) */
+  video_url?: string | null;
   nextLessonId: string | null;
   prevLessonId: string | null;
 }

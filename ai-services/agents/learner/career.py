@@ -1,12 +1,16 @@
 """Career Support Agent — skill-gap analysis and career guidance.
 
 Provides skill-gap analysis based on track progress, job market alignment,
-and suggested focus areas for learners.
+and suggested focus areas for learners.  When a learner has declared a
+project interest during onboarding and has completed Foundation Module 2,
+the agent generates a personalized learning emphasis report mapping the
+interest to track modules via LLM.  Otherwise it produces a generic
+report based on track and background.
 
 Endpoints:
     POST /ai/career/guidance  — Skill-gap analysis and career guidance
 
-Requirements: 21.10
+Requirements: 5.6, 5.7, 21.10
 """
 
 from __future__ import annotations
@@ -24,6 +28,7 @@ from agents.learner.guardrails import (
     filter_output,
     validate_input,
 )
+from agents.llm_factory import invoke_llm
 from config import settings
 
 logger = logging.getLogger("ai_services")
@@ -46,6 +51,12 @@ class CareerGuidanceRequest(BaseModel):
     career_interests: str = Field(
         default="", max_length=2000, description="Learner's career interests"
     )
+    project_interest: str | None = Field(
+        default=None, max_length=500, description="What the learner wants to build (from onboarding)"
+    )
+    foundation_module_2_complete: bool = Field(
+        default=False, description="Whether the learner has completed Foundation Module 2"
+    )
 
 
 class SkillGap(BaseModel):
@@ -65,8 +76,46 @@ class CareerGuidanceResponse(BaseModel):
     skill_gaps: list[SkillGap]
     suggested_focus_areas: list[str]
     job_market_alignment: str
+    learning_emphasis: str | None = Field(
+        default=None, description="Personalized learning emphasis report based on project interest"
+    )
     confidence: str = Field(description="high | medium | low")
     telemetry: dict[str, Any]
+
+
+# ---------------------------------------------------------------------------
+# Prompt builders
+# ---------------------------------------------------------------------------
+
+def _build_personalized_prompt(request: CareerGuidanceRequest) -> str:
+    """Build an LLM prompt for a personalized learning emphasis report."""
+    return (
+        f"You are a career support advisor for an applied AI learning platform.\n"
+        f"The learner wants to build: '{request.project_interest}'.\n"
+        f"They are enrolled in track {request.track_id} and have completed "
+        f"{len(request.completed_modules)} modules so far: "
+        f"{', '.join(request.completed_modules) or 'none'}.\n\n"
+        f"Generate a personalized learning emphasis report that maps their "
+        f"project interest to relevant track modules and recommended focus "
+        f"areas. Include specific module recommendations, practical skills "
+        f"to prioritize, and how their project goal connects to the track "
+        f"curriculum. Keep the response concise (2-3 paragraphs)."
+    )
+
+
+def _build_generic_prompt(request: CareerGuidanceRequest) -> str:
+    """Build an LLM prompt for a generic learning emphasis report."""
+    return (
+        f"You are a career support advisor for an applied AI learning platform.\n"
+        f"The learner is enrolled in track {request.track_id} and has completed "
+        f"{len(request.completed_modules)} modules so far: "
+        f"{', '.join(request.completed_modules) or 'none'}.\n"
+        f"Career interests: {request.career_interests or 'not specified'}.\n\n"
+        f"Generate a generic learning emphasis report based on their track "
+        f"and background. Recommend a balanced approach across track modules "
+        f"with emphasis on core competencies and practical labs. "
+        f"Keep the response concise (2-3 paragraphs)."
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -90,9 +139,11 @@ async def career_guidance(request: CareerGuidanceRequest) -> CareerGuidanceRespo
     try:
         if request.career_interests:
             validate_input(request.career_interests)
+        if request.project_interest:
+            validate_input(request.project_interest)
 
         # Stub skill-gap analysis — real integration requires LLM API keys
-        progress_ratio = len(request.completed_modules) / max(1, 12)  # assume ~12 modules per track
+        progress_ratio = len(request.completed_modules) / max(1, 12)
 
         skill_gaps = [
             SkillGap(
@@ -114,6 +165,56 @@ async def career_guidance(request: CareerGuidanceRequest) -> CareerGuidanceRespo
             "Engage in pod collaboration for practical experience",
             "Review industry case studies in your track domain",
         ]
+
+        # Generate learning emphasis report based on project_interest
+        learning_emphasis: str | None = None
+        if request.project_interest and request.foundation_module_2_complete:
+            # Personalized report mapping project interest to track modules
+            prompt = _build_personalized_prompt(request)
+            try:
+                raw = await invoke_llm(
+                    prompt,
+                    agent_type="career_support",
+                    learner_id=request.learner_id,
+                )
+                learning_emphasis = filter_output(raw)
+            except Exception as exc:
+                logger.warning(
+                    "career_llm_fallback",
+                    extra={"error": str(exc), "learner_id": request.learner_id},
+                )
+                learning_emphasis = filter_output(
+                    f"Based on your goal to build '{request.project_interest}', "
+                    f"we recommend focusing on the following modules in track "
+                    f"{request.track_id}: applied implementation labs, "
+                    f"domain-specific case studies, and capstone preparation "
+                    f"aligned with your project vision."
+                )
+            suggested_focus.insert(
+                0,
+                f"Focus on modules related to: {request.project_interest}",
+            )
+        else:
+            # Generic report based on track and background
+            prompt = _build_generic_prompt(request)
+            try:
+                raw = await invoke_llm(
+                    prompt,
+                    agent_type="career_support",
+                    learner_id=request.learner_id,
+                )
+                learning_emphasis = filter_output(raw)
+            except Exception as exc:
+                logger.warning(
+                    "career_llm_fallback",
+                    extra={"error": str(exc), "learner_id": request.learner_id},
+                )
+                learning_emphasis = filter_output(
+                    f"Based on your track {request.track_id} and "
+                    f"{len(request.completed_modules)} completed modules, "
+                    f"we recommend a balanced approach across all track modules "
+                    f"with emphasis on core competencies and practical labs."
+                )
 
         alignment = filter_output(
             f"Based on {len(request.completed_modules)} completed modules in track "
@@ -141,6 +242,7 @@ async def career_guidance(request: CareerGuidanceRequest) -> CareerGuidanceRespo
             skill_gaps=skill_gaps,
             suggested_focus_areas=suggested_focus,
             job_market_alignment=alignment,
+            learning_emphasis=learning_emphasis,
             confidence=confidence,
             telemetry=telemetry,
         )

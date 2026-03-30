@@ -162,56 +162,74 @@ export class PaymentController {
 
   /**
    * POST /payment/webhook
-   * Payment provider webhook callback endpoint.
-   * Protected by HMAC-SHA256 signature verification via WebhookGuard.
+   * Paystack webhook callback endpoint.
+   * Protected by HMAC-SHA512 signature verification via WebhookGuard.
+   * Processes `charge.success` events to mark installments as paid
+   * and stores the Paystack transaction reference.
    */
   @UseGuards(WebhookGuard)
   @Post('webhook')
   async handleWebhook(@Body() body: Record<string, unknown>, @Req() req: Request) {
-    const eventType = body.event_type as string;
-    const installmentId = body.installment_id as string | undefined;
-    const userId = body.user_id as string | undefined;
+    const event = body.event as string;
+    const data = body.data as Record<string, unknown> | undefined;
 
     this.logger.log(
       JSON.stringify({
         event: 'webhook_received',
-        event_type: eventType,
-        installment_id: installmentId,
+        paystack_event: event,
         ip: req.ip,
         timestamp: new Date().toISOString(),
       }),
     );
 
-    // Run fraud checks if user context is available
-    if (userId) {
-      const paymentCountry = body.payment_country as string | undefined;
-      const registeredCountry = body.registered_country as string | undefined;
-      const success = body.status === 'succeeded';
+    // Process charge.success events
+    if (event === 'charge.success' && data) {
+      const reference = data.reference as string | undefined;
+      const metadata = data.metadata as Record<string, unknown> | undefined;
+      const installmentId = metadata?.installment_id as string | undefined;
 
-      this.fraudMonitorService.recordAttempt(userId, success);
+      if (installmentId) {
+        await this.paymentService.markInstallmentPaid(installmentId, reference);
 
-      const alerts = this.fraudMonitorService.runAllChecks({
-        userId,
-        paymentCountry,
-        registeredCountry,
-      });
-
-      if (alerts.length > 0) {
-        this.logger.warn(
+        this.logger.log(
           JSON.stringify({
-            event: 'webhook_fraud_alerts',
-            user_id: userId,
-            alert_count: alerts.length,
-            alert_types: alerts.map((a) => a.type),
+            event: 'charge_success_processed',
+            installment_id: installmentId,
+            paystack_reference: reference,
             timestamp: new Date().toISOString(),
           }),
         );
       }
-    }
 
-    // Process payment events
-    if (eventType === 'payment.succeeded' && installmentId) {
-      await this.paymentService.markInstallmentPaid(installmentId);
+      // Extract safe card data if authorization is present (PCI DSS — only last4 and auth code)
+      const authorization = data.authorization as Record<string, unknown> | undefined;
+      if (authorization) {
+        this.logger.log(
+          JSON.stringify({
+            event: 'card_data_extracted',
+            last4: authorization.last4,
+            timestamp: new Date().toISOString(),
+          }),
+        );
+      }
+
+      // Run fraud checks if user context is available
+      const userId = metadata?.user_id as string | undefined;
+      if (userId) {
+        this.fraudMonitorService.recordAttempt(userId, true);
+        const alerts = this.fraudMonitorService.runAllChecks({ userId });
+        if (alerts.length > 0) {
+          this.logger.warn(
+            JSON.stringify({
+              event: 'webhook_fraud_alerts',
+              user_id: userId,
+              alert_count: alerts.length,
+              alert_types: alerts.map((a) => a.type),
+              timestamp: new Date().toISOString(),
+            }),
+          );
+        }
+      }
     }
 
     return { received: true };

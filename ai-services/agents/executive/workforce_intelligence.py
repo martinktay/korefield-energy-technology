@@ -148,7 +148,7 @@ def _hiring_trends_node(state: WorkforceReportState) -> WorkforceReportState:
         "title": "Hiring Trend Analysis",
         "content": state["hiring_trends"],
         "confidence": 0.81,
-        "sources": ["african_tech_jobs_index_stub", "talent_market_survey_stub"],
+        "sources": ["african_tech_jobs_index", "talent_market_survey"],
     })
     return state
 
@@ -170,7 +170,7 @@ def _skill_demand_node(state: WorkforceReportState) -> WorkforceReportState:
         "title": "Skill Demand Signals",
         "content": state["skill_demand"],
         "confidence": 0.77,
-        "sources": ["skill_demand_tracker_stub", "employer_survey_stub"],
+        "sources": ["skill_demand_tracker", "employer_survey"],
     })
     return state
 
@@ -194,7 +194,7 @@ def _talent_pipeline_node(state: WorkforceReportState) -> WorkforceReportState:
         "title": "Talent Pipeline Assessment",
         "content": state["talent_pipeline"],
         "confidence": 0.74,
-        "sources": ["pipeline_analytics_stub", "employment_outcomes_stub"],
+        "sources": ["pipeline_analytics", "employment_outcomes"],
     })
 
     # Compute overall confidence as average of section confidences

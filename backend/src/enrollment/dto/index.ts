@@ -10,3 +10,4 @@ export { JoinWaitlistDto } from './join-waitlist.dto';
 export { AssignPodDto } from './assign-pod.dto';
 export { ActivatePodDto } from './activate-pod.dto';
 export { EvaluateGateDto } from './evaluate-gate.dto';
+export { UpdateLearnerDto } from './update-learner.dto';

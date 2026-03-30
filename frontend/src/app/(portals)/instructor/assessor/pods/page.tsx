@@ -1,5 +1,5 @@
-/** @file assessor/pods/page.tsx — Detailed pod supervision view with member roles and deliverable tracking. */
 "use client";
+/** @file assessor/pods/page.tsx — Detailed pod supervision view with member roles and deliverable tracking. */
 
 import { useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";

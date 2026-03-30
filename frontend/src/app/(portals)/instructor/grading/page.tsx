@@ -1,5 +1,5 @@
-/** @file instructor/grading/page.tsx — Grading queue showing pending submissions for performance gates and labs. */
 "use client";
+/** @file instructor/grading/page.tsx — Grading queue showing pending submissions for performance gates and labs. */
 
 import { useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";

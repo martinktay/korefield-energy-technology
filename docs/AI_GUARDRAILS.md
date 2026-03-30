@@ -84,3 +84,38 @@ All AI agents in the KoreField Academy ecosystem are advisory only. They assist 
 | Learner agents (Tutor, Feedback, Dropout, Career) | Learners | Own learner data only |
 | Faculty agents (Instructor Insight, Assessor Support, Cert Validation) | Instructors, Assessors | Assigned cohort/pod data |
 | Executive agents (Market, Pricing, Expansion, Academic) | Super Admin only | Platform-wide aggregated data |
+
+
+## Unit Economics Safeguards (Cohort-Based)
+
+### Cost Control Architecture
+
+AI interactions are designed as structured actions (not unlimited conversational AI) within a cohort-bounded container. Each cohort has a pre-calculated AI budget, making costs predictable and protectable.
+
+| Control | Implementation | Purpose |
+|---------|---------------|---------|
+| Per-user daily caps | Redis counters: 50 hints/day (cohort), 10/day (Foundation) | Prevent individual cost spikes within cohort budget |
+| Response caching | Redis cache on tutor queries (15-min TTL, keyed by module+query hash) | Learners in same cohort asking similar questions hit cache |
+| Model tiering | gpt-4o-mini for hints, gpt-4o for feedback/reports | Match model cost to value delivered |
+| Cohort-level amortization | Instructor Insight, Assessor Support, Academic Performance agents run per-cohort | One AI analysis serves 30-50 learners |
+| Async processing | SQS queues for executive reports, dropout evaluations, analytics | Smooth cost spikes across cohort duration |
+| Circuit breaker | 5 failures → 30s cooldown → half-open probe | Prevent cascading retry costs |
+| Foundation ceiling | ~$3/learner total for Foundation School | Protect pre-conversion economics |
+| Post-cohort wind-down | AI features reduce to 5 hints/day for 30 days, then end | No indefinite AI cost tail |
+| Token budgets | Per-agent token limits per request (tutor: 1K output, feedback: 2K output) | Bound per-request cost |
+
+### What Is NOT Allowed for Cost Reasons
+
+1. **No unlimited conversational AI** — Learners cannot have open-ended chat sessions with AI agents. All interactions are action-based with defined inputs and bounded outputs.
+2. **No real-time AI code generation** — AI provides hints and error explanations, not full code generation. Prevents unbounded token usage during coding sessions.
+3. **No AI-generated curriculum** — Curriculum is instructor-authored and version-controlled. AI personalizes emphasis and pacing within the existing curriculum.
+4. **No AI access outside cohort window** — After the 30-day post-cohort grace period, AI features are fully deactivated. Learners must re-enroll in a new cohort for continued AI access.
+5. **No Foundation access to premium AI** — Assignment Feedback Agent, Career Support Agent, and AI Code Review are cohort-only features.
+
+### Cohort-Level Metering and Observability
+
+- Every LLM call logged as AWE-* with token count, model used, latency, cost estimate, and cohort_id
+- Daily aggregation job computes per-cohort AI cost and per-learner AI cost within cohort
+- Super Admin Cohort Economics dashboard surfaces: cohort revenue, AI cost, gross margin, cache hit rate, completion rate
+- Alerts trigger when cohort AI spend exceeds 120% of pre-calculated budget
+- Weekly cohort AI cost report emailed to Super Admin

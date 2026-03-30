@@ -59,6 +59,11 @@ The Learner Dashboard is the primary interface for all enrolled learners. It pro
 ## Onboarding Flow
 1. Registration form: email, password
 2. Email verification
+3. Onboarding questionnaire: country, professional background, learning goals, **project interest** ("What do you want to build?")
+4. AI Foundation School auto-enrollment
+5. **AI Goal Capture**: After Foundation Module 2 (Choosing Your AI Career Path), the Career Support Agent generates a personalized learning emphasis report showing which modules and projects align with the learner's declared goals
+6. Track selection confirmation with AI-recommended focus areas highlighted
+2. Email verification
 3. Onboarding: country, professional background, learning goals
 4. Track recommendations based on goals/background
 5. Auto-enrollment in AI Foundation School

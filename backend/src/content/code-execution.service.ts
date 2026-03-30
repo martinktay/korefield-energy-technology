@@ -1,13 +1,12 @@
 /**
  * @file code-execution.service.ts
- * Sandboxed code execution service for in-browser coding exercises.
- * Spawns child processes with time/memory limits to run learner code
- * and validate against instructor-defined test cases.
- * Currently supports Python and JavaScript; SQL is stubbed.
- * Production will use Docker containers for full isolation.
+ * Docker-sandboxed code execution service for coding exercises.
+ * Runs learner code inside short-lived Docker containers with network disabled,
+ * read-only root filesystem, and configurable memory/time limits.
+ * Supports Python and JavaScript via pre-built sandbox images.
  */
-import { Injectable, Logger } from '@nestjs/common';
-import { spawn } from 'child_process';
+import { Injectable, Logger, HttpException, HttpStatus } from '@nestjs/common';
+import Docker from 'dockerode';
 
 export interface TestCase {
   input: string;
@@ -29,89 +28,150 @@ export interface ExecutionResult {
   error?: string;
 }
 
+/** Default memory limit in MB. */
+const DEFAULT_MEMORY_LIMIT_MB = 256;
+
+/** Default time limit in seconds. */
+const DEFAULT_TIME_LIMIT_SECONDS = 10;
+
+/** Map of supported languages to their sandbox Docker images. */
+const LANGUAGE_IMAGES: Record<string, string> = {
+  python: 'kf-sandbox-python:latest',
+  javascript: 'kf-sandbox-node:latest',
+};
+
+/** Map of supported languages to their execution commands. */
+const LANGUAGE_COMMANDS: Record<string, string[]> = {
+  python: ['python3', '-c'],
+  javascript: ['node', '-e'],
+};
+
 @Injectable()
 export class CodeExecutionService {
   private readonly logger = new Logger(CodeExecutionService.name);
+  private readonly docker: Docker;
+
+  constructor() {
+    this.docker = new Docker();
+  }
 
   /**
-   * Execute code in a sandboxed child process with timeout and memory limits.
-   * This is a stub implementation — real sandboxed execution (Docker containers) comes later.
-   * Currently supports Python via `python -c` and JavaScript via `node -e`.
+   * Execute code inside an isolated Docker container with network disabled,
+   * read-only root filesystem, and configurable memory/time limits.
+   * Returns captured stdout/stderr and execution timing.
+   *
+   * @param code - The source code to execute
+   * @param language - Programming language ('python' or 'javascript')
+   * @param timeLimitSeconds - Maximum execution time in seconds (default 10)
+   * @param memoryLimitMb - Maximum memory in MB (default 256)
    */
   async executeCode(
     code: string,
     language: string,
-    timeLimitSeconds: number,
-    memoryLimitMb: number,
+    timeLimitSeconds: number = DEFAULT_TIME_LIMIT_SECONDS,
+    memoryLimitMb: number = DEFAULT_MEMORY_LIMIT_MB,
   ): Promise<{ output: string; execution_time_ms: number; error?: string }> {
-    const { command, args } = this.buildCommand(code, language, memoryLimitMb);
+    const image = LANGUAGE_IMAGES[language];
+    if (!image) {
+      return {
+        output: '',
+        execution_time_ms: 0,
+        error: `Unsupported language: ${language}`,
+      };
+    }
+
+    const cmd = LANGUAGE_COMMANDS[language];
+    if (!cmd) {
+      return {
+        output: '',
+        execution_time_ms: 0,
+        error: `No execution command for language: ${language}`,
+      };
+    }
+
     const timeoutMs = timeLimitSeconds * 1000;
+    const memoryBytes = memoryLimitMb * 1024 * 1024;
     const startTime = Date.now();
+    let container: Docker.Container | null = null;
 
-    return new Promise((resolve) => {
-      let stdout = '';
-      let stderr = '';
-      let killed = false;
-
-      const child = spawn(command, args, {
-        timeout: timeoutMs,
-        stdio: ['pipe', 'pipe', 'pipe'],
-        env: { ...process.env, NODE_OPTIONS: `--max-old-space-size=${memoryLimitMb}` },
+    try {
+      container = await this.docker.createContainer({
+        Image: image,
+        Cmd: [...cmd, code],
+        NetworkDisabled: true,
+        HostConfig: {
+          ReadonlyRootfs: true,
+          Memory: memoryBytes,
+          MemorySwap: memoryBytes,
+          NetworkMode: 'none',
+        },
+        AttachStdout: true,
+        AttachStderr: true,
       });
 
-      child.stdout.on('data', (data: Buffer) => {
-        stdout += data.toString();
-      });
+      await container.start();
 
-      child.stderr.on('data', (data: Buffer) => {
-        stderr += data.toString();
-      });
+      // Race between container completion and timeout
+      const result = await Promise.race([
+        this.waitForContainer(container),
+        this.timeoutContainer(container, timeoutMs),
+      ]);
 
-      child.on('error', (err) => {
-        const executionTimeMs = Date.now() - startTime;
-        this.logger.warn(`Execution error for ${language}: ${err.message}`);
-        resolve({
-          output: '',
+      const executionTimeMs = Date.now() - startTime;
+
+      if (result.timedOut) {
+        return {
+          output: result.stdout.trim(),
           execution_time_ms: executionTimeMs,
-          error: `Execution failed: ${err.message}`,
-        });
-      });
+          error: 'Execution terminated: time limit exceeded',
+        };
+      }
 
-      child.on('close', (exitCode, signal) => {
-        const executionTimeMs = Date.now() - startTime;
-
-        if (signal === 'SIGTERM' || killed || executionTimeMs >= timeoutMs) {
-          resolve({
-            output: stdout.trim(),
-            execution_time_ms: executionTimeMs,
-            error: `Execution terminated: time limit of ${timeLimitSeconds}s exceeded`,
-          });
-          return;
-        }
-
-        if (exitCode !== 0) {
-          resolve({
-            output: stdout.trim(),
-            execution_time_ms: executionTimeMs,
-            error: stderr.trim() || `Process exited with code ${exitCode}`,
-          });
-          return;
-        }
-
-        resolve({
-          output: stdout.trim(),
+      if (result.exitCode !== 0) {
+        return {
+          output: result.stdout.trim(),
           execution_time_ms: executionTimeMs,
-        });
-      });
+          error: result.stderr.trim() || `Process exited with code ${result.exitCode}`,
+        };
+      }
 
-      // Enforce timeout manually as a safety net
-      setTimeout(() => {
-        if (!child.killed) {
-          killed = true;
-          child.kill('SIGTERM');
+      return {
+        output: result.stdout.trim(),
+        execution_time_ms: executionTimeMs,
+      };
+    } catch (err: unknown) {
+      const executionTimeMs = Date.now() - startTime;
+      const errorMessage = err instanceof Error ? err.message : String(err);
+
+      // Docker daemon unavailable
+      if (
+        errorMessage.includes('ECONNREFUSED') ||
+        errorMessage.includes('connect ENOENT') ||
+        errorMessage.includes('socket not found') ||
+        errorMessage.includes('Cannot connect to the Docker daemon')
+      ) {
+        throw new HttpException(
+          'Execution service temporarily unavailable',
+          HttpStatus.SERVICE_UNAVAILABLE,
+        );
+      }
+
+      this.logger.error(`Docker execution error for ${language}: ${errorMessage}`);
+      return {
+        output: '',
+        execution_time_ms: executionTimeMs,
+        error: `Execution failed: ${errorMessage}`,
+      };
+    } finally {
+      // Clean up container
+      if (container) {
+        try {
+          await container.remove({ force: true });
+        } catch {
+          // Container may already be removed
         }
-      }, timeoutMs + 500);
-    });
+      }
+    }
   }
 
   /**
@@ -123,8 +183,8 @@ export class CodeExecutionService {
     code: string,
     language: string,
     testCases: TestCase[],
-    timeLimitSeconds: number,
-    memoryLimitMb: number,
+    timeLimitSeconds: number = DEFAULT_TIME_LIMIT_SECONDS,
+    memoryLimitMb: number = DEFAULT_MEMORY_LIMIT_MB,
   ): Promise<ExecutionResult> {
     // First, execute the raw code to get output
     const rawResult = await this.executeCode(
@@ -180,29 +240,51 @@ export class CodeExecutionService {
   }
 
   /**
-   * Build the shell command and args for the given language.
+   * Wait for a container to finish and collect its output.
    */
-  private buildCommand(
-    code: string,
-    language: string,
-    _memoryLimitMb: number,
-  ): { command: string; args: string[] } {
-    switch (language) {
-      case 'python':
-        return { command: 'python3', args: ['-c', code] };
-      case 'javascript':
-        return { command: 'node', args: ['-e', code] };
-      case 'sql':
-        // SQL execution is a stub — real implementation uses sandboxed PostgreSQL
-        return { command: 'echo', args: ['SQL execution not yet supported in stub mode'] };
-      default:
-        return { command: 'echo', args: [`Unsupported language: ${language}`] };
-    }
+  private async waitForContainer(
+    container: Docker.Container,
+  ): Promise<{ stdout: string; stderr: string; exitCode: number; timedOut: false }> {
+    const waitResult = await container.wait();
+    const logs = await container.logs({ stdout: true, stderr: true });
+    const logOutput = logs.toString('utf-8');
+
+    // Docker multiplexed stream: stdout and stderr are interleaved with headers.
+    // For simplicity, treat all output as stdout and parse stderr from exit code.
+    return {
+      stdout: logOutput,
+      stderr: waitResult.StatusCode !== 0 ? logOutput : '',
+      exitCode: waitResult.StatusCode,
+      timedOut: false,
+    };
+  }
+
+  /**
+   * Enforce timeout by stopping and removing the container after the limit.
+   */
+  private async timeoutContainer(
+    container: Docker.Container,
+    timeoutMs: number,
+  ): Promise<{ stdout: string; stderr: string; exitCode: number; timedOut: true }> {
+    return new Promise((resolve) => {
+      setTimeout(async () => {
+        try {
+          await container.stop({ t: 0 });
+        } catch {
+          // Container may have already stopped
+        }
+        resolve({
+          stdout: '',
+          stderr: '',
+          exitCode: -1,
+          timedOut: true,
+        });
+      }, timeoutMs);
+    });
   }
 
   /**
    * Build test code by combining the user's code with the test input.
-   * The test input is appended after the user's code.
    */
   private buildTestCode(
     userCode: string,

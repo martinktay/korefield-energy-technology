@@ -19,6 +19,7 @@ const navItems: NavItem[] = [
   { label: "Growth", href: "/super-admin/growth", Icon: TrendingUp },
   { label: "Product Strategy", href: "/super-admin/product", Icon: Lightbulb },
   { label: "Workforce", href: "/super-admin/workforce", Icon: Users },
+  { label: "Cohort Economics", href: "/super-admin/cohort-economics", Icon: Calculator },
 ];
 
 export default function SuperAdminLayout({ children }: { children: React.ReactNode }) {

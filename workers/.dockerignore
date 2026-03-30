@@ -1,0 +1,27 @@
+# KoreField Academy Workers — .dockerignore
+
+# Dependencies (installed inside container)
+node_modules/
+
+# Build output (rebuilt inside container)
+dist/
+
+# Environment files (injected at runtime)
+.env
+.env.local
+.env.*.local
+
+# Test artifacts
+coverage/
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Docs
+*.md
+
+# Logs
+*.log

@@ -160,9 +160,8 @@ export default function PodWorkspacePage() {
 
       {/* ── Peer Review Dialog ── */}
       {reviewDialogOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-surface-950/50" onClick={() => setReviewDialogOpen(false)} />
-          <div className="relative w-full max-w-lg mx-4 rounded-card border border-surface-200 bg-surface-0 shadow-lg">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center overflow-y-auto py-6">
+          <div className="relative w-full max-w-lg mx-4 rounded-card border border-surface-200 bg-surface-0 shadow-xl">
             <div className="flex items-center justify-between px-6 py-4 border-b border-surface-200">
               <h2 className="text-heading-sm text-surface-900">Submit Peer Review</h2>
               <button onClick={() => setReviewDialogOpen(false)} className="p-1 rounded-lg text-surface-400 hover:bg-surface-100 hover:text-surface-600 transition-colors" aria-label="Close dialog">

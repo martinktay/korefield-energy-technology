@@ -4,7 +4,7 @@
  * @file register/page.tsx
  * Multi-step onboarding wizard for new learners.
  * Step 1: Account Creation (name, email, password, confirm password)
- * Step 2: Profile Setup (country, professional background, learning goals)
+ * Step 2: Profile Setup (country, professional background, learning goals, optional project interest)
  * Step 3: Track Recommendation (based on selections, show recommended tracks)
  * Renders outside the sidebar layout (excluded in learner/layout.tsx).
  */
@@ -12,6 +12,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { apiFetch } from "@/lib/api";
 
 /* ── Constants ── */
 
@@ -224,6 +225,7 @@ export default function RegisterPage() {
   const [country, setCountry] = useState("");
   const [background, setBackground] = useState<Background | "">("");
   const [goals, setGoals] = useState<LearningGoal[]>([]);
+  const [projectInterest, setProjectInterest] = useState("");
   const [step2Errors, setStep2Errors] = useState<Step2Errors>({});
 
   // Step 3
@@ -262,7 +264,28 @@ export default function RegisterPage() {
 
   async function handleFinish() {
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 1000));
+    try {
+      // Submit profile data including optional project interest
+      await apiFetch("/enrollment/onboard", {
+        method: "POST",
+        body: JSON.stringify({
+          learner_id: "", // populated by backend from JWT
+          country,
+          professional_background: background,
+          learning_goals: goals.join(", "),
+        }),
+      });
+
+      // Submit project interest if provided
+      if (projectInterest.trim()) {
+        await apiFetch("/enrollment/learners/me", {
+          method: "PATCH",
+          body: JSON.stringify({ project_interest: projectInterest.trim() }),
+        });
+      }
+    } catch {
+      // Proceed even if API calls fail during development
+    }
     setLoading(false);
     router.push("/learner/foundation");
   }
@@ -351,6 +374,19 @@ export default function RegisterPage() {
                   ))}
                 </div>
                 {step2Errors.goals && <p className="mt-1.5 text-caption text-status-error">{step2Errors.goals}</p>}
+              </div>
+              <div>
+                <label htmlFor="project-interest" className="block text-body-sm font-medium text-surface-700 mb-1.5">What do you want to build? <span className="text-surface-400 font-normal">(optional)</span></label>
+                <textarea
+                  id="project-interest"
+                  value={projectInterest}
+                  onChange={(e) => setProjectInterest(e.target.value.slice(0, 500))}
+                  placeholder="e.g., A fraud detection system for mobile payments"
+                  maxLength={500}
+                  rows={3}
+                  className={inputClass}
+                />
+                <p className="mt-1 text-caption text-surface-400">{projectInterest.length}/500</p>
               </div>
               <div className="flex gap-3">
                 <button type="button" onClick={() => setStep(1)} className="rounded-xl border border-surface-200 px-4 py-3 text-body-sm text-surface-700 hover:bg-surface-50 transition-all flex-1">Back</button>

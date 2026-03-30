@@ -1,10 +1,10 @@
+"use client";
 /**
  * @file pod-chat.tsx
  * Pod communication hub for learners — simulates real workplace team chat.
  * Channels: #general, #standup, #code-review, #help, plus DMs to pod members.
  * Supports emoji picker, reactions, and message threading.
  */
-"use client";
 
 import { useState, useRef, useEffect } from "react";
 import { Send, Hash, Smile, Pencil, Trash2 } from "lucide-react";

@@ -16,8 +16,11 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { RecruitmentModule } from './recruitment/recruitment.module';
 import { FinanceModule } from './finance/finance.module';
 import { NotificationModule } from './notification/notification.module';
+import { EmailModule } from './email/email.module';
+import { ProgressModule } from './progress/progress.module';
+import { LogsModule } from './logs/logs.module';
 
 @Module({
-  imports: [CommonModule, AuthModule, EnrollmentModule, ContentModule, PaymentModule, CertificationModule, DashboardModule, RecruitmentModule, FinanceModule, NotificationModule],
+  imports: [CommonModule, EmailModule, AuthModule, EnrollmentModule, ContentModule, PaymentModule, CertificationModule, DashboardModule, RecruitmentModule, FinanceModule, NotificationModule, ProgressModule, LogsModule],
 })
 export class AppModule {}

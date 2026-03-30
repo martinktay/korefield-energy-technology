@@ -1,7 +1,8 @@
 /**
  * @file webhook.guard.ts
- * NestJS guard for verifying HMAC-SHA256 signatures on payment provider webhooks.
- * Includes replay protection via timestamp validation (5-minute window).
+ * NestJS guard for verifying Paystack HMAC-SHA512 webhook signatures.
+ * Validates the `x-paystack-signature` header against the computed hash
+ * of the raw request body using the PAYSTACK_SECRET_KEY environment variable.
  * Uses timing-safe comparison to prevent timing attacks.
  */
 import {
@@ -14,28 +15,15 @@ import {
 import { createHmac, timingSafeEqual } from 'crypto';
 import { Request } from 'express';
 
-/**
- * Default header name for the webhook signature.
- */
-const DEFAULT_SIGNATURE_HEADER = 'x-webhook-signature';
+/** Paystack sends the signature in this header. */
+const PAYSTACK_SIGNATURE_HEADER = 'x-paystack-signature';
 
 /**
- * Default timestamp header for replay protection.
- */
-const DEFAULT_TIMESTAMP_HEADER = 'x-webhook-timestamp';
-
-/**
- * Maximum age of a webhook request in milliseconds (5 minutes).
- */
-const MAX_WEBHOOK_AGE_MS = 5 * 60 * 1000;
-
-/**
- * Guard that verifies HMAC-SHA256 signatures on payment provider webhook callbacks.
+ * Guard that verifies Paystack HMAC-SHA512 signatures on webhook callbacks.
  *
- * Requirement 31.14: Validate payment provider webhook requests using
- * request signature verification before processing any payment event.
- *
- * The webhook secret is read from the PAYMENT_WEBHOOK_SECRET env var.
+ * Paystack signs webhook payloads with HMAC-SHA512 using the merchant's
+ * secret key. This guard rejects any request with a missing or invalid
+ * signature with HTTP 401.
  */
 @Injectable()
 export class WebhookGuard implements CanActivate {
@@ -43,19 +31,16 @@ export class WebhookGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest<Request>();
-    const signature = request.headers[DEFAULT_SIGNATURE_HEADER] as
+    const signature = request.headers[PAYSTACK_SIGNATURE_HEADER] as
       | string
       | undefined;
-    const timestamp = request.headers[DEFAULT_TIMESTAMP_HEADER] as
-      | string
-      | undefined;
-    const secret = process.env.PAYMENT_WEBHOOK_SECRET;
+    const secret = process.env.PAYSTACK_SECRET_KEY;
 
     if (!secret) {
       this.logger.error(
         JSON.stringify({
           event: 'webhook_secret_missing',
-          message: 'PAYMENT_WEBHOOK_SECRET env var is not configured',
+          message: 'PAYSTACK_SECRET_KEY env var is not configured',
           timestamp: new Date().toISOString(),
         }),
       );
@@ -73,33 +58,12 @@ export class WebhookGuard implements CanActivate {
       throw new UnauthorizedException('Missing webhook signature');
     }
 
-    // Replay protection: reject stale requests
-    if (timestamp) {
-      const requestTime = parseInt(timestamp, 10);
-      if (!isNaN(requestTime)) {
-        const age = Date.now() - requestTime;
-        if (age > MAX_WEBHOOK_AGE_MS) {
-          this.logger.warn(
-            JSON.stringify({
-              event: 'webhook_replay_rejected',
-              age_ms: age,
-              ip: request.ip,
-              timestamp: new Date().toISOString(),
-            }),
-          );
-          throw new UnauthorizedException('Webhook request too old');
-        }
-      }
-    }
-
     const body =
       typeof request.body === 'string'
         ? request.body
         : JSON.stringify(request.body);
 
-    const payload = timestamp ? `${timestamp}.${body}` : body;
-
-    const isValid = WebhookGuard.verifySignature(payload, signature, secret);
+    const isValid = WebhookGuard.verifySignature(body, signature, secret);
 
     if (!isValid) {
       this.logger.warn(
@@ -124,14 +88,14 @@ export class WebhookGuard implements CanActivate {
   }
 
   /**
-   * Verify an HMAC-SHA256 signature using timing-safe comparison.
+   * Verify a Paystack HMAC-SHA512 signature using timing-safe comparison.
    */
   static verifySignature(
     payload: string,
     signature: string,
     secret: string,
   ): boolean {
-    const expected = createHmac('sha256', secret)
+    const expected = createHmac('sha512', secret)
       .update(payload)
       .digest('hex');
 
