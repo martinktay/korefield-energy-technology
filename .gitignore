@@ -41,6 +41,7 @@ yarn.lock
 coverage/
 playwright-report/
 test-results/
+.hypothesis/
 
 # Misc
 *.log
