@@ -2,8 +2,10 @@
 /** @file admin/curriculum/page.tsx — Curriculum management page for tracks, levels, and module administration. */
 
 import { useState } from "react";
-import { X, Pencil, Trash2, Plus, Info } from "lucide-react";
+import { X, Pencil, Trash2, Plus, Info, ChevronDown } from "lucide-react";
 import { useContentStore } from "@/stores/content-store";
+import { CustomSelect } from "@/components/ui/custom-select";
+import { useToastStore } from "@/components/ui/toast";
 
 export default function CurriculumPage() {
   const store = useContentStore();
@@ -22,7 +24,7 @@ export default function CurriculumPage() {
   }));
 
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [form, setForm] = useState({ title: "", track: trackNames[0] ?? "", gateThreshold: "70" });
+  const [form, setForm] = useState({ title: "", track: trackNames[0] ?? "", level: "Beginner" as string, gateThreshold: "70", description: "", defaultLessonType: "video_text" as string });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [annotations, setAnnotations] = useState<Record<string, string>>({});
   const [editingAnnotation, setEditingAnnotation] = useState<string | null>(null);
@@ -31,7 +33,7 @@ export default function CurriculumPage() {
   const [addAnnotationValue, setAddAnnotationValue] = useState("");
 
   function openDialog() {
-    setForm({ title: "", track: trackNames[0] ?? "", gateThreshold: "70" });
+    setForm({ title: "", track: trackNames[0] ?? "", level: "Beginner", gateThreshold: "70", description: "", defaultLessonType: "video_text" });
     setErrors({});
     setDialogOpen(true);
   }
@@ -52,10 +54,11 @@ export default function CurriculumPage() {
 
     store.addModule(
       form.track,
-      "Beginner",
+      form.level,
       form.title.trim(),
     );
     setDialogOpen(false);
+    useToastStore.getState().addToast("Module created successfully");
   }
   return (
     <div className="space-y-6">
@@ -131,50 +134,73 @@ export default function CurriculumPage() {
 
       {/* ── Create Module Dialog ── */}
       {dialogOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center overflow-y-auto py-6">
-          <div className="relative w-full max-w-xl mx-4 rounded-card border border-surface-200 border-t-[3px] border-t-brand-600 bg-surface-0 shadow-xl">
-            <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 border-b border-surface-200 bg-surface-0 rounded-t-card">
-              <h2 className="text-heading-sm text-surface-900">Create New Module</h2>
-              <button onClick={() => setDialogOpen(false)} className="p-1 rounded-lg text-surface-400 hover:bg-surface-100 hover:text-surface-600 transition-colors" aria-label="Close dialog">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <form onSubmit={handleSubmit} className="px-6 py-5 space-y-5">
-              <div>
-                <label htmlFor="mod-title" className="block text-body-sm font-medium text-surface-700 mb-1.5">Title <span className="text-status-error">*</span></label>
-                <input id="mod-title" type="text" value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} placeholder="e.g. Advanced RAG Pipelines" className="w-full rounded-lg border border-surface-300 px-3.5 py-2.5 text-body-sm text-surface-900 placeholder:text-surface-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-colors" aria-invalid={!!errors.title} />
-                {errors.title && <p className="mt-1 text-caption text-status-error">{errors.title}</p>}
-                <p className="mt-1.5 text-caption text-surface-400">Choose a clear, descriptive name for the module</p>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
+        <>
+          <div className="fixed inset-0 z-[59]" onClick={() => setDialogOpen(false)} aria-hidden="true" />
+          <div className="fixed inset-0 z-[60] flex items-start justify-center pt-[10vh]">
+            <div className="relative w-full max-w-lg mx-4 rounded-2xl border border-surface-200 bg-surface-0 shadow-2xl animate-in fade-in zoom-in-95 duration-200" role="dialog" aria-modal="true" aria-labelledby="create-module-title">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-surface-100">
                 <div>
-                  <label htmlFor="mod-track" className="block text-body-sm font-medium text-surface-700 mb-1.5">Track</label>
-                  <select id="mod-track" value={form.track} onChange={(e) => setForm((f) => ({ ...f, track: e.target.value }))} className="w-full rounded-lg border border-surface-300 px-3.5 py-2.5 text-body-sm text-surface-900 bg-surface-0 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-colors">
-                    {trackNames.map((t) => <option key={t} value={t}>{t}</option>)}
-                  </select>
+                  <h2 id="create-module-title" className="text-heading-sm text-surface-900">Create New Module</h2>
+                  <p className="text-caption text-surface-400 mt-0.5">Add a module to an existing track pathway</p>
                 </div>
-                <div>
-                  <label htmlFor="mod-gate" className="block text-body-sm font-medium text-surface-700 mb-1.5">Gate Threshold (%) <span className="text-status-error">*</span></label>
-                  <input id="mod-gate" type="number" min={1} max={100} value={form.gateThreshold} onChange={(e) => setForm((f) => ({ ...f, gateThreshold: e.target.value }))} className="w-full rounded-lg border border-surface-300 px-3.5 py-2.5 text-body-sm text-surface-900 placeholder:text-surface-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-colors" aria-invalid={!!errors.gateThreshold} />
-                  {errors.gateThreshold && <p className="mt-1 text-caption text-status-error">{errors.gateThreshold}</p>}
-                  <p className="mt-1.5 text-caption text-surface-400">Minimum score (%) learners must achieve to pass</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3 rounded-lg border border-brand-200 bg-brand-50/50 p-3">
-                <Info className="w-4 h-4 text-brand-500 mt-0.5 shrink-0" />
-                <p className="text-caption text-brand-700">New modules are created as Inactive. You can activate them from the curriculum table.</p>
-              </div>
-
-              <div className="flex items-center justify-end gap-3 pt-2 border-t border-surface-100">
-                <button type="button" onClick={() => setDialogOpen(false)} className="rounded-lg border border-surface-300 px-4 py-2.5 text-body-sm font-medium text-surface-700 hover:bg-surface-100 transition-colors">Cancel</button>
-                <button type="submit" className="rounded-lg bg-brand-600 px-4 py-2.5 text-body-sm font-medium text-white hover:bg-brand-700 transition-colors flex items-center gap-2">
-                  <Plus className="w-4 h-4" /> Create Module
+                <button onClick={() => setDialogOpen(false)} className="p-1.5 rounded-lg text-surface-400 hover:bg-surface-100 hover:text-surface-600 transition-colors" aria-label="Close dialog">
+                  <X className="w-5 h-5" />
                 </button>
               </div>
-            </form>
+              <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
+                <div>
+                  <label htmlFor="mod-title" className="block text-body-sm font-medium text-surface-700 mb-1.5">Module Title <span className="text-status-error">*</span></label>
+                  <input id="mod-title" type="text" value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} placeholder="e.g. Advanced RAG Pipelines" className="w-full rounded-xl border border-surface-200 px-3.5 py-2.5 text-body-sm text-surface-900 placeholder:text-surface-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-all" aria-invalid={!!errors.title} autoFocus />
+                  {errors.title && <p className="mt-1 text-caption text-status-error">{errors.title}</p>}
+                </div>
+
+                <div>
+                  <label htmlFor="mod-desc" className="block text-body-sm font-medium text-surface-700 mb-1.5">Description <span className="text-caption text-surface-400 font-normal">(optional)</span></label>
+                  <textarea id="mod-desc" rows={2} value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="Brief description of what learners will cover in this module" className="w-full rounded-xl border border-surface-200 px-3.5 py-2.5 text-body-sm text-surface-900 placeholder:text-surface-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-all resize-none" />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="mod-track" className="block text-body-sm font-medium text-surface-700 mb-1.5">Track</label>
+                    <CustomSelect id="mod-track" value={form.track} onChange={(v) => setForm((f) => ({ ...f, track: v }))} options={trackNames.map((t) => ({ value: t, label: t }))} />
+                  </div>
+                  <div>
+                    <label htmlFor="mod-level" className="block text-body-sm font-medium text-surface-700 mb-1.5">Level Tier</label>
+                    <CustomSelect id="mod-level" value={form.level} onChange={(v) => setForm((f) => ({ ...f, level: v }))} options={[{ value: "Beginner", label: "Beginner" }, { value: "Intermediate", label: "Intermediate" }, { value: "Advanced", label: "Advanced" }]} />
+                  </div>
+                </div>
+
+                <div>
+                  <label htmlFor="mod-content-type" className="block text-body-sm font-medium text-surface-700 mb-1.5">Default Content Type</label>
+                  <CustomSelect id="mod-content-type" value={form.defaultLessonType} onChange={(v) => setForm((f) => ({ ...f, defaultLessonType: v }))} options={[{ value: "video_text", label: "Video + Text" }, { value: "coding_lab", label: "Coding Lab" }, { value: "mcq", label: "Multiple Choice Quiz" }, { value: "drag_drop", label: "Drag & Drop" }, { value: "quiz", label: "Mixed Quiz" }]} />
+                  <p className="mt-1 text-caption text-surface-400">Lessons added to this module will default to this type</p>
+                </div>
+
+                <div>
+                  <label htmlFor="mod-gate" className="block text-body-sm font-medium text-surface-700 mb-1.5">Performance Gate Threshold <span className="text-status-error">*</span></label>
+                  <div className="flex items-center gap-3">
+                    <input id="mod-gate" type="range" min={1} max={100} value={form.gateThreshold} onChange={(e) => setForm((f) => ({ ...f, gateThreshold: e.target.value }))} className="flex-1 h-2 rounded-full appearance-none bg-surface-200 accent-brand-600 cursor-pointer" />
+                    <span className="w-12 text-center text-body-sm font-semibold text-surface-900 tabular-nums">{form.gateThreshold}%</span>
+                  </div>
+                  {errors.gateThreshold && <p className="mt-1 text-caption text-status-error">{errors.gateThreshold}</p>}
+                  <p className="mt-1 text-caption text-surface-400">Minimum score learners must achieve to pass this module&apos;s performance gate</p>
+                </div>
+
+                <div className="flex items-start gap-2.5 rounded-xl border border-brand-200 bg-brand-50/50 p-3">
+                  <Info className="w-4 h-4 text-brand-500 mt-0.5 shrink-0" />
+                  <p className="text-caption text-brand-700">New modules are created as unpublished drafts. Add lessons and activate from the curriculum table when ready.</p>
+                </div>
+
+                <div className="flex items-center justify-end gap-3 pt-3 border-t border-surface-100">
+                  <button type="button" onClick={() => setDialogOpen(false)} className="rounded-xl border border-surface-200 px-4 py-2.5 text-body-sm font-medium text-surface-700 hover:bg-surface-50 transition-colors">Cancel</button>
+                  <button type="submit" className="rounded-xl bg-brand-600 px-5 py-2.5 text-body-sm font-medium text-white hover:bg-brand-700 active:bg-brand-800 transition-colors flex items-center gap-2 shadow-sm">
+                    <Plus className="w-4 h-4" /> Create Module
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );

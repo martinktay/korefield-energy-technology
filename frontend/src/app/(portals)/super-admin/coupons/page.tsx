@@ -3,6 +3,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import { X, Plus, Tag, Copy, CheckCircle2, Ban, Pencil, Trash2, MoreHorizontal, Power, CopyPlus } from "lucide-react";
+import { CustomSelect } from "@/components/ui/custom-select";
+import { useToastStore } from "@/components/ui/toast";
 
 interface Coupon {
   id: string;
@@ -157,6 +159,7 @@ export default function CouponsPage() {
     }
     setDialogOpen(false);
     setEditingCoupon(null);
+    useToastStore.getState().addToast("Coupon created successfully");
   }
 
   function editCoupon(coupon: Coupon) {
@@ -337,7 +340,7 @@ export default function CouponsPage() {
 
       {/* Create Coupon Dialog */}
       {dialogOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center overflow-y-auto py-6">
+        <div className="fixed inset-0 z-[60] flex items-start justify-center pt-[10vh]">
           <div className="relative w-full max-w-xl mx-4 rounded-card border border-surface-200 border-t-[3px] border-t-brand-600 bg-surface-0 shadow-xl">
             <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 border-b border-surface-200 bg-surface-0 rounded-t-card">
               <h2 className="text-heading-sm text-surface-900">{editingCoupon ? "Edit Coupon" : "Create Coupon"}</h2>
@@ -364,9 +367,7 @@ export default function CouponsPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="cpn-type" className="block text-body-sm font-medium text-surface-700 mb-1.5">Discount Type</label>
-                  <select id="cpn-type" value={form.discount_type} onChange={(e) => setForm((f) => ({ ...f, discount_type: e.target.value, discount_value: e.target.value === "full_access" ? "100" : f.discount_value }))} className="w-full rounded-lg border border-surface-300 px-3.5 py-2.5 text-body-sm text-surface-900 bg-surface-0 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-colors">
-                    {DISCOUNT_TYPES.map((dt) => <option key={dt.value} value={dt.value}>{dt.label}</option>)}
-                  </select>
+                  <CustomSelect id="cpn-type" value={form.discount_type} onChange={(v) => setForm((f) => ({ ...f, discount_type: v, discount_value: v === "full_access" ? "100" : f.discount_value }))} options={DISCOUNT_TYPES.map((dt) => ({ value: dt.value, label: dt.label }))} />
                 </div>
                 <div>
                   <label htmlFor="cpn-value" className="block text-body-sm font-medium text-surface-700 mb-1.5">Discount Value <span className="text-status-error">*</span></label>

@@ -3,6 +3,8 @@
 
 import { useState } from "react";
 import { X, Check } from "lucide-react";
+import { CustomSelect } from "@/components/ui/custom-select";
+import { useToastStore } from "@/components/ui/toast";
 
 interface Session {
   id: string; title: string; date: string; time: string; module: string; cohort: string; status: string;
@@ -59,6 +61,7 @@ export default function SchedulePage() {
     };
     setSessions((prev) => [newSession, ...prev]);
     setDialogOpen(false);
+    useToastStore.getState().addToast("Session scheduled successfully");
     setJustCreated(newSession.id);
     setTimeout(() => setJustCreated(""), 3000);
   }
@@ -97,7 +100,7 @@ export default function SchedulePage() {
 
       {/* ── Schedule Session Dialog ── */}
       {dialogOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center overflow-y-auto py-6">
+        <div className="fixed inset-0 z-[60] flex items-start justify-center pt-[10vh]">
           <div className="relative w-full max-w-lg mx-4 rounded-card border border-surface-200 bg-surface-0 shadow-xl">
             <div className="flex items-center justify-between px-6 py-4 border-b border-surface-200">
               <h2 className="text-heading-sm text-surface-900">Schedule New Session</h2>
@@ -126,15 +129,11 @@ export default function SchedulePage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="ses-module" className="block text-body-sm font-medium text-surface-700 mb-1.5">Module</label>
-                  <select id="ses-module" value={form.module} onChange={(e) => setForm((f) => ({ ...f, module: e.target.value }))} className="w-full rounded-lg border border-surface-300 px-3.5 py-2.5 text-body-sm text-surface-900 bg-surface-0 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-colors">
-                    {MODULES.map((m) => <option key={m} value={m}>{m}</option>)}
-                  </select>
+                  <CustomSelect id="ses-module" value={form.module} onChange={(v) => setForm((f) => ({ ...f, module: v }))} options={MODULES.map((m) => ({ value: m, label: m }))} />
                 </div>
                 <div>
                   <label htmlFor="ses-cohort" className="block text-body-sm font-medium text-surface-700 mb-1.5">Cohort</label>
-                  <select id="ses-cohort" value={form.cohort} onChange={(e) => setForm((f) => ({ ...f, cohort: e.target.value }))} className="w-full rounded-lg border border-surface-300 px-3.5 py-2.5 text-body-sm text-surface-900 bg-surface-0 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-colors">
-                    {COHORTS.map((c) => <option key={c} value={c}>{c}</option>)}
-                  </select>
+                  <CustomSelect id="ses-cohort" value={form.cohort} onChange={(v) => setForm((f) => ({ ...f, cohort: v }))} options={COHORTS.map((c) => ({ value: c, label: c }))} />
                 </div>
               </div>
               <div className="flex items-center justify-end gap-3 pt-2">

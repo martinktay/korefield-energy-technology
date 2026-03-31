@@ -1,0 +1,17 @@
+[project]
+name = "virus-scanner-lambda"
+version = "0.1.0"
+description = "Virus scanner Lambda — property tests for S3 upload scanning with ClamAV"
+requires-python = ">=3.11"
+dependencies = [
+    "boto3>=1.35.0",
+]
+
+[dependency-groups]
+dev = [
+    "hypothesis>=6.151.10",
+    "pytest>=9.0.2",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["."]

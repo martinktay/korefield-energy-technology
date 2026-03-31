@@ -13,6 +13,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api";
+import { CustomSelect } from "@/components/ui/custom-select";
 
 /* ── Constants ── */
 
@@ -345,10 +346,7 @@ export default function RegisterPage() {
               <h2 className="text-heading-sm text-surface-900">Tell us about yourself</h2>
               <div>
                 <label htmlFor="country" className="block text-body-sm font-medium text-surface-700 mb-1.5">Country</label>
-                <select id="country" value={country} onChange={(e) => setCountry(e.target.value)} className={inputClass} aria-invalid={!!step2Errors.country}>
-                  <option value="">Select country</option>
-                  {COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
-                </select>
+                <CustomSelect id="country" value={country} onChange={(v) => setCountry(v)} options={[{ value: "", label: "Select country" }, ...COUNTRIES.map((c) => ({ value: c, label: c }))]} aria-label="Country" />
                 {step2Errors.country && <p className="mt-1.5 text-caption text-status-error">{step2Errors.country}</p>}
               </div>
               <div>

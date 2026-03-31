@@ -3,7 +3,7 @@
  * store initialization. Validates that every lesson present in the static data
  * exports exists in the store's lessons array with identical field values.
  */
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import * as fc from "fast-check";
 
 vi.mock("@/lib/api", () => ({
@@ -710,5 +710,361 @@ describe("Content Store — Property 12: Accurate module counts per track", () =
     const distinctModuleIds = new Set(lessonsForTrack.map((l) => l.moduleId));
     // Plus the empty module
     expect(targetTrack!.modules).toBe(distinctModuleIds.size + 1);
+  });
+});
+
+describe("Content Store — Property 9: Content Store Mutation Sync", () => {
+  /**
+   * **Validates: Requirements 5.1, 5.2, 5.3, 5.4**
+   *
+   * For any content mutation (addLesson, updateLesson, deleteLesson, addModule),
+   * the Content Store should issue the corresponding HTTP request (POST, PUT,
+   * DELETE, POST respectively) to the backend content API with the correct payload.
+   */
+
+  let mockApiFetch: ReturnType<typeof vi.fn>;
+
+  beforeEach(async () => {
+    const apiModule = await import("@/lib/api");
+    mockApiFetch = vi.mocked(apiModule.apiFetch);
+
+    useContentStore.setState({
+      lessons: [...ALL_STATIC_LESSONS],
+      emptyModules: [],
+      conflictData: null,
+    });
+  });
+
+  afterEach(() => {
+    mockApiFetch.mockReset();
+    mockApiFetch.mockRejectedValue(new Error("no backend in test"));
+  });
+
+  it("addLesson issues POST /content/lessons with correct payload", () => {
+    fc.assert(
+      fc.property(
+        fc.constantFrom(...ALL_STATIC_LESSONS),
+        fc.string({ minLength: 1, maxLength: 30 }),
+        (baseLesson, newTitle) => {
+          // Reset state and mock for each iteration
+          useContentStore.setState({
+            lessons: [...ALL_STATIC_LESSONS],
+            emptyModules: [],
+            conflictData: null,
+          });
+          mockApiFetch.mockReset();
+          mockApiFetch.mockResolvedValue({ ...baseLesson, id: "LSN-server-001" });
+
+          const { id: _id, prevLessonId: _prev, nextLessonId: _next, ...payload } = baseLesson;
+          const lessonPayload = { ...payload, title: newTitle };
+
+          useContentStore.getState().addLesson(lessonPayload);
+
+          // Verify POST was called with correct path and payload
+          expect(mockApiFetch).toHaveBeenCalledWith(
+            "/content/lessons",
+            expect.objectContaining({
+              method: "POST",
+              body: JSON.stringify(lessonPayload),
+            }),
+          );
+        },
+      ),
+      { numRuns: 100 },
+    );
+  });
+
+  it("updateLesson issues PUT /content/lessons/:id with correct payload", () => {
+    fc.assert(
+      fc.property(
+        fc.constantFrom(...ALL_STATIC_LESSONS),
+        fc.string({ minLength: 1, maxLength: 50 }),
+        fc.integer({ min: 1, max: 100 }),
+        (lesson, newTitle, version) => {
+          useContentStore.setState({
+            lessons: [...ALL_STATIC_LESSONS],
+            emptyModules: [],
+            conflictData: null,
+          });
+          mockApiFetch.mockReset();
+          mockApiFetch.mockResolvedValue({ ...lesson, title: newTitle });
+
+          const updates = { title: newTitle };
+          useContentStore.getState().updateLesson(lesson.id, updates, version);
+
+          expect(mockApiFetch).toHaveBeenCalledWith(
+            `/content/lessons/${lesson.id}`,
+            expect.objectContaining({
+              method: "PUT",
+              body: JSON.stringify({ ...updates, version }),
+            }),
+          );
+        },
+      ),
+      { numRuns: 100 },
+    );
+  });
+
+  it("deleteLesson issues DELETE /content/lessons/:id", () => {
+    fc.assert(
+      fc.property(
+        fc.constantFrom(...ALL_STATIC_LESSONS),
+        (lesson) => {
+          useContentStore.setState({
+            lessons: [...ALL_STATIC_LESSONS],
+            emptyModules: [],
+            conflictData: null,
+          });
+          mockApiFetch.mockReset();
+          mockApiFetch.mockResolvedValue(undefined);
+
+          useContentStore.getState().deleteLesson(lesson.id);
+
+          expect(mockApiFetch).toHaveBeenCalledWith(
+            `/content/lessons/${lesson.id}`,
+            expect.objectContaining({ method: "DELETE" }),
+          );
+        },
+      ),
+      { numRuns: 100 },
+    );
+  });
+
+  it("addModule issues POST /content/modules with correct payload", () => {
+    const distinctTracks = Array.from(
+      new Set(ALL_STATIC_LESSONS.map((l) => l.trackName)),
+    );
+
+    fc.assert(
+      fc.property(
+        fc.constantFrom(...distinctTracks),
+        fc.constantFrom("Beginner", "Intermediate", "Advanced"),
+        fc.string({ minLength: 1, maxLength: 30 }),
+        (trackName, levelTier, moduleName) => {
+          useContentStore.setState({
+            lessons: [...ALL_STATIC_LESSONS],
+            emptyModules: [],
+            conflictData: null,
+          });
+          mockApiFetch.mockReset();
+          mockApiFetch.mockResolvedValue({ id: "MOD-server-001" });
+
+          useContentStore.getState().addModule(trackName, levelTier, moduleName);
+
+          expect(mockApiFetch).toHaveBeenCalledWith(
+            "/content/modules",
+            expect.objectContaining({
+              method: "POST",
+              body: JSON.stringify({ trackName, levelTier, moduleName }),
+            }),
+          );
+        },
+      ),
+      { numRuns: 100 },
+    );
+  });
+});
+
+describe("Content Store — Property 10: Content Store Failed Sync Queues Locally", () => {
+  /**
+   * **Validates: Requirements 5.5**
+   *
+   * For any backend sync failure, the Content Store should retain the mutation
+   * in localStorage (via the zustand persist middleware) and the local state
+   * should still reflect the optimistic update.
+   */
+
+  let mockApiFetch: ReturnType<typeof vi.fn>;
+
+  beforeEach(async () => {
+    const apiModule = await import("@/lib/api");
+    mockApiFetch = vi.mocked(apiModule.apiFetch);
+
+    // Ensure apiFetch rejects to simulate backend failure
+    mockApiFetch.mockReset();
+    mockApiFetch.mockRejectedValue(new Error("Network error: backend unreachable"));
+
+    useContentStore.setState({
+      lessons: [...ALL_STATIC_LESSONS],
+      emptyModules: [],
+      conflictData: null,
+    });
+  });
+
+  afterEach(() => {
+    mockApiFetch.mockReset();
+    mockApiFetch.mockRejectedValue(new Error("no backend in test"));
+  });
+
+  it("addLesson retains new lesson in local state after failed sync", () => {
+    fc.assert(
+      fc.property(
+        fc.constantFrom(...ALL_STATIC_LESSONS),
+        fc.string({ minLength: 1, maxLength: 30 }),
+        (baseLesson, newTitle) => {
+          // Reset state and ensure apiFetch rejects
+          useContentStore.setState({
+            lessons: [...ALL_STATIC_LESSONS],
+            emptyModules: [],
+            conflictData: null,
+          });
+          mockApiFetch.mockReset();
+          mockApiFetch.mockRejectedValue(new Error("sync failure"));
+
+          const countBefore = useContentStore.getState().lessons.length;
+
+          const { id: _id, prevLessonId: _prev, nextLessonId: _next, ...payload } = baseLesson;
+          const lessonPayload = { ...payload, title: newTitle };
+
+          const newId = useContentStore.getState().addLesson(lessonPayload);
+
+          // Local state should reflect the optimistic update despite sync failure
+          const stateAfter = useContentStore.getState();
+          expect(stateAfter.lessons.length).toBe(countBefore + 1);
+
+          const addedLesson = stateAfter.getLessonById(newId);
+          expect(addedLesson).toBeDefined();
+          expect(addedLesson!.title).toBe(newTitle);
+          expect(addedLesson!.id).toBe(newId);
+
+          // The persisted store state in localStorage should contain the new lesson
+          const persisted = localStorage.getItem("kf-content-store");
+          expect(persisted).not.toBeNull();
+          const parsed = JSON.parse(persisted!);
+          const persistedLessons = parsed.state?.lessons ?? [];
+          const persistedLesson = persistedLessons.find(
+            (l: { id: string }) => l.id === newId,
+          );
+          expect(persistedLesson).toBeDefined();
+          expect(persistedLesson.title).toBe(newTitle);
+        },
+      ),
+      { numRuns: 100 },
+    );
+  });
+
+  it("updateLesson retains updated fields in local state after failed sync", () => {
+    fc.assert(
+      fc.property(
+        fc.constantFrom(...ALL_STATIC_LESSONS),
+        fc.string({ minLength: 1, maxLength: 50 }),
+        (lesson, newTitle) => {
+          useContentStore.setState({
+            lessons: [...ALL_STATIC_LESSONS],
+            emptyModules: [],
+            conflictData: null,
+          });
+          mockApiFetch.mockReset();
+          mockApiFetch.mockRejectedValue(new Error("sync failure"));
+
+          useContentStore.getState().updateLesson(lesson.id, { title: newTitle });
+
+          // Local state should reflect the optimistic update
+          const updated = useContentStore.getState().getLessonById(lesson.id);
+          expect(updated).toBeDefined();
+          expect(updated!.title).toBe(newTitle);
+
+          // The persisted store state should also reflect the update
+          const persisted = localStorage.getItem("kf-content-store");
+          expect(persisted).not.toBeNull();
+          const parsed = JSON.parse(persisted!);
+          const persistedLessons = parsed.state?.lessons ?? [];
+          const persistedLesson = persistedLessons.find(
+            (l: { id: string }) => l.id === lesson.id,
+          );
+          expect(persistedLesson).toBeDefined();
+          expect(persistedLesson.title).toBe(newTitle);
+        },
+      ),
+      { numRuns: 100 },
+    );
+  });
+
+  it("deleteLesson retains removal in local state after failed sync", () => {
+    fc.assert(
+      fc.property(
+        fc.constantFrom(...ALL_STATIC_LESSONS),
+        (lesson) => {
+          useContentStore.setState({
+            lessons: [...ALL_STATIC_LESSONS],
+            emptyModules: [],
+            conflictData: null,
+          });
+          mockApiFetch.mockReset();
+          mockApiFetch.mockRejectedValue(new Error("sync failure"));
+
+          const countBefore = useContentStore.getState().lessons.length;
+
+          useContentStore.getState().deleteLesson(lesson.id);
+
+          // Local state should reflect the optimistic delete
+          const stateAfter = useContentStore.getState();
+          expect(stateAfter.lessons.length).toBe(countBefore - 1);
+          expect(stateAfter.getLessonById(lesson.id)).toBeUndefined();
+
+          // The persisted store state should also reflect the deletion
+          const persisted = localStorage.getItem("kf-content-store");
+          expect(persisted).not.toBeNull();
+          const parsed = JSON.parse(persisted!);
+          const persistedLessons = parsed.state?.lessons ?? [];
+          const persistedLesson = persistedLessons.find(
+            (l: { id: string }) => l.id === lesson.id,
+          );
+          expect(persistedLesson).toBeUndefined();
+        },
+      ),
+      { numRuns: 100 },
+    );
+  });
+
+  it("addModule retains new module in local state after failed sync", () => {
+    const distinctTracks = Array.from(
+      new Set(ALL_STATIC_LESSONS.map((l) => l.trackName)),
+    );
+
+    fc.assert(
+      fc.property(
+        fc.constantFrom(...distinctTracks),
+        fc.constantFrom("Beginner", "Intermediate", "Advanced"),
+        fc.string({ minLength: 1, maxLength: 30 }),
+        (trackName, levelTier, moduleName) => {
+          useContentStore.setState({
+            lessons: [...ALL_STATIC_LESSONS],
+            emptyModules: [],
+            conflictData: null,
+          });
+          mockApiFetch.mockReset();
+          mockApiFetch.mockRejectedValue(new Error("sync failure"));
+
+          const emptyModulesBefore = useContentStore.getState().emptyModules.length;
+
+          const newModId = useContentStore.getState().addModule(trackName, levelTier, moduleName);
+
+          // Local state should reflect the optimistic update
+          const stateAfter = useContentStore.getState();
+          expect(stateAfter.emptyModules.length).toBe(emptyModulesBefore + 1);
+
+          const addedModule = stateAfter.emptyModules.find(
+            (em) => em.moduleId === newModId,
+          );
+          expect(addedModule).toBeDefined();
+          expect(addedModule!.moduleName).toBe(moduleName);
+          expect(addedModule!.trackName).toBe(trackName);
+          expect(addedModule!.levelTier).toBe(levelTier);
+
+          // The persisted store state should contain the new module
+          const persisted = localStorage.getItem("kf-content-store");
+          expect(persisted).not.toBeNull();
+          const parsed = JSON.parse(persisted!);
+          const persistedModules = parsed.state?.emptyModules ?? [];
+          const persistedModule = persistedModules.find(
+            (em: { moduleId: string }) => em.moduleId === newModId,
+          );
+          expect(persistedModule).toBeDefined();
+          expect(persistedModule.moduleName).toBe(moduleName);
+        },
+      ),
+      { numRuns: 100 },
+    );
   });
 });

@@ -7,6 +7,8 @@ import { AssessmentBuilder, type Question } from "@/components/content";
 import { useContentStore } from "@/stores/content-store";
 import type { LessonSummary, ModuleView } from "@/stores/content-store";
 import { uploadFile, type UploadProgress, NetworkError, TimeoutError } from "@/lib/api";
+import { CustomSelect } from "@/components/ui/custom-select";
+import { useToastStore } from "@/components/ui/toast";
 
 const TRACKS = [
   "AI Engineering and Intelligent Systems",
@@ -98,6 +100,7 @@ export default function ContentPage() {
 
     store.addModule(moduleForm.track, moduleForm.level, moduleForm.title.trim());
     setModuleDialogOpen(false);
+    useToastStore.getState().addToast("Module created successfully");
   }
 
   // ── Lesson CRUD ──
@@ -174,6 +177,7 @@ export default function ContentPage() {
 
     setLessonDialogOpen(null);
     setEditingLesson(null);
+    useToastStore.getState().addToast("Lesson created successfully");
   }
 
   function handleDeleteLesson(lessonId: string) {
@@ -309,7 +313,7 @@ export default function ContentPage() {
 
       {/* ── Create Module Dialog ── */}
       {moduleDialogOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center overflow-y-auto py-6">
+        <div className="fixed inset-0 z-[60] flex items-start justify-center pt-[10vh]">
           <div ref={moduleDialogRef} className="relative w-full max-w-3xl mx-4 rounded-card border border-surface-200 border-t-4 border-t-brand-600 bg-surface-0 shadow-xl">
             <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 border-b border-surface-200 bg-surface-0 rounded-t-card">
               <h2 className="text-heading-sm text-surface-900">Create New Module</h2>
@@ -326,15 +330,11 @@ export default function ContentPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="mod-track" className="block text-body-sm font-medium text-surface-700 mb-1.5">Track</label>
-                    <select id="mod-track" value={moduleForm.track} onChange={(e) => setModuleForm((f) => ({ ...f, track: e.target.value }))} className="w-full rounded-lg border border-surface-300 px-3.5 py-2.5 text-body-sm text-surface-900 bg-surface-0 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-colors">
-                      {TRACKS.map((t) => <option key={t} value={t}>{t}</option>)}
-                    </select>
+                    <CustomSelect id="mod-track" value={moduleForm.track} onChange={(v) => setModuleForm((f) => ({ ...f, track: v }))} options={TRACKS.map((t) => ({ value: t, label: t }))} />
                   </div>
                   <div>
                     <label htmlFor="mod-level" className="block text-body-sm font-medium text-surface-700 mb-1.5">Level</label>
-                    <select id="mod-level" value={moduleForm.level} onChange={(e) => setModuleForm((f) => ({ ...f, level: e.target.value }))} className="w-full rounded-lg border border-surface-300 px-3.5 py-2.5 text-body-sm text-surface-900 bg-surface-0 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-colors">
-                      {LEVELS.map((l) => <option key={l} value={l}>{l}</option>)}
-                    </select>
+                    <CustomSelect id="mod-level" value={moduleForm.level} onChange={(v) => setModuleForm((f) => ({ ...f, level: v }))} options={LEVELS.map((l) => ({ value: l, label: l }))} />
                   </div>
                 </div>
               </div>
@@ -366,7 +366,7 @@ export default function ContentPage() {
 
       {/* ── Lesson Create/Edit Dialog ── */}
       {lessonDialogOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center overflow-y-auto py-6">
+        <div className="fixed inset-0 z-[60] flex items-start justify-center pt-[10vh]">
           <div ref={lessonDialogRef} className="relative w-full max-w-3xl mx-4 rounded-card border border-surface-200 bg-surface-0 shadow-xl">
             <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 border-b border-surface-200 bg-surface-0 rounded-t-card">
               <h2 className="text-heading-sm text-surface-900">{editingLesson ? "Edit Lesson" : "Add Lesson"}</h2>

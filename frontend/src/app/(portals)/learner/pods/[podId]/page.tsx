@@ -5,6 +5,7 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { CustomSelect } from "@/components/ui/custom-select";
 
 /** Pod members with their assigned multidisciplinary roles */
 const mockMembers = [
@@ -160,7 +161,7 @@ export default function PodWorkspacePage() {
 
       {/* ── Peer Review Dialog ── */}
       {reviewDialogOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center overflow-y-auto py-6">
+        <div className="fixed inset-0 z-[60] flex items-start justify-center pt-[10vh]">
           <div className="relative w-full max-w-lg mx-4 rounded-card border border-surface-200 bg-surface-0 shadow-xl">
             <div className="flex items-center justify-between px-6 py-4 border-b border-surface-200">
               <h2 className="text-heading-sm text-surface-900">Submit Peer Review</h2>
@@ -182,15 +183,11 @@ export default function PodWorkspacePage() {
                 <form onSubmit={(e) => { e.preventDefault(); if (!reviewForm.feedback.trim()) return; setReviewSubmitted(true); }} className="space-y-4">
                   <div>
                     <label htmlFor="review-member" className="block text-body-sm font-medium text-surface-700 mb-1.5">Team Member</label>
-                    <select id="review-member" value={reviewForm.member} onChange={(e) => setReviewForm((f) => ({ ...f, member: e.target.value }))} className="w-full rounded-lg border border-surface-300 px-3.5 py-2.5 text-body-sm text-surface-900 bg-surface-0 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-colors">
-                      {mockMembers.map((m) => <option key={m.id} value={m.id}>{m.name} — {m.role}</option>)}
-                    </select>
+                    <CustomSelect id="review-member" value={reviewForm.member} onChange={(v) => setReviewForm((f) => ({ ...f, member: v }))} options={mockMembers.map((m) => ({ value: m.id, label: `${m.name} — ${m.role}` }))} />
                   </div>
                   <div>
                     <label htmlFor="review-rating" className="block text-body-sm font-medium text-surface-700 mb-1.5">Rating (1–5)</label>
-                    <select id="review-rating" value={reviewForm.rating} onChange={(e) => setReviewForm((f) => ({ ...f, rating: e.target.value }))} className="w-full rounded-lg border border-surface-300 px-3.5 py-2.5 text-body-sm text-surface-900 bg-surface-0 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-colors">
-                      {[1, 2, 3, 4, 5].map((n) => <option key={n} value={String(n)}>{n}</option>)}
-                    </select>
+                    <CustomSelect id="review-rating" value={reviewForm.rating} onChange={(v) => setReviewForm((f) => ({ ...f, rating: v }))} options={[1, 2, 3, 4, 5].map((n) => ({ value: String(n), label: String(n) }))} />
                   </div>
                   <div>
                     <label htmlFor="review-feedback" className="block text-body-sm font-medium text-surface-700 mb-1.5">Feedback <span className="text-status-error">*</span></label>

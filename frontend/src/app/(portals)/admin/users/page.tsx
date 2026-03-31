@@ -6,6 +6,8 @@ import { X } from "lucide-react";
 
 import { useQuery } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
+import { CustomSelect } from "@/components/ui/custom-select";
+import { useToastStore } from "@/components/ui/toast";
 
 const FALLBACK_USERS = [
   { id: "USR-olumide-001", name: "Olumide Adebayo", email: "olumide@korefield.com", role: "Super Admin", status: "Active", joined: "2024-06-01" },
@@ -93,6 +95,7 @@ export default function UsersPage() {
     };
     setExtraUsers((prev) => [newUser, ...prev]);
     setDialogOpen(false);
+    useToastStore.getState().addToast("User created successfully");
   }
 
   return (
@@ -142,7 +145,7 @@ export default function UsersPage() {
 
       {/* ── Create User Dialog ── */}
       {dialogOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center overflow-y-auto py-6">
+        <div className="fixed inset-0 z-[60] flex items-start justify-center pt-[10vh]">
           <div className="relative w-full max-w-lg mx-4 rounded-card border border-surface-200 bg-surface-0 shadow-xl">
             <div className="flex items-center justify-between px-6 py-4 border-b border-surface-200">
               <h2 className="text-heading-sm text-surface-900">Create New User</h2>
@@ -164,16 +167,11 @@ export default function UsersPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="user-role" className="block text-body-sm font-medium text-surface-700 mb-1.5">Role</label>
-                  <select id="user-role" value={form.role} onChange={(e) => setForm((f) => ({ ...f, role: e.target.value }))} className="w-full rounded-lg border border-surface-300 px-3.5 py-2.5 text-body-sm text-surface-900 bg-surface-0 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-colors">
-                    {ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
-                  </select>
+                  <CustomSelect id="user-role" value={form.role} onChange={(v) => setForm((f) => ({ ...f, role: v }))} options={ROLES.map((r) => ({ value: r, label: r }))} />
                 </div>
                 <div>
                   <label htmlFor="user-status" className="block text-body-sm font-medium text-surface-700 mb-1.5">Status</label>
-                  <select id="user-status" value={form.status} onChange={(e) => setForm((f) => ({ ...f, status: e.target.value }))} className="w-full rounded-lg border border-surface-300 px-3.5 py-2.5 text-body-sm text-surface-900 bg-surface-0 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-colors">
-                    <option value="Active">Active</option>
-                    <option value="Inactive">Inactive</option>
-                  </select>
+                  <CustomSelect id="user-status" value={form.status} onChange={(v) => setForm((f) => ({ ...f, status: v }))} options={[{ value: "Active", label: "Active" }, { value: "Inactive", label: "Inactive" }]} />
                 </div>
               </div>
               <div className="flex items-center justify-end gap-3 pt-2">

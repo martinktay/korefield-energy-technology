@@ -202,7 +202,7 @@ export default function PaymentsPage() {
 
       {/* ── Checkout Modal ── */}
       {checkoutOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center overflow-y-auto py-6">
+        <div className="fixed inset-0 z-[60] flex items-start justify-center pt-[10vh]">
           <div className="w-full max-w-lg mx-4 rounded-2xl border border-surface-200 bg-surface-0 shadow-xl" onClick={(e) => e.stopPropagation()}>
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-surface-100">
@@ -411,7 +411,7 @@ export default function PaymentsPage() {
 
       {/* ── Pause Dialog ── */}
       {pauseOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center overflow-y-auto py-6">
+        <div className="fixed inset-0 z-[60] flex items-start justify-center pt-[10vh]">
           <div className="w-full max-w-md mx-4 rounded-2xl border border-surface-200 bg-surface-0 shadow-xl" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between px-6 py-4 border-b border-surface-100">
               <h2 className="text-heading-sm text-surface-900">Pause Payments</h2>

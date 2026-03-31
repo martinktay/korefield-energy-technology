@@ -66,6 +66,21 @@
   ::selection {
     @apply bg-brand-100 text-brand-900;
   }
+
+  /* Round native select dropdown panels (Chromium) */
+  select {
+    border-radius: 0.75rem;
+  }
+  select::part(listbox) {
+    border-radius: 0.75rem;
+    padding: 4px;
+  }
+  /* Webkit: round the dropdown popup */
+  @supports (-webkit-appearance: none) {
+    select {
+      -webkit-border-radius: 0.75rem;
+    }
+  }
 }
 
 @layer components {
