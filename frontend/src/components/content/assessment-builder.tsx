@@ -114,7 +114,7 @@ export function AssessmentBuilder({ questions, onChange }: Props) {
       {questions.length === 0 && (
         <div className="rounded-lg border-2 border-dashed border-surface-300 py-8 text-center">
           <p className="text-body-sm text-surface-500">No questions added yet.</p>
-          <p className="text-caption text-surface-400 mt-1">Click "Add Question" to create assessments for this module.</p>
+          <p className="text-caption text-surface-400 mt-1">Click &quot;Add Question&quot; to create assessments for this module.</p>
         </div>
       )}
 

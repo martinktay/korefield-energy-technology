@@ -19,6 +19,9 @@ export const ENTITY_PREFIXES = [
   'POD', // Pod
   'PDM', // Pod Member
   'WTL', // Waitlist Entry
+  'LWT', // Launch Waitlist Entry
+  'NTF', // Notification
+  'PSB', // Push Subscription
   'FND', // Foundation Progress
   'PGT', // Performance Gate
   'GTA', // Gate Attempt
@@ -26,6 +29,8 @@ export const ENTITY_PREFIXES = [
   'IST', // Installment
   'PRC', // Pricing Config
   'CMP', // Campaign
+  'CPN', // Coupon
+  'CRD', // Coupon Redemption
   'SCH', // Scholarship
   'CPS', // Capstone
   'DEF', // Capstone Defense
@@ -44,6 +49,7 @@ export const ENTITY_PREFIXES = [
   'EML', // Email Log
   'EPR', // Email Preference
   'FIL', // File Upload
+  'APP', // Job Application
 ] as const;
 
 export type EntityPrefix = (typeof ENTITY_PREFIXES)[number];

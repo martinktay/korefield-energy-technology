@@ -19,8 +19,24 @@ import { NotificationModule } from './notification/notification.module';
 import { EmailModule } from './email/email.module';
 import { ProgressModule } from './progress/progress.module';
 import { LogsModule } from './logs/logs.module';
+import { LaunchWaitlistModule } from './launch-waitlist/launch-waitlist.module';
 
 @Module({
-  imports: [CommonModule, EmailModule, AuthModule, EnrollmentModule, ContentModule, PaymentModule, CertificationModule, DashboardModule, RecruitmentModule, FinanceModule, NotificationModule, ProgressModule, LogsModule],
+  imports: [
+    CommonModule,
+    EmailModule,
+    AuthModule,
+    EnrollmentModule,
+    ContentModule,
+    PaymentModule,
+    CertificationModule,
+    DashboardModule,
+    RecruitmentModule,
+    FinanceModule,
+    NotificationModule,
+    ProgressModule,
+    LogsModule,
+    LaunchWaitlistModule,
+  ],
 })
 export class AppModule {}

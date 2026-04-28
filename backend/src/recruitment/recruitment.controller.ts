@@ -17,6 +17,11 @@ import { Roles } from '@common/decorators/roles.decorator';
 import { RecruitmentService } from './recruitment.service';
 import { ApplyDto, UpdateApplicationStatusDto } from './dto';
 
+interface UploadedCvFile {
+  originalname?: string;
+  buffer?: Buffer;
+}
+
 @Controller('careers')
 export class RecruitmentController {
   constructor(private readonly recruitmentService: RecruitmentService) {}
@@ -29,7 +34,7 @@ export class RecruitmentController {
   @UseInterceptors(FileInterceptor('cv'))
   async apply(
     @Body() dto: ApplyDto,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file: UploadedCvFile,
   ) {
     const cvFilename = file?.originalname || 'unknown.pdf';
     const cvText = file?.buffer?.toString('utf-8') || '';

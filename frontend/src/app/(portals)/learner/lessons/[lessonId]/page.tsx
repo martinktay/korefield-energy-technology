@@ -366,19 +366,6 @@ export default function TrackLessonPage() {
     return () => clearTimeout(timer);
   }, [activeTab, codeValue, codeOutput, practiceInput, deliverableInput, submitted, mcqAnswers, mcqShowResults, dragDropMatches, dragDropChecked, reviewAnswers, reviewShowResults, params.lessonId, lesson, progressStore]);
 
-  if (!lesson) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20 text-center">
-        <BookOpen className="w-12 h-12 text-surface-300 mb-4" />
-        <h1 className="text-heading-sm text-surface-900 mb-2">Lesson Not Found</h1>
-        <p className="text-body-sm text-surface-500 mb-6">The lesson you are looking for does not exist or has been moved.</p>
-        <Link href="/learner/lessons" className="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-body-sm font-medium text-white hover:bg-brand-700 transition-colors">
-          <ArrowLeft className="w-4 h-4" /> Back to Lessons
-        </Link>
-      </div>
-    );
-  }
-
   const handleRunCode = useCallback(async () => {
     if (codeRunning) return;
     setCodeRunning(true);
@@ -401,6 +388,19 @@ export default function TrackLessonPage() {
       setCodeRunning(false);
     }
   }, [codeValue, codeRunning]);
+
+  if (!lesson) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-center">
+        <BookOpen className="w-12 h-12 text-surface-300 mb-4" />
+        <h1 className="text-heading-sm text-surface-900 mb-2">Lesson Not Found</h1>
+        <p className="text-body-sm text-surface-500 mb-6">The lesson you are looking for does not exist or has been moved.</p>
+        <Link href="/learner/lessons" className="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-body-sm font-medium text-white hover:bg-brand-700 transition-colors">
+          <ArrowLeft className="w-4 h-4" /> Back to Lessons
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-3xl space-y-6 pb-12">

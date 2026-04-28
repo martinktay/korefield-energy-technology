@@ -59,10 +59,9 @@ function isDuplicate(message: string, stack: string): boolean {
 
   recentErrors.set(key, now);
 
-  // Clean up old entries
-  for (const [k, ts] of recentErrors) {
+  recentErrors.forEach((ts, k) => {
     if (now - ts >= DEDUP_WINDOW_MS) recentErrors.delete(k);
-  }
+  });
 
   return false;
 }

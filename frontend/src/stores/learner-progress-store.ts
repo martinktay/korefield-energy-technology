@@ -208,7 +208,7 @@ export const useLearnerProgressStore = create<LearnerProgressState>()(
       partialize: (state) => ({
         progress: state.progress,
       }),
-      onRehydrate: () => {
+      onRehydrateStorage: () => {
         return (_state, error) => {
           if (!error) {
             // After rehydration, attempt server sync
