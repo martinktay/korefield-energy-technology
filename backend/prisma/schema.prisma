@@ -301,6 +301,21 @@ model WaitlistEntry {
   @@map("waitlist_entries")
 }
 
+model LaunchWaitlistEntry {
+  id               String   @id @default("")
+  email            String   @unique
+  full_name        String?
+  organization     String?
+  role             String?
+  area_of_interest String?  @default("KoreField Academy")
+  source           String?  @default("korefield-academy-coming-soon")
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  @@index([created_at])
+  @@map("launch_waitlist_entries")
+}
+
 // ─── Payment Domain ─────────────────────────────────────────────
 
 enum PaymentPlanType {

@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  output: 'standalone',
+  output: process.platform === 'win32' ? undefined : 'standalone',
 };
 
 module.exports = nextConfig;

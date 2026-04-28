@@ -6,7 +6,6 @@
  * blocking during long-running or infinite-loop code.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-restricted-globals */
 
 declare function importScripts(...urls: string[]): void;
