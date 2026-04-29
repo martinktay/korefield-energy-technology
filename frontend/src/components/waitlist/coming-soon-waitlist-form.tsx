@@ -1,15 +1,19 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
-import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 const WAITLIST_FORM_ENDPOINT =
   process.env.NEXT_PUBLIC_WAITLIST_FORM_ENDPOINT || "https://formspree.io/f/xvzdeyvn";
 
 export function ComingSoonWaitlistForm() {
-  const searchParams = useSearchParams();
-  const isSuccess = searchParams.get("waitlist") === "success";
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setIsSuccess(params.get("waitlist") === "success");
+  }, []);
 
   return (
     <form
