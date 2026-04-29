@@ -220,7 +220,7 @@ export default function LandingPage() {
               </a>
             </div>
             <p className="mt-8 text-sm text-[#434652]">
-              <span className="font-bold text-[#003d37]">?180,000</span> Early Bird Price · Limited Slots
+              <span className="font-bold text-[#003d37]">{"\u20A6"}180,000</span> Early Bird Price · Limited Slots
             </p>
           </div>
         </section>
@@ -265,7 +265,7 @@ export default function LandingPage() {
             <aside className="rounded-3xl border border-[#c3c6d4]/25 bg-[#e9f6fd] p-8 shadow-sm">
               <div className="text-center">
                 <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#003d37]">Investment</p>
-                <p className="mt-4 font-sans text-5xl font-extrabold text-[#003d37]">?180,000</p>
+                <p className="mt-4 font-sans text-5xl font-extrabold text-[#003d37]">{"\u20A6"}180,000</p>
                 <p className="mt-2 text-sm text-[#4c616c]">Early Bird Price</p>
               </div>
               <div className="mt-8 grid grid-cols-3 gap-3">
@@ -382,4 +382,6 @@ export default function LandingPage() {
     </div>
   );
 }
+
+
 
