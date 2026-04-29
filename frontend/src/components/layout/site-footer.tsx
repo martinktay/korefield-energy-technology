@@ -14,6 +14,7 @@ const PORTAL_PREFIXES = ["/learner", "/instructor", "/admin", "/super-admin", "/
 export function SiteFooter() {
   const pathname = usePathname();
   const isPortal = PORTAL_PREFIXES.some((p) => pathname.startsWith(p));
+  if (pathname === "/") return null;
   if (isPortal) return null;
 
   return (
