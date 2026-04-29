@@ -3,9 +3,10 @@
 import { FormEvent, useState } from "react";
 import { ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { apiFetch } from "@/lib/api";
 
 type FormState = "idle" | "submitting" | "success" | "error";
+
+const WAITLIST_FORM_ENDPOINT = process.env.NEXT_PUBLIC_WAITLIST_FORM_ENDPOINT;
 
 export function ComingSoonWaitlistForm() {
   const [state, setState] = useState<FormState>("idle");
@@ -19,8 +20,16 @@ export function ComingSoonWaitlistForm() {
     const formData = new FormData(event.currentTarget);
 
     try {
-      await apiFetch("/launch-waitlist", {
+      if (!WAITLIST_FORM_ENDPOINT) {
+        throw new Error("Waitlist form endpoint is not configured.");
+      }
+
+      const res = await fetch(WAITLIST_FORM_ENDPOINT, {
         method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           email: formData.get("email"),
           full_name: formData.get("full_name"),
@@ -30,8 +39,11 @@ export function ComingSoonWaitlistForm() {
           source: "korefield-academy-coming-soon",
           website: formData.get("website"),
         }),
-        retries: 0,
       });
+
+      if (!res.ok) {
+        throw new Error(`Waitlist signup failed: ${res.status}`);
+      }
 
       event.currentTarget.reset();
       setState("success");
