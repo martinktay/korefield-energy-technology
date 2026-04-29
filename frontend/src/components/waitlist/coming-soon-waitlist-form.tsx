@@ -7,6 +7,12 @@ import { Button } from "@/components/ui/button";
 type FormState = "idle" | "submitting" | "success" | "error";
 
 const WAITLIST_FORM_ENDPOINT = process.env.NEXT_PUBLIC_WAITLIST_FORM_ENDPOINT;
+const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+
+function getBackendWaitlistEndpoint() {
+  if (!API_BASE) return null;
+  return `${API_BASE.replace(/\/$/, "")}/launch-waitlist`;
+}
 
 export function ComingSoonWaitlistForm() {
   const [state, setState] = useState<FormState>("idle");
@@ -20,20 +26,37 @@ export function ComingSoonWaitlistForm() {
     const formData = new FormData(event.currentTarget);
 
     try {
-      if (!WAITLIST_FORM_ENDPOINT) {
+      formData.set("area_of_interest", "KoreField Academy");
+      formData.set("source", "korefield-academy-coming-soon");
+      const backendEndpoint = getBackendWaitlistEndpoint();
+      const endpoint = WAITLIST_FORM_ENDPOINT || backendEndpoint;
+
+      if (!endpoint) {
         throw new Error("Waitlist form endpoint is not configured.");
       }
 
-      formData.set("area_of_interest", "KoreField Academy");
-      formData.set("source", "korefield-academy-coming-soon");
-
-      const res = await fetch(WAITLIST_FORM_ENDPOINT, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-        },
-        body: formData,
-      });
+      const res = WAITLIST_FORM_ENDPOINT
+        ? await fetch(endpoint, {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+            },
+            body: formData,
+          })
+        : await fetch(endpoint, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify({
+              website: String(formData.get("website") || ""),
+              full_name: String(formData.get("full_name") || ""),
+              email: String(formData.get("email") || ""),
+              area_of_interest: String(formData.get("area_of_interest") || ""),
+              source: String(formData.get("source") || ""),
+            }),
+          });
 
       if (!res.ok) {
         throw new Error(`Waitlist signup failed: ${res.status}`);
