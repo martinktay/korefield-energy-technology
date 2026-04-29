@@ -26,17 +26,6 @@ export default function LandingPage() {
           <Link href="/" className="text-heading-sm font-semibold text-brand-700">
             KoreField Academy
           </Link>
-          <div className="flex items-center gap-2">
-            <Link href="/pricing" className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "hidden sm:inline-flex")}>
-              Pricing
-            </Link>
-            <Link href="/team" className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "hidden sm:inline-flex")}>
-              Team
-            </Link>
-            <Link href="/learner/login" className={cn(buttonVariants({ variant: "outline", size: "sm" }))}>
-              Sign in
-            </Link>
-          </div>
         </div>
       </nav>
 
@@ -59,9 +48,6 @@ export default function LandingPage() {
                   Join the waitlist
                   <ArrowUpRight className="size-4" />
                 </a>
-                <Link href="/careers" className={cn(buttonVariants({ size: "lg", variant: "outline" }), "bg-white")}>
-                  Careers
-                </Link>
               </div>
             </div>
 
@@ -115,13 +101,8 @@ export default function LandingPage() {
       </main>
 
       <footer className="border-t border-surface-200 bg-surface-950 px-4 py-8 text-surface-300 sm:px-6 lg:px-8">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mx-auto flex max-w-7xl items-center justify-center">
           <p className="text-body-sm">KoreField Academy is coming soon.</p>
-          <div className="flex gap-4 text-body-sm">
-            <Link href="/privacy" className="hover:text-white">Privacy</Link>
-            <Link href="/terms" className="hover:text-white">Terms</Link>
-            <Link href="/cookies" className="hover:text-white">Cookies</Link>
-          </div>
         </div>
       </footer>
     </div>

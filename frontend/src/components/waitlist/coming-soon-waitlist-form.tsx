@@ -24,21 +24,15 @@ export function ComingSoonWaitlistForm() {
         throw new Error("Waitlist form endpoint is not configured.");
       }
 
+      formData.set("area_of_interest", "KoreField Academy");
+      formData.set("source", "korefield-academy-coming-soon");
+
       const res = await fetch(WAITLIST_FORM_ENDPOINT, {
         method: "POST",
         headers: {
           Accept: "application/json",
-          "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          email: formData.get("email"),
-          full_name: formData.get("full_name"),
-          organization: formData.get("organization"),
-          role: formData.get("role"),
-          area_of_interest: "KoreField Academy",
-          source: "korefield-academy-coming-soon",
-          website: formData.get("website"),
-        }),
+        body: formData,
       });
 
       if (!res.ok) {
