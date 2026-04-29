@@ -8,6 +8,7 @@
 import { useState, useRef, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { Bell, LogOut, Settings, User } from "lucide-react";
 import { useUIStore } from "@/stores/ui-store";
 
@@ -197,7 +198,13 @@ export function TopBar({ portalName, userName = "Kofi Mensah", userRole = "learn
           >
             <span className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold text-white overflow-hidden ${ROLE_COLORS[userRole] || "bg-brand-600"}`}>
               {avatarUrl ? (
-                <img src={avatarUrl} alt={userName} className="h-full w-full object-cover" />
+                <Image
+                  src={avatarUrl}
+                  alt={userName}
+                  width={32}
+                  height={32}
+                  className="h-full w-full object-cover"
+                />
               ) : (
                 getInitials(userName)
               )}
