@@ -58,51 +58,30 @@ export function ComingSoonWaitlistForm() {
       />
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="space-y-2">
-          <span className="text-body-sm font-medium text-surface-700">Full name</span>
+          <span className="text-body-sm font-medium text-surface-700">Your full name</span>
           <input
             name="full_name"
             type="text"
+            required
             maxLength={120}
             className="h-11 w-full rounded-lg border border-surface-300 bg-white px-3 text-body-sm text-surface-900 shadow-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
             placeholder="Your name"
           />
         </label>
         <label className="space-y-2">
-          <span className="text-body-sm font-medium text-surface-700">Work email</span>
+          <span className="text-body-sm font-medium text-surface-700">Email address</span>
           <input
             name="email"
             type="email"
             required
             maxLength={320}
             className="h-11 w-full rounded-lg border border-surface-300 bg-white px-3 text-body-sm text-surface-900 shadow-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
-            placeholder="you@company.com"
-          />
-        </label>
-      </div>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <label className="space-y-2">
-          <span className="text-body-sm font-medium text-surface-700">Organization</span>
-          <input
-            name="organization"
-            type="text"
-            maxLength={160}
-            className="h-11 w-full rounded-lg border border-surface-300 bg-white px-3 text-body-sm text-surface-900 shadow-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
-            placeholder="Company or school"
-          />
-        </label>
-        <label className="space-y-2">
-          <span className="text-body-sm font-medium text-surface-700">Role</span>
-          <input
-            name="role"
-            type="text"
-            maxLength={120}
-            className="h-11 w-full rounded-lg border border-surface-300 bg-white px-3 text-body-sm text-surface-900 shadow-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
-            placeholder="Founder, learner, HR lead"
+            placeholder="you@example.com"
           />
         </label>
       </div>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <Button type="submit" size="lg" className="bg-brand-600 text-white hover:bg-brand-700" disabled={state === "submitting"}>
+        <Button type="submit" size="lg" className="bg-[#06463f] text-white hover:bg-[#053832]" disabled={state === "submitting"}>
           {state === "submitting" ? (
             <Loader2 className="size-4 animate-spin" />
           ) : state === "success" ? (
@@ -113,7 +92,7 @@ export function ComingSoonWaitlistForm() {
           {state === "success" ? "You are on the list" : "Join the waitlist"}
         </Button>
         <p className="text-caption text-surface-500">
-          No spam. We will only contact you about the KoreField Academy launch.
+          No spam. We will only contact you about enrollment updates.
         </p>
       </div>
       {state === "error" && (
