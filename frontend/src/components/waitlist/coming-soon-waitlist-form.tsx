@@ -1,84 +1,37 @@
 "use client";
 
-import { FormEvent, useState } from "react";
-import { ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-
-type FormState = "idle" | "submitting" | "success" | "error";
 
 const WAITLIST_FORM_ENDPOINT =
   process.env.NEXT_PUBLIC_WAITLIST_FORM_ENDPOINT || "https://formspree.io/f/xvzdeyvn";
-const API_BASE = process.env.NEXT_PUBLIC_API_URL;
-
-function getBackendWaitlistEndpoint() {
-  if (!API_BASE) return null;
-  return `${API_BASE.replace(/\/$/, "")}/launch-waitlist`;
-}
 
 export function ComingSoonWaitlistForm() {
-  const [state, setState] = useState<FormState>("idle");
-  const [error, setError] = useState("");
-
-  async function onSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setError("");
-    setState("submitting");
-
-    const formData = new FormData(event.currentTarget);
-
-    try {
-      formData.set("area_of_interest", "KoreField Academy");
-      formData.set("source", "korefield-academy-coming-soon");
-      const backendEndpoint = getBackendWaitlistEndpoint();
-      const endpoint = WAITLIST_FORM_ENDPOINT || backendEndpoint;
-
-      if (!endpoint) {
-        throw new Error("Waitlist form endpoint is not configured.");
-      }
-
-      const res = WAITLIST_FORM_ENDPOINT
-        ? await fetch(endpoint, {
-            method: "POST",
-            headers: {
-              Accept: "application/json",
-            },
-            body: formData,
-          })
-        : await fetch(endpoint, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-            body: JSON.stringify({
-              website: String(formData.get("website") || ""),
-              full_name: String(formData.get("full_name") || ""),
-              email: String(formData.get("email") || ""),
-              area_of_interest: String(formData.get("area_of_interest") || ""),
-              source: String(formData.get("source") || ""),
-            }),
-          });
-
-      if (!res.ok) {
-        throw new Error(`Waitlist signup failed: ${res.status}`);
-      }
-
-      event.currentTarget.reset();
-      setState("success");
-    } catch {
-      setError("We could not add you to the waitlist. Please try again.");
-      setState("error");
-    }
-  }
+  const searchParams = useSearchParams();
+  const isSuccess = searchParams.get("waitlist") === "success";
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4" aria-label="Join the waitlist">
+    <form
+      action={WAITLIST_FORM_ENDPOINT}
+      method="POST"
+      className="space-y-4"
+      aria-label="Join the waitlist"
+    >
       <input
         name="website"
         tabIndex={-1}
         autoComplete="off"
         className="hidden"
         aria-hidden="true"
+      />
+      <input type="hidden" name="area_of_interest" value="KoreField Academy" />
+      <input type="hidden" name="source" value="korefield-academy-coming-soon" />
+      <input type="hidden" name="_subject" value="KoreField Academy Waitlist Signup" />
+      <input
+        type="hidden"
+        name="_next"
+        value="https://academy.korefield.com/?waitlist=success#waitlist"
       />
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="space-y-2">
@@ -105,23 +58,20 @@ export function ComingSoonWaitlistForm() {
         </label>
       </div>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <Button type="submit" size="lg" className="bg-[#06463f] text-white hover:bg-[#053832]" disabled={state === "submitting"}>
-          {state === "submitting" ? (
-            <Loader2 className="size-4 animate-spin" />
-          ) : state === "success" ? (
-            <CheckCircle2 className="size-4" />
-          ) : (
-            <ArrowRight className="size-4" />
-          )}
-          {state === "success" ? "You are on the list" : "Join the waitlist"}
+        <Button type="submit" size="lg" className="bg-[#06463f] text-white hover:bg-[#053832]">
+          <ArrowRight className="size-4" />
+          Join the waitlist
         </Button>
         <p className="text-caption text-surface-500">
           No spam. We will only contact you about enrollment updates.
         </p>
       </div>
-      {state === "error" && (
-        <p className="text-body-sm font-medium text-status-error" role="alert">
-          {error}
+      {isSuccess && (
+        <p className="text-body-sm font-medium text-status-success" role="status">
+          <span className="inline-flex items-center gap-2">
+            <CheckCircle2 className="size-4" />
+            You are on the waitlist. We will keep you posted on enrollment updates.
+          </span>
         </p>
       )}
     </form>
