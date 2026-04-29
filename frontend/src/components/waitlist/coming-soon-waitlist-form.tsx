@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 
 type FormState = "idle" | "submitting" | "success" | "error";
 
-const WAITLIST_FORM_ENDPOINT = process.env.NEXT_PUBLIC_WAITLIST_FORM_ENDPOINT;
+const WAITLIST_FORM_ENDPOINT =
+  process.env.NEXT_PUBLIC_WAITLIST_FORM_ENDPOINT || "https://formspree.io/f/xvzdeyvn";
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
 function getBackendWaitlistEndpoint() {
