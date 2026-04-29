@@ -9,16 +9,52 @@ const WAITLIST_FORM_ENDPOINT =
 
 export function ComingSoonWaitlistForm() {
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     setIsSuccess(params.get("waitlist") === "success");
   }, []);
 
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const response = await fetch(WAITLIST_FORM_ENDPOINT, {
+        method: "POST",
+        body: formData,
+        headers: {
+          Accept: "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Formspree submission failed");
+      }
+
+      form.reset();
+      setIsSuccess(true);
+      if (typeof window !== "undefined") {
+        window.history.replaceState({}, "", `${window.location.pathname}#waitlist`);
+      }
+    } catch (error) {
+      console.error("Waitlist submission failed", error);
+      setSubmitError("We could not add you to the waitlist. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
   return (
     <form
-      action={WAITLIST_FORM_ENDPOINT}
-      method="POST"
+      onSubmit={handleSubmit}
       className="space-y-4"
       aria-label="Join the waitlist"
     >
@@ -32,11 +68,6 @@ export function ComingSoonWaitlistForm() {
       <input type="hidden" name="area_of_interest" value="KoreField Academy" />
       <input type="hidden" name="source" value="korefield-academy-coming-soon" />
       <input type="hidden" name="_subject" value="KoreField Academy Waitlist Signup" />
-      <input
-        type="hidden"
-        name="_next"
-        value="https://academy.korefield.com/?waitlist=success#waitlist"
-      />
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="space-y-2">
           <span className="text-body-sm font-medium text-surface-700">Your full name</span>
@@ -62,9 +93,14 @@ export function ComingSoonWaitlistForm() {
         </label>
       </div>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <Button type="submit" size="lg" className="bg-[#06463f] text-white hover:bg-[#053832]">
+        <Button
+          type="submit"
+          size="lg"
+          disabled={isSubmitting}
+          className="bg-[#06463f] text-white hover:bg-[#053832]"
+        >
           <ArrowRight className="size-4" />
-          Join the waitlist
+          {isSubmitting ? "Joining..." : "Join the waitlist"}
         </Button>
         <p className="text-caption text-surface-500">
           No spam. We will only contact you about enrollment updates.
@@ -76,6 +112,11 @@ export function ComingSoonWaitlistForm() {
             <CheckCircle2 className="size-4" />
             You are on the waitlist. We will keep you posted on enrollment updates.
           </span>
+        </p>
+      )}
+      {submitError && (
+        <p className="text-body-sm font-medium text-status-danger" role="alert">
+          {submitError}
         </p>
       )}
     </form>
