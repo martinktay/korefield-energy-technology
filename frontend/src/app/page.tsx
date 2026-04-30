@@ -127,6 +127,7 @@ const navLinks = [
   { href: "#program", label: "Program" },
   { href: "#academy-philosophy", label: "Philosophy" },
   { href: "#instructor", label: "Instructor" },
+  { href: "#team", label: "Team" },
   { href: "#waitlist", label: "Waitlist", active: true },
 ];
 
@@ -350,6 +351,60 @@ export default function LandingPage() {
               <p className="mt-4 text-base leading-relaxed text-[#434652] sm:text-lg">
                 With professional experience deploying AI systems for enterprise clients across energy, finance, and operations, Martin brings real-world engineering expertise to every session. This is practical, industry-grade AI education.
               </p>
+            </div>
+          </div>
+        </section>
+
+        <section id="team" className="bg-white px-4 py-16 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-6xl">
+            <div className="mx-auto max-w-3xl text-center">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#003d37]">Academy Team</p>
+              <h2 className="mt-2 font-sans text-4xl font-extrabold tracking-tight text-[#111d23]">Built by practitioners who care about access</h2>
+              <p className="mt-4 text-base leading-relaxed text-[#4c616c] sm:text-lg">
+                The Academy is shaped by people who understand both professional technology delivery and the need to make quality tech education practical, affordable, and close to real opportunity.
+              </p>
+            </div>
+
+            <div className="mt-10 grid gap-5 md:grid-cols-2">
+              <article className="rounded-3xl border border-[#c3c6d4]/20 bg-[#f4faff] p-5 shadow-sm sm:p-6">
+                <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
+                  <div className="w-full max-w-[11rem] overflow-hidden rounded-2xl border border-[#003d37]/10 bg-[#d7e4ec] p-1.5 shadow-md shadow-[#111d23]/5">
+                    <div className="relative aspect-square overflow-hidden rounded-[0.95rem]">
+                      <Image
+                        src="/images/martin-tay-instructor.png"
+                        alt="Martin K. Tay"
+                        fill
+                        sizes="11rem"
+                        className="object-cover object-[50%_28%]"
+                      />
+                    </div>
+                  </div>
+                  <div className="text-left">
+                    <h3 className="font-sans text-2xl font-bold text-[#003d37]">Martin K. Tay</h3>
+                    <p className="mt-1 text-xs font-bold uppercase tracking-[0.16em] text-[#4c616c]">Founder and Lead Engineer</p>
+                    <p className="mt-4 text-sm leading-relaxed text-[#434652]">
+                      Leads the Academy curriculum, live instruction, and project-based learning model, connecting classroom progress to practical AI engineering habits.
+                    </p>
+                  </div>
+                </div>
+              </article>
+
+              <article className="rounded-3xl border border-[#c3c6d4]/20 bg-[#f4faff] p-5 shadow-sm sm:p-6">
+                <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
+                  <div className="flex aspect-square w-full max-w-[11rem] items-center justify-center rounded-2xl border border-[#003d37]/10 bg-[linear-gradient(145deg,#d7e4ec,#f7fbfd)] p-1.5 shadow-md shadow-[#111d23]/5">
+                    <div className="flex h-full w-full items-center justify-center rounded-[0.95rem] bg-white/70 font-sans text-4xl font-extrabold text-[#003d37]">
+                      NA
+                    </div>
+                  </div>
+                  <div className="text-left">
+                    <h3 className="font-sans text-2xl font-bold text-[#003d37]">Ngo Alabilo</h3>
+                    <p className="mt-1 text-xs font-bold uppercase tracking-[0.16em] text-[#4c616c]">Technical Partner</p>
+                    <p className="mt-4 text-sm leading-relaxed text-[#434652]">
+                      Supports the technical direction of the Academy experience, helping align the bootcamp, platform roadmap, and learner support systems with real-world delivery standards.
+                    </p>
+                  </div>
+                </div>
+              </article>
             </div>
           </div>
         </section>
