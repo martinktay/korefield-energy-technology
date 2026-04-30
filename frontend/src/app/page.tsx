@@ -332,7 +332,6 @@ export default function LandingPage() {
         <section id="instructor" className="bg-[#d7e4ec] px-4 py-16 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-4xl text-center">
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#003d37]">Your Instructor</p>
-            <h2 className="mt-2 font-sans text-4xl font-extrabold tracking-tight text-[#111d23]">Led by an AI Engineer and Data Scientist</h2>
             <div className="mx-auto mt-8 max-w-2xl rounded-3xl border border-[#c3c6d4]/20 bg-white p-6 shadow-sm sm:p-10">
               <div className="mx-auto mb-7 w-full max-w-[18rem] overflow-hidden rounded-3xl border border-[#003d37]/10 bg-[#d7e4ec] p-2 shadow-lg shadow-[#111d23]/10">
                 <div className="relative aspect-square overflow-hidden rounded-[1.25rem]">
@@ -349,7 +348,7 @@ export default function LandingPage() {
               <h3 className="font-sans text-2xl font-bold text-[#003d37]">Martin K. Tay</h3>
               <p className="mt-2 text-sm font-bold uppercase tracking-[0.16em] text-[#4c616c]">Founder and Lead Engineer, KoreField</p>
               <p className="mt-4 text-base leading-relaxed text-[#434652] sm:text-lg">
-                With professional experience deploying AI systems for enterprise clients across energy, finance, and operations, Martin brings real-world engineering expertise to every session. This is practical, industry-grade AI education.
+                Martin is a Computer Engineer trained in the Russian Federation with an MSc in Data Science and Computational Intelligence from the UK. Across more than 8 years of professional experience spanning Oil and Gas, finance, enterprise operations, and applied AI delivery, he brings practical engineering judgment to every session.
               </p>
             </div>
           </div>
@@ -383,7 +382,7 @@ export default function LandingPage() {
                     <h3 className="font-sans text-2xl font-bold text-[#003d37]">Martin K. Tay</h3>
                     <p className="mt-1 text-xs font-bold uppercase tracking-[0.16em] text-[#4c616c]">Founder and Lead Engineer</p>
                     <p className="mt-4 text-sm leading-relaxed text-[#434652]">
-                      Leads the Academy curriculum, live instruction, and project-based learning model, connecting classroom progress to practical AI engineering habits.
+                      Leads the Academy curriculum, live instruction, and project-based learning model with 8+ years across engineering, data science, Oil and Gas, finance, enterprise operations, and applied AI.
                     </p>
                   </div>
                 </div>
