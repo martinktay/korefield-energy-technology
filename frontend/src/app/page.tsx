@@ -4,13 +4,15 @@ import { ComingSoonWaitlistForm } from "@/components/waitlist/coming-soon-waitli
 
 export const metadata: Metadata = {
   title: "KoreField Academy | AI Holiday Bootcamp",
-  description: "Join the KoreField Academy AI Holiday Bootcamp for senior secondary students to learn Python, build AI agents, and work on real-world projects.",
+  description: "Join KoreField Academy's affordable AI Holiday Bootcamp for senior secondary students to learn Python, build AI agents, and prepare for real tech opportunities.",
   keywords: [
     "KoreField Academy",
     "AI Holiday Bootcamp",
     "AI classes for students",
     "Python bootcamp Nigeria",
     "AI education Lagos",
+    "affordable tech education Nigeria",
+    "tech career training",
     "secondary school coding bootcamp",
   ],
   alternates: {
@@ -18,7 +20,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "KoreField Academy | AI Holiday Bootcamp",
-    description: "Learn Python, build AI agents, and work on real-world projects in KoreField Academy's 8-week holiday bootcamp.",
+    description: "Affordable AI education for students who want to learn Python, build AI agents, and prepare for real tech opportunities.",
     url: "https://academy.korefield.com",
     siteName: "KoreField Academy",
     type: "website",
@@ -34,7 +36,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "KoreField Academy | AI Holiday Bootcamp",
-    description: "Learn Python, build AI agents, and work on real-world projects in KoreField Academy's 8-week holiday bootcamp.",
+    description: "Affordable AI education for students who want to learn Python, build AI agents, and prepare for real tech opportunities.",
     images: ["https://korefield.com/images/sovereign-ai-viz.png"],
   },
 };
@@ -92,7 +94,7 @@ const structuredData = {
       "@id": "https://academy.korefield.com/#ai-holiday-bootcamp",
       name: "AI Holiday Bootcamp",
       description:
-        "An intensive 8-week bootcamp for senior secondary students to learn Python, build AI agents, and work on real-world projects.",
+        "An affordable 8-week bootcamp for senior secondary students to learn Python, build AI agents, and prepare for real tech opportunities without breaking the bank.",
       provider: {
         "@id": "https://academy.korefield.com/#organization",
       },
@@ -121,11 +123,10 @@ const structuredData = {
 };
 
 const navLinks = [
-  { href: "https://korefield.com", label: "Home" },
-  { href: "#waitlist", label: "KoreField Academy", active: true },
-  { href: "https://korefield.com/services", label: "Services" },
-  { href: "https://korefield.com/about", label: "About Us" },
-  { href: "https://korefield.com/contact", label: "Contact" },
+  { href: "#program", label: "Program" },
+  { href: "#academy-philosophy", label: "Philosophy" },
+  { href: "#instructor", label: "Instructor" },
+  { href: "#waitlist", label: "Waitlist", active: true },
 ];
 
 function NavLink({ href, label, active = false }: { href: string; label: string; active?: boolean }) {
@@ -174,7 +175,7 @@ export default function LandingPage() {
               <X className="hidden size-5 group-open:block" />
             </summary>
             <div className="absolute right-0 top-14 w-[min(88vw,22rem)] rounded-3xl border border-[#c3c6d4]/60 bg-[#f4faff] p-5 shadow-2xl">
-              <div className="mb-6 text-lg font-black tracking-tight text-[#003d37]">KETL</div>
+              <div className="mb-6 text-lg font-black tracking-tight text-[#003d37]">KoreField Academy</div>
               <div className="flex flex-col gap-5 text-xl font-bold">
                 {navLinks.map((link) => (
                   <NavLink key={link.label} href={link.href} label={link.label} active={link.active} />
@@ -225,7 +226,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="border-y border-[#c3c6d4]/35 bg-white px-4 py-16 sm:px-6 lg:px-8">
+        <section id="program" className="border-y border-[#c3c6d4]/35 bg-white px-4 py-16 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-6xl">
             <div className="text-center">
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#003d37]">Program Overview</p>
@@ -243,6 +244,35 @@ export default function LandingPage() {
                   </div>
                 );
               })}
+            </div>
+          </div>
+        </section>
+
+        <section id="academy-philosophy" className="bg-[#e9f6fd] px-4 py-16 sm:px-6 lg:px-8">
+          <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#003d37]">About the Academy</p>
+              <h2 className="mt-2 font-sans text-4xl font-extrabold tracking-tight text-[#111d23]">A practical path into tech that does not break the bank</h2>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="rounded-2xl border border-[#c3c6d4]/20 bg-white p-6 shadow-sm">
+                <h3 className="text-lg font-bold text-[#003d37]">Affordable by Design</h3>
+                <p className="mt-3 text-sm leading-relaxed text-[#4c616c]">
+                  KoreField Academy exists for families who want serious tech education without paying luxury-school prices. We keep the offer focused: live teaching, real projects, mentorship, and a clear learning path.
+                </p>
+              </div>
+              <div className="rounded-2xl border border-[#c3c6d4]/20 bg-white p-6 shadow-sm">
+                <h3 className="text-lg font-bold text-[#003d37]">Job-Ready Thinking</h3>
+                <p className="mt-3 text-sm leading-relaxed text-[#4c616c]">
+                  Our philosophy is simple: students should learn skills that can grow into internships, freelance work, scholarships, and future jobs. The goal is not just to finish lessons, but to build confidence with tools used in the real world.
+                </p>
+              </div>
+              <div className="rounded-2xl border border-[#c3c6d4]/20 bg-white p-6 shadow-sm sm:col-span-2">
+                <h3 className="text-lg font-bold text-[#003d37]">Talent First, Platform Next</h3>
+                <p className="mt-3 text-sm leading-relaxed text-[#4c616c]">
+                  While the full LMS is being completed, this first cohort runs live via Google Meet so students can begin now. Early learners will move into the platform when it launches, carrying their project work and community access with them.
+                </p>
+              </div>
             </div>
           </div>
         </section>
@@ -297,7 +327,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="bg-[#d7e4ec] px-4 py-16 sm:px-6 lg:px-8">
+        <section id="instructor" className="bg-[#d7e4ec] px-4 py-16 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-4xl text-center">
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#003d37]">Your Instructor</p>
             <h2 className="mt-2 font-sans text-4xl font-extrabold tracking-tight text-[#111d23]">Led by an AI Engineer and Data Scientist</h2>
