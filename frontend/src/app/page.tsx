@@ -1,4 +1,5 @@
 ﻿import type { Metadata } from "next";
+import Image from "next/image";
 import { CalendarDays, CheckCircle2, Flame, Mail, Menu, MessageSquare, Phone, Rocket, School, Users, Video, X } from "lucide-react";
 import { ComingSoonWaitlistForm } from "@/components/waitlist/coming-soon-waitlist-form";
 
@@ -331,11 +332,18 @@ export default function LandingPage() {
           <div className="mx-auto max-w-4xl text-center">
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#003d37]">Your Instructor</p>
             <h2 className="mt-2 font-sans text-4xl font-extrabold tracking-tight text-[#111d23]">Led by an AI Engineer and Data Scientist</h2>
-            <div className="mx-auto mt-8 max-w-2xl rounded-3xl border border-[#c3c6d4]/20 bg-white p-8 shadow-sm sm:p-10">
-              <div className="mx-auto mb-6 flex aspect-[3/4] w-full max-w-[16rem] flex-col justify-between overflow-hidden rounded-3xl border border-[#003d37]/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.28)_0%,rgba(0,61,55,0.18)_100%)] p-4 text-center shadow-lg shadow-[#111d23]/10">
-                <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#434652]">Professional Headshot</span>
-                <span className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-white/80 font-sans text-3xl font-extrabold text-[#003d37]">MT</span>
-                <span className="mx-auto max-w-[12rem] text-[11px] font-bold uppercase tracking-[0.16em] text-[#003d37]">AI Engineer and Data Scientist</span>
+            <div className="mx-auto mt-8 max-w-2xl rounded-3xl border border-[#c3c6d4]/20 bg-white p-6 shadow-sm sm:p-10">
+              <div className="mx-auto mb-7 w-full max-w-[18rem] overflow-hidden rounded-3xl border border-[#003d37]/10 bg-[#d7e4ec] p-2 shadow-lg shadow-[#111d23]/10">
+                <div className="relative aspect-square overflow-hidden rounded-[1.25rem]">
+                  <Image
+                    src="/images/martin-tay-instructor.png"
+                    alt="Martin K. Tay, Founder and Lead Engineer of KoreField"
+                    fill
+                    sizes="(min-width: 640px) 18rem, 82vw"
+                    className="object-cover object-[50%_28%]"
+                    priority
+                  />
+                </div>
               </div>
               <h3 className="font-sans text-2xl font-bold text-[#003d37]">Martin K. Tay</h3>
               <p className="mt-2 text-sm font-bold uppercase tracking-[0.16em] text-[#4c616c]">Founder and Lead Engineer, KoreField</p>
