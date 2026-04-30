@@ -396,10 +396,10 @@ export default function LandingPage() {
                     </div>
                   </div>
                   <div className="text-left">
-                    <h3 className="font-sans text-2xl font-bold text-[#003d37]">Ngo Alabilo</h3>
+                    <h3 className="font-sans text-2xl font-bold text-[#003d37]">Ngo Alalibo</h3>
                     <p className="mt-1 text-xs font-bold uppercase tracking-[0.16em] text-[#4c616c]">Technical Partner</p>
                     <p className="mt-4 text-sm leading-relaxed text-[#434652]">
-                      Supports the technical direction of the Academy experience, helping align the bootcamp, platform roadmap, and learner support systems with real-world delivery standards.
+                      Brings a wealth of software engineering experience across fintech and edtech, supporting the Academy&apos;s technical direction, platform roadmap, and learner support systems with real-world delivery standards.
                     </p>
                   </div>
                 </div>
