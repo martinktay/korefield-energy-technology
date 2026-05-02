@@ -153,8 +153,19 @@ export default function LandingPage() {
       />
       <nav className="sticky top-0 z-50 border-b border-[#c3c6d4]/40 bg-[rgba(244,250,255,0.9)] backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <a href="https://korefield.com" className="font-sans text-xl font-black tracking-tight text-[#003d37]">
-            KoreField Academy
+          <a href="https://korefield.com" className="inline-flex items-center gap-3 font-sans text-xl font-black tracking-tight text-[#003d37]">
+            <Image
+              src="/images/korefield-logo.png"
+              alt="KoreField"
+              width={36}
+              height={36}
+              className="h-9 w-9 rounded-xl object-cover shadow-md shadow-[#003d37]/15"
+              priority
+            />
+            <span className="flex flex-col leading-none">
+              <span className="text-xl font-black tracking-tight text-[#003d37]">KoreField</span>
+              <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#4c616c]">Academy</span>
+            </span>
           </a>
 
           <div className="hidden items-center gap-8 text-sm md:flex">
@@ -461,13 +472,52 @@ export default function LandingPage() {
         </section>
       </main>
 
-      <footer className="bg-[#031817] px-4 py-8 text-white/75 sm:px-6 lg:px-8">
-        <div className="mx-auto flex max-w-7xl flex-col gap-3 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left">
-          <div>
-            <p className="text-sm font-semibold text-white">KoreField Academy</p>
-            <p className="text-xs">KoreField Academy is under active development.</p>
+      <footer className="border-t border-white/10 bg-[#020202] px-4 py-14 text-white/75 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-6xl">
+          <div className="grid gap-10 md:grid-cols-[1.2fr_0.8fr_0.9fr]">
+            <div>
+              <div className="inline-flex items-center gap-3">
+                <Image
+                  src="/images/korefield-logo.png"
+                  alt="KoreField"
+                  width={44}
+                  height={44}
+                  className="h-11 w-11 rounded-xl object-cover shadow-md shadow-[#95d400]/10"
+                />
+                <div>
+                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#95d400]">KoreField Academy</p>
+                  <p className="text-xl font-black tracking-tight text-white">Build Real AI Systems</p>
+                </div>
+              </div>
+              <p className="mt-4 max-w-md text-sm leading-relaxed text-white/65">
+                The Academy focuses on practical, affordable AI education, live instruction, and a pathway that connects learning to real opportunity.
+              </p>
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/45">Quick Links</p>
+              <div className="mt-4 flex flex-col gap-3 text-sm">
+                <a className="hover:text-[#95d400] transition-colors" href="#program">Program</a>
+                <a className="hover:text-[#95d400] transition-colors" href="#academy-philosophy">Philosophy</a>
+                <a className="hover:text-[#95d400] transition-colors" href="#instructor">Instructor</a>
+                <a className="hover:text-[#95d400] transition-colors" href="#team">Team</a>
+                <a className="hover:text-[#95d400] transition-colors" href="#waitlist">Waitlist</a>
+                <a className="hover:text-[#95d400] transition-colors" href="https://korefield.com/">Official Site</a>
+              </div>
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/45">Contact</p>
+              <div className="mt-4 flex flex-col gap-3 text-sm">
+                <a className="hover:text-[#95d400] transition-colors" href="https://wa.me/2347033075594?text=Hello%20KoreField%2C%20I%20want%20to%20join%20the%20Academy.">WhatsApp: +234 703 307 5594</a>
+                <a className="hover:text-[#95d400] transition-colors" href="mailto:enquiry@korefield.com">enquiry@korefield.com</a>
+                <p>32 Oyelegunde Street, Beckley Estate, U-Turn Bus Stop, Lagos State, Nigeria</p>
+                <a className="hover:text-[#95d400] transition-colors" href="https://academy.korefield.com/">academy.korefield.com</a>
+              </div>
+            </div>
           </div>
-          <p className="text-xs">Lagos, Nigeria · academy.korefield.com</p>
+          <div className="mt-10 flex flex-col gap-3 border-t border-white/10 pt-6 text-xs text-white/45 sm:flex-row sm:items-center sm:justify-between">
+            <p>KoreField Academy is under active development.</p>
+            <p>Lagos, Nigeria · academy.korefield.com · Connected to korefield.com</p>
+          </div>
         </div>
       </footer>
     </div>
