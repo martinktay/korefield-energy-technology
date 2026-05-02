@@ -231,17 +231,17 @@ export default function LandingPage() {
           <div className="mx-auto max-w-6xl">
             <div className="text-center">
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#003d37]">Program Overview</p>
-              <h2 className="mt-2 font-sans text-4xl font-extrabold tracking-tight text-[#111d23]">What You&apos;re Signing Up For</h2>
+              <h2 className="mt-2 font-sans text-3xl font-extrabold tracking-tight text-[#111d23] sm:text-4xl">What You&apos;re Signing Up For</h2>
             </div>
-            <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-8 grid gap-3 sm:mt-10 sm:grid-cols-2 lg:grid-cols-4">
               {overview.map((item) => {
                 const Icon = item.icon;
                 return (
-                  <div key={item.label} className="flex min-h-[8rem] flex-col justify-center rounded-2xl border border-[#c3c6d4]/20 bg-[#f7fbfd] p-5 text-left shadow-sm sm:p-6">
-                    <Icon className="size-6 text-[#003d37]" />
-                    <p className="mt-4 font-sans text-2xl font-extrabold text-[#003d37] sm:text-3xl">{item.value}</p>
+                  <div key={item.label} className="flex min-h-[6.5rem] flex-col justify-center rounded-2xl border border-[#c3c6d4]/20 bg-[#f7fbfd] p-4 text-left shadow-sm sm:min-h-[7rem] sm:p-5">
+                    <Icon className="size-5 text-[#003d37]" />
+                    <p className="mt-3 font-sans text-xl font-extrabold text-[#003d37] sm:text-2xl">{item.value}</p>
                     <p className="text-sm font-bold text-[#111d23]">{item.label}</p>
-                    <p className="text-xs leading-relaxed text-[#4c616c]">{item.detail}</p>
+                    <p className="text-[11px] leading-relaxed text-[#4c616c]">{item.detail}</p>
                   </div>
                 );
               })}
