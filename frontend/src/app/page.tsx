@@ -74,7 +74,6 @@ const structuredData = {
       "@type": "EducationalOrganization",
       "@id": "https://academy.korefield.com/#organization",
       name: "KoreField Academy",
-      alternateName: "KETL Academy",
       url: "https://academy.korefield.com",
       parentOrganization: {
         "@type": "Organization",
@@ -155,7 +154,7 @@ export default function LandingPage() {
       <nav className="sticky top-0 z-50 border-b border-[#c3c6d4]/40 bg-[rgba(244,250,255,0.9)] backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <a href="https://korefield.com" className="font-sans text-xl font-black tracking-tight text-[#003d37]">
-            KETL
+            KoreField Academy
           </a>
 
           <div className="hidden items-center gap-8 text-sm md:flex">
@@ -166,7 +165,7 @@ export default function LandingPage() {
 
           <a
             href={whatsappUrl}
-            className="hidden rounded-lg bg-gradient-to-br from-[#003d37] to-[#12554f] px-5 py-2.5 text-sm font-bold tracking-tight text-white shadow-sm transition-transform active:scale-95 md:inline-flex"
+            className="hidden rounded-lg bg-[#003d37] px-4 py-2 text-sm font-bold tracking-tight text-white transition-colors hover:bg-[#12554f] md:inline-flex"
           >
             Enroll Now
           </a>
@@ -177,7 +176,7 @@ export default function LandingPage() {
               <X className="hidden size-5 group-open:block" />
             </summary>
             <div className="absolute right-0 top-14 w-[min(88vw,22rem)] rounded-3xl border border-[#c3c6d4]/60 bg-[#f4faff] p-5 shadow-2xl">
-              <div className="mb-6 text-lg font-black tracking-tight text-[#003d37]">KoreField Academy</div>
+              <div className="mb-6 text-lg font-black tracking-tight text-[#003d37]">Academy Menu</div>
               <div className="flex flex-col gap-5 text-xl font-bold">
                 {navLinks.map((link) => (
                   <NavLink key={link.label} href={link.href} label={link.label} active={link.active} />
@@ -185,7 +184,7 @@ export default function LandingPage() {
               </div>
               <a
                 href={whatsappUrl}
-                className="mt-8 inline-flex w-full items-center justify-center rounded-xl bg-[#003d37] px-5 py-3.5 text-base font-bold text-white"
+                className="mt-8 inline-flex w-full items-center justify-center rounded-lg bg-[#003d37] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#12554f]"
               >
                 Enroll Now
               </a>
@@ -212,12 +211,12 @@ export default function LandingPage() {
             <p className="mx-auto mt-5 max-w-3xl text-lg leading-relaxed text-[#4c616c]">
               An intensive 8-week bootcamp designed for senior secondary students who want to learn Python, build AI agents, and work on real-world projects, led by a practising AI Engineer and Data Scientist.
             </p>
-            <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
-              <a href={whatsappUrl} className="inline-flex min-h-[3.25rem] items-center justify-center gap-3 rounded-xl bg-[#003d37] px-7 py-3.5 text-base font-bold text-white shadow-lg shadow-[#003d37]/10 transition-all hover:bg-[#12554f]">
+            <div className="mt-10 flex flex-col justify-center gap-3 sm:flex-row">
+              <a href={whatsappUrl} className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#003d37] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#12554f]">
                 <MessageSquare className="size-5" />
                 Enroll via WhatsApp
               </a>
-              <a href="#waitlist" className="inline-flex min-h-[3.25rem] items-center justify-center gap-3 rounded-xl bg-[#cfe6f2] px-7 py-3.5 text-base font-bold text-[#003d37] transition-all hover:bg-[#bdd8e6]">
+              <a href="#waitlist" className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#cfe6f2] px-4 py-2.5 text-sm font-semibold text-[#003d37] transition-colors hover:bg-[#bdd8e6]">
                 <Mail className="size-5" />
                 Join Waitlist
               </a>
@@ -238,11 +237,11 @@ export default function LandingPage() {
               {overview.map((item) => {
                 const Icon = item.icon;
                 return (
-                  <div key={item.label} className="flex min-h-[8rem] flex-col justify-center rounded-2xl border border-[#c3c6d4]/20 bg-[#f7fbfd] p-6 text-center shadow-sm">
-                    <Icon className="mx-auto size-7 text-[#003d37]" />
-                    <p className="mt-4 font-sans text-3xl font-extrabold text-[#003d37]">{item.value}</p>
+                  <div key={item.label} className="flex min-h-[8rem] flex-col justify-center rounded-2xl border border-[#c3c6d4]/20 bg-[#f7fbfd] p-5 text-left shadow-sm sm:p-6">
+                    <Icon className="size-6 text-[#003d37]" />
+                    <p className="mt-4 font-sans text-2xl font-extrabold text-[#003d37] sm:text-3xl">{item.value}</p>
                     <p className="text-sm font-bold text-[#111d23]">{item.label}</p>
-                    <p className="text-xs text-[#4c616c]">{item.detail}</p>
+                    <p className="text-xs leading-relaxed text-[#4c616c]">{item.detail}</p>
                   </div>
                 );
               })}
@@ -252,24 +251,24 @@ export default function LandingPage() {
 
         <section id="academy-philosophy" className="bg-[#e9f6fd] px-4 py-16 sm:px-6 lg:px-8">
           <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
-            <div>
+            <div className="text-center lg:text-left">
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#003d37]">About the Academy</p>
-              <h2 className="mt-2 font-sans text-4xl font-extrabold tracking-tight text-[#111d23]">A practical path into tech that does not break the bank</h2>
+              <h2 className="mt-2 font-sans text-3xl font-extrabold tracking-tight text-[#111d23] sm:text-4xl">A practical path into tech that does not break the bank</h2>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="rounded-2xl border border-[#c3c6d4]/20 bg-white p-6 shadow-sm">
+              <div className="rounded-2xl border border-[#c3c6d4]/20 bg-white p-5 shadow-sm sm:p-6">
                 <h3 className="text-lg font-bold text-[#003d37]">Affordable by Design</h3>
                 <p className="mt-3 text-sm leading-relaxed text-[#4c616c]">
                   KoreField Academy exists for families who want serious tech education without paying luxury-school prices. We keep the offer focused: live teaching, real projects, mentorship, and a clear learning path.
                 </p>
               </div>
-              <div className="rounded-2xl border border-[#c3c6d4]/20 bg-white p-6 shadow-sm">
+              <div className="rounded-2xl border border-[#c3c6d4]/20 bg-white p-5 shadow-sm sm:p-6">
                 <h3 className="text-lg font-bold text-[#003d37]">Job-Ready Thinking</h3>
                 <p className="mt-3 text-sm leading-relaxed text-[#4c616c]">
                   Our philosophy is simple: students should learn skills that can grow into internships, freelance work, scholarships, and future jobs. The goal is not just to finish lessons, but to build confidence with tools used in the real world.
                 </p>
               </div>
-              <div className="rounded-2xl border border-[#c3c6d4]/20 bg-white p-6 shadow-sm sm:col-span-2">
+              <div className="rounded-2xl border border-[#c3c6d4]/20 bg-white p-5 shadow-sm sm:col-span-2 sm:p-6">
                 <h3 className="text-lg font-bold text-[#003d37]">Talent First, Platform Next</h3>
                 <p className="mt-3 text-sm leading-relaxed text-[#4c616c]">
                   While the full LMS is being completed, this first cohort runs live via Google Meet so students can begin now. Early learners will move into the platform when it launches, carrying their project work and community access with them.
@@ -283,33 +282,33 @@ export default function LandingPage() {
           <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[0.95fr_1.05fr]">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#003662]">What You&apos;ll Learn</p>
-              <h2 className="mt-2 font-sans text-4xl font-extrabold tracking-tight text-[#111d23]">Skills That Actually Matter</h2>
+              <h2 className="mt-2 font-sans text-3xl font-extrabold tracking-tight text-[#111d23] sm:text-4xl">Skills That Actually Matter</h2>
               <div className="mt-8 grid gap-4 sm:grid-cols-2">
                 {outcomes.map(([title, description]) => (
-                  <div key={title} className="rounded-2xl border border-[#c3c6d4]/20 bg-[#e9f6fd] p-6 shadow-sm">
+                  <div key={title} className="rounded-2xl border border-[#c3c6d4]/20 bg-[#e9f6fd] p-5 shadow-sm sm:p-6">
                     <Rocket className="size-6 text-[#003d37]" />
-                    <h3 className="mt-4 text-lg font-bold text-[#111d23]">{title}</h3>
+                    <h3 className="mt-4 text-base font-bold text-[#111d23] sm:text-lg">{title}</h3>
                     <p className="mt-2 text-sm leading-relaxed text-[#4c616c]">{description}</p>
                   </div>
                 ))}
               </div>
             </div>
-            <aside className="rounded-3xl border border-[#c3c6d4]/25 bg-[#e9f6fd] p-8 shadow-sm">
+            <aside className="rounded-3xl border border-[#c3c6d4]/25 bg-[#e9f6fd] p-6 shadow-sm sm:p-8">
               <div className="text-center">
                 <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#003d37]">Investment</p>
-                <p className="mt-4 font-sans text-5xl font-extrabold text-[#003d37]">{"\u20A6"}180,000</p>
+                <p className="mt-4 font-sans text-4xl font-extrabold text-[#003d37] sm:text-5xl">{"\u20A6"}180,000</p>
                 <p className="mt-2 text-sm text-[#4c616c]">Early Bird Price</p>
               </div>
-              <div className="mt-8 grid grid-cols-3 gap-3">
-                <div className="flex min-h-[5.25rem] flex-col justify-center rounded-2xl border border-[#c3c6d4]/15 bg-white p-4 text-center">
+              <div className="mt-8 grid grid-cols-3 gap-2 sm:gap-3">
+                <div className="flex min-h-[4.5rem] flex-col justify-center rounded-2xl border border-[#c3c6d4]/15 bg-white p-3 text-center sm:min-h-[5.25rem] sm:p-4">
                   <div className="text-lg font-extrabold text-[#003d37]">8</div>
                   <div className="mt-1 text-[11px] font-bold uppercase tracking-[0.16em] text-[#4c616c]">Weeks</div>
                 </div>
-                <div className="flex min-h-[5.25rem] flex-col justify-center rounded-2xl border border-[#c3c6d4]/15 bg-white p-4 text-center">
+                <div className="flex min-h-[4.5rem] flex-col justify-center rounded-2xl border border-[#c3c6d4]/15 bg-white p-3 text-center sm:min-h-[5.25rem] sm:p-4">
                   <div className="text-lg font-extrabold text-[#003d37]">12</div>
                   <div className="mt-1 text-[11px] font-bold uppercase tracking-[0.16em] text-[#4c616c]">Sessions</div>
                 </div>
-                <div className="flex min-h-[5.25rem] flex-col justify-center rounded-2xl border border-[#c3c6d4]/15 bg-white p-4 text-center">
+                <div className="flex min-h-[4.5rem] flex-col justify-center rounded-2xl border border-[#c3c6d4]/15 bg-white p-3 text-center sm:min-h-[5.25rem] sm:p-4">
                   <div className="text-lg font-extrabold text-[#003d37]">Live</div>
                   <div className="mt-1 text-[11px] font-bold uppercase tracking-[0.16em] text-[#4c616c]">Mentoring</div>
                 </div>
@@ -322,7 +321,7 @@ export default function LandingPage() {
                   </div>
                 ))}
               </div>
-              <a href={whatsappUrl} className="mt-8 inline-flex min-h-[3.25rem] w-full items-center justify-center rounded-xl bg-[#003d37] px-7 py-3.5 text-base font-bold text-white hover:bg-[#12554f]">
+              <a href={whatsappUrl} className="mt-8 inline-flex w-full items-center justify-center rounded-lg bg-[#003d37] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#12554f]">
                 Enroll Now
               </a>
             </aside>
@@ -332,8 +331,8 @@ export default function LandingPage() {
         <section id="instructor" className="bg-[#d7e4ec] px-4 py-16 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-4xl text-center">
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#003d37]">Your Instructor</p>
-            <div className="mx-auto mt-8 max-w-2xl rounded-3xl border border-[#c3c6d4]/20 bg-white p-6 shadow-sm sm:p-10">
-              <div className="mx-auto mb-7 w-full max-w-[18rem] overflow-hidden rounded-3xl border border-[#003d37]/10 bg-[#d7e4ec] p-2 shadow-lg shadow-[#111d23]/10">
+            <div className="mx-auto mt-8 max-w-2xl rounded-3xl border border-[#c3c6d4]/20 bg-white p-5 shadow-sm sm:p-10">
+              <div className="mx-auto mb-6 w-full max-w-[16rem] overflow-hidden rounded-3xl border border-[#003d37]/10 bg-[#d7e4ec] p-2 shadow-lg shadow-[#111d23]/10 sm:max-w-[18rem]">
                 <div className="relative aspect-square overflow-hidden rounded-[1.25rem]">
                   <Image
                     src="/images/martin-tay-instructor.png"
@@ -365,9 +364,9 @@ export default function LandingPage() {
             </div>
 
             <div className="mt-10 grid gap-5 md:grid-cols-2">
-              <article className="rounded-3xl border border-[#c3c6d4]/20 bg-[#f4faff] p-5 shadow-sm sm:p-6">
-                <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
-                  <div className="w-full max-w-[11rem] overflow-hidden rounded-2xl border border-[#003d37]/10 bg-[#d7e4ec] p-1.5 shadow-md shadow-[#111d23]/5">
+              <article className="rounded-3xl border border-[#c3c6d4]/20 bg-[#f4faff] p-4 shadow-sm sm:p-6">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
+                  <div className="mx-auto w-full max-w-[9.5rem] overflow-hidden rounded-2xl border border-[#003d37]/10 bg-[#d7e4ec] p-1.5 shadow-md shadow-[#111d23]/5 sm:mx-0 sm:max-w-[11rem]">
                     <div className="relative aspect-square overflow-hidden rounded-[0.95rem]">
                       <Image
                         src="/images/martin-tay-instructor.png"
@@ -388,9 +387,9 @@ export default function LandingPage() {
                 </div>
               </article>
 
-              <article className="rounded-3xl border border-[#c3c6d4]/20 bg-[#f4faff] p-5 shadow-sm sm:p-6">
-                <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
-                  <div className="flex aspect-square w-full max-w-[11rem] items-center justify-center rounded-2xl border border-[#003d37]/10 bg-[linear-gradient(145deg,#d7e4ec,#f7fbfd)] p-1.5 shadow-md shadow-[#111d23]/5">
+              <article className="rounded-3xl border border-[#c3c6d4]/20 bg-[#f4faff] p-4 shadow-sm sm:p-6">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
+                  <div className="mx-auto flex aspect-square w-full max-w-[9.5rem] items-center justify-center rounded-2xl border border-[#003d37]/10 bg-[linear-gradient(145deg,#d7e4ec,#f7fbfd)] p-1.5 shadow-md shadow-[#111d23]/5 sm:mx-0 sm:max-w-[11rem]">
                     <div className="flex h-full w-full items-center justify-center rounded-[0.95rem] bg-white/70 font-sans text-4xl font-extrabold text-[#003d37]">
                       NA
                     </div>
@@ -421,9 +420,9 @@ export default function LandingPage() {
 
         <section id="waitlist" className="bg-white px-4 py-16 sm:px-6 lg:px-8">
           <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.92fr_1.08fr]">
-            <div className="rounded-3xl border border-[#c3c6d4]/20 bg-[#e3f0f8] p-8 shadow-sm sm:p-10">
+            <div className="rounded-3xl border border-[#c3c6d4]/20 bg-[#e3f0f8] p-6 shadow-sm sm:p-10">
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#003d37]">Join the Waitlist</p>
-              <h2 className="mt-3 font-sans text-3xl font-extrabold tracking-tight text-[#111d23] sm:text-4xl">Get notified about enrollment updates</h2>
+              <h2 className="mt-3 font-sans text-2xl font-extrabold tracking-tight text-[#111d23] sm:text-4xl">Get notified about enrollment updates</h2>
               <p className="mt-4 text-base leading-relaxed text-[#4c616c] sm:text-lg">
                 Join the list for enrollment updates, curriculum previews, and early-bird offers.
               </p>
@@ -438,7 +437,7 @@ export default function LandingPage() {
                 </div>
               </div>
             </div>
-            <div className="rounded-3xl border border-[#c3c6d4]/20 bg-[#f7fbfd] p-5 shadow-sm sm:p-8">
+            <div className="rounded-3xl border border-[#c3c6d4]/20 bg-[#f7fbfd] p-4 shadow-sm sm:p-8">
               <ComingSoonWaitlistForm />
             </div>
           </div>
@@ -449,12 +448,12 @@ export default function LandingPage() {
           <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-[#8bc8bf] sm:text-lg">
             Limited spots available. Learn from a practising AI engineer while the full Academy platform is being prepared.
           </p>
-          <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <a href={whatsappUrl} className="inline-flex min-h-[3.25rem] items-center justify-center gap-3 rounded-xl bg-white px-7 py-3.5 text-base font-extrabold text-[#003d37] hover:bg-[#eaf4f7]">
+          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <a href={whatsappUrl} className="inline-flex items-center justify-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-[#003d37] transition-colors hover:bg-[#eaf4f7]">
               <MessageSquare className="size-5" />
               WhatsApp Us
             </a>
-            <a href="tel:+2347033075594" className="inline-flex min-h-[3.25rem] items-center justify-center gap-3 rounded-xl border border-white/30 px-7 py-3.5 text-base font-bold text-white hover:bg-white/10">
+            <a href="tel:+2347033075594" className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/30 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-white/10">
               <Phone className="size-5" />
               +234 703 307 5594
             </a>
@@ -465,7 +464,7 @@ export default function LandingPage() {
       <footer className="bg-[#031817] px-4 py-8 text-white/75 sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left">
           <div>
-            <p className="text-sm font-semibold text-white">KoreField Energy & Technology Ltd (KETL)</p>
+            <p className="text-sm font-semibold text-white">KoreField Academy</p>
             <p className="text-xs">KoreField Academy is under active development.</p>
           </div>
           <p className="text-xs">Lagos, Nigeria · academy.korefield.com</p>
