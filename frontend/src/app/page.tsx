@@ -237,8 +237,8 @@ export default function LandingPage() {
               {overview.map((item) => {
                 const Icon = item.icon;
                 return (
-                  <div key={item.label} className="flex min-h-[6.5rem] flex-col justify-center rounded-2xl border border-[#c3c6d4]/20 bg-[#f7fbfd] p-4 text-left shadow-sm sm:min-h-[7rem] sm:p-5">
-                    <Icon className="size-5 text-[#003d37]" />
+                  <div key={item.label} className="flex min-h-[6.5rem] flex-col justify-center rounded-2xl border border-[#c3c6d4]/20 bg-[#f7fbfd] p-4 text-center shadow-sm sm:min-h-[7rem] sm:p-5">
+                    <Icon className="mx-auto size-5 text-[#003d37]" />
                     <p className="mt-3 font-sans text-xl font-extrabold text-[#003d37] sm:text-2xl">{item.value}</p>
                     <p className="text-sm font-bold text-[#111d23]">{item.label}</p>
                     <p className="text-[11px] leading-relaxed text-[#4c616c]">{item.detail}</p>
