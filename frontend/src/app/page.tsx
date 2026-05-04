@@ -460,11 +460,11 @@ export default function LandingPage() {
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#003d37]">Academy Team</p>
               <h2 className="mt-2 font-sans text-4xl font-extrabold tracking-tight text-[#111d23]">Built by practitioners who care about access</h2>
               <p className="mt-4 text-base leading-relaxed text-[#4c616c] sm:text-lg">
-                The Academy is shaped by lead instructors, specialist faculty, and partners who combine rigorous delivery with real care for access—so learners get both world-class standards and human support.
+                The Academy is shaped by lead instructors and specialist faculty who combine rigorous delivery with real care for access—so learners get both world-class standards and human support.
               </p>
             </div>
 
-            <div className="mt-10 grid gap-5 md:grid-cols-2">
+            <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               <article className="rounded-3xl border border-[#c3c6d4]/20 bg-[#f4faff] p-4 shadow-sm sm:p-6">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
                   <div className="mx-auto w-full max-w-[9.5rem] overflow-hidden rounded-2xl border border-[#003d37]/10 bg-[#d7e4ec] p-1.5 shadow-md shadow-[#111d23]/5 sm:mx-0 sm:max-w-[11rem]">
@@ -529,23 +529,6 @@ export default function LandingPage() {
                     <p className="mt-1 text-xs font-bold uppercase tracking-[0.16em] text-[#4c616c]">AI/ML Instructor &amp; Mentor</p>
                     <p className="mt-4 text-sm leading-relaxed text-[#434652]">
                       Michael is a senior AI/ML engineer who brings current, university-level depth into the classroom: he is completing a BSc in Artificial Intelligence at Johannes Kepler Universität Linz alongside active industry work. He has mentored engineers in structured programs and focuses on clear explanations, sound problem-solving habits, and the same professional standards we expect in real delivery teams.
-                    </p>
-                  </div>
-                </div>
-              </article>
-
-              <article className="rounded-3xl border border-[#c3c6d4]/20 bg-[#f4faff] p-4 shadow-sm sm:p-6">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
-                  <div className="mx-auto flex aspect-square w-full max-w-[9.5rem] items-center justify-center rounded-2xl border border-[#003d37]/10 bg-[linear-gradient(145deg,#d7e4ec,#f7fbfd)] p-1.5 shadow-md shadow-[#111d23]/5 sm:mx-0 sm:max-w-[11rem]">
-                    <div className="flex h-full w-full items-center justify-center rounded-[0.95rem] bg-white/70 font-sans text-4xl font-extrabold text-[#003d37]">
-                      NA
-                    </div>
-                  </div>
-                  <div className="text-center sm:text-left">
-                    <h3 className="font-sans text-2xl font-bold text-[#003d37]">Ngo Alalibo</h3>
-                    <p className="mt-1 text-xs font-bold uppercase tracking-[0.16em] text-[#4c616c]">Technical Partner</p>
-                    <p className="mt-4 text-sm leading-relaxed text-[#434652]">
-                      Brings a wealth of software engineering experience across fintech and edtech, supporting the Academy&apos;s technical direction, platform roadmap, and learner support systems with real-world delivery standards.
                     </p>
                   </div>
                 </div>
