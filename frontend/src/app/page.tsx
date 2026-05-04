@@ -460,7 +460,7 @@ export default function LandingPage() {
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#003d37]">Academy Team</p>
               <h2 className="mt-2 font-sans text-4xl font-extrabold tracking-tight text-[#111d23]">Built by practitioners who care about access</h2>
               <p className="mt-4 text-base leading-relaxed text-[#4c616c] sm:text-lg">
-                The Academy is shaped by people who understand both professional technology delivery and the need to make quality tech education practical, affordable, and close to real opportunity.
+                The Academy is shaped by lead instructors, specialist faculty, and partners who combine rigorous delivery with real care for access—so learners get both world-class standards and human support.
               </p>
             </div>
 
@@ -483,6 +483,40 @@ export default function LandingPage() {
                     <p className="mt-1 text-xs font-bold uppercase tracking-[0.16em] text-[#4c616c]">Founder and Lead Engineer</p>
                     <p className="mt-4 text-sm leading-relaxed text-[#434652]">
                       Leads the Academy curriculum, live instruction, and project-based learning model with 8+ years across engineering, data science, Oil and Gas, finance, enterprise operations, and applied AI.
+                    </p>
+                  </div>
+                </div>
+              </article>
+
+              <article className="rounded-3xl border border-[#c3c6d4]/20 bg-[#f4faff] p-4 shadow-sm sm:p-6">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
+                  <div className="mx-auto flex aspect-square w-full max-w-[9.5rem] items-center justify-center rounded-2xl border border-[#003d37]/10 bg-[linear-gradient(145deg,#dceee4,#f7fbfd)] p-1.5 shadow-md shadow-[#111d23]/5 sm:mx-0 sm:max-w-[11rem]">
+                    <div className="flex h-full w-full items-center justify-center rounded-[0.95rem] bg-white/80 font-sans text-3xl font-extrabold tracking-tight text-[#003d37] sm:text-4xl">
+                      AE
+                    </div>
+                  </div>
+                  <div className="text-left">
+                    <h3 className="font-sans text-2xl font-bold text-[#003d37]">Abigail Emmanuel</h3>
+                    <p className="mt-1 text-xs font-bold uppercase tracking-[0.16em] text-[#4c616c]">Principal Tutor — Mathematics &amp; English</p>
+                    <p className="mt-4 text-sm leading-relaxed text-[#434652]">
+                      Abigail is an outcomes-driven educator with more than eight years of experience helping learners excel in high-stakes pathways—including Common Entrance, IELTS, and the SAT. She tailors every plan to the student in front of her: strengthening foundations, building confidence, and tracking measurable progress from week to week.
+                    </p>
+                  </div>
+                </div>
+              </article>
+
+              <article className="rounded-3xl border border-[#c3c6d4]/20 bg-[#f4faff] p-4 shadow-sm sm:p-6">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
+                  <div className="mx-auto flex aspect-square w-full max-w-[9.5rem] items-center justify-center rounded-2xl border border-[#003d37]/10 bg-[linear-gradient(145deg,#d7e4ec,#eef6fa)] p-1.5 shadow-md shadow-[#111d23]/5 sm:mx-0 sm:max-w-[11rem]">
+                    <div className="flex h-full w-full items-center justify-center rounded-[0.95rem] bg-white/80 font-sans text-3xl font-extrabold tracking-tight text-[#003d37] sm:text-4xl">
+                      MO
+                    </div>
+                  </div>
+                  <div className="text-left">
+                    <h3 className="font-sans text-2xl font-bold text-[#003d37]">Michael Ogu</h3>
+                    <p className="mt-1 text-xs font-bold uppercase tracking-[0.16em] text-[#4c616c]">Senior AI/ML Instructor &amp; Mentor</p>
+                    <p className="mt-4 text-sm leading-relaxed text-[#434652]">
+                      Michael is a senior AI/ML engineer and long-time mentor who has guided engineers through Springboard and shipped real products with the GitStart community (YC S19). He blends full-stack delivery experience with a BSc in Artificial Intelligence at Johannes Kepler Universität Linz—and leads The Bezalels, a nonprofit in Lagos that teaches programming to underserved learners, aligned with KoreField&apos;s access-first mission.
                     </p>
                   </div>
                 </div>
