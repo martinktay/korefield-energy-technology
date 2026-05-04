@@ -1,6 +1,26 @@
 ﻿import type { Metadata } from "next";
 import Image from "next/image";
-import { CalendarDays, CheckCircle2, Flame, Mail, MapPin, Menu, MessageSquare, Phone, Rocket, School, Users, Video, X } from "lucide-react";
+import {
+  CalendarDays,
+  CheckCircle2,
+  Cloud,
+  Code2,
+  Container,
+  Database,
+  FileCode2,
+  Flame,
+  GitBranch,
+  Mail,
+  MapPin,
+  Menu,
+  MessageSquare,
+  Phone,
+  Rocket,
+  School,
+  Users,
+  Video,
+  X,
+} from "lucide-react";
 import { ComingSoonWaitlistForm } from "@/components/waitlist/coming-soon-waitlist-form";
 
 export const metadata: Metadata = {
@@ -176,7 +196,7 @@ export default function LandingPage() {
 
           <a
             href={whatsappUrl}
-            className="hidden rounded-lg bg-[#003d37] px-4 py-2 text-sm font-bold tracking-tight text-white transition-colors hover:bg-[#12554f] md:inline-flex"
+            className="hidden rounded-lg bg-[#003d37] px-3.5 py-1.5 text-sm font-bold tracking-tight text-white transition-colors hover:bg-[#12554f] md:inline-flex"
           >
             Enroll Now
           </a>
@@ -195,7 +215,7 @@ export default function LandingPage() {
               </div>
               <a
                 href={whatsappUrl}
-                className="mt-8 inline-flex w-full items-center justify-center rounded-lg bg-[#003d37] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#12554f]"
+                className="mt-8 inline-flex w-full items-center justify-center rounded-lg bg-[#003d37] px-3.5 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#12554f]"
               >
                 Enroll Now
               </a>
@@ -285,6 +305,75 @@ export default function LandingPage() {
                   While the full LMS is being completed, this first cohort runs live via Google Meet so students can begin now. Early learners will move into the platform when it launches, carrying their project work and community access with them.
                 </p>
               </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-[#e9f6fd] px-4 py-16 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-6xl">
+            <div className="text-center">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#003d37]">Industry Tools</p>
+              <h2 className="mt-2 font-sans text-3xl font-extrabold tracking-tight text-[#111d23] sm:text-4xl">
+                Tools We Work With at KoreField
+              </h2>
+              <p className="mx-auto mt-4 max-w-2xl text-lg text-[#4c616c]">
+                Learn with the same technologies our team uses to build production AI systems at KoreField Energy &amp; Technology.
+              </p>
+            </div>
+            <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {(
+                [
+                  {
+                    title: "Python & PyTorch",
+                    body: "Industry-standard AI development with the most widely used ML stack.",
+                    icon: Code2,
+                    iconWrap: "bg-[#3776ab]/10 text-[#3776ab]",
+                  },
+                  {
+                    title: "LangChain & LangGraph",
+                    body: "Production-ready agents and workflows with composable orchestration.",
+                    icon: GitBranch,
+                    iconWrap: "bg-[#111d23]/10 text-[#111d23]",
+                  },
+                  {
+                    title: "AWS Cloud",
+                    body: "Deploy and scale AI workloads on leading cloud primitives.",
+                    icon: Cloud,
+                    iconWrap: "bg-[#ff9900]/12 text-[#ca6c00]",
+                  },
+                  {
+                    title: "Docker & FastAPI",
+                    body: "Containerized services and high-performance APIs for models and agents.",
+                    icon: Container,
+                    iconWrap: "bg-[#2496ed]/10 text-[#2496ed]",
+                  },
+                  {
+                    title: "PostgreSQL & data",
+                    body: "Reliable storage, migrations, and analytics-ready pipelines.",
+                    icon: Database,
+                    iconWrap: "bg-[#336791]/12 text-[#336791]",
+                  },
+                  {
+                    title: "TypeScript & Next.js",
+                    body: "Typed, accessible web surfaces learners and staff use every day.",
+                    icon: FileCode2,
+                    iconWrap: "bg-[#003d37]/10 text-[#003d37]",
+                  },
+                ] as const
+              ).map(({ title, body, icon: Icon, iconWrap }) => (
+                <div
+                  key={title}
+                  className="rounded-2xl border border-[#c3c6d4]/20 bg-white p-6 text-center shadow-sm"
+                >
+                  <div
+                    className={`mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl ${iconWrap}`}
+                  >
+                    <Icon className="size-6" aria-hidden />
+                  </div>
+                  <h3 className="text-lg font-bold text-[#111d23]">{title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-[#4c616c]">{body}</p>
+                </div>
+              ))}
             </div>
           </div>
         </section>
