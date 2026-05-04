@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const WAITLIST_FORM_ENDPOINT =
   process.env.NEXT_PUBLIC_WAITLIST_FORM_ENDPOINT || "https://formspree.io/f/xvzdeyvn";
@@ -92,12 +93,15 @@ export function ComingSoonWaitlistForm() {
           />
         </label>
       </div>
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+      <div className="flex flex-col items-center gap-3 sm:flex-row sm:items-center">
         <Button
           type="submit"
           size="lg"
           disabled={isSubmitting}
-          className="bg-[#06463f] text-white hover:bg-[#053832]"
+          className={cn(
+            "bg-[#06463f] text-white hover:bg-[#053832]",
+            "h-10 w-full max-w-[min(14rem,calc(100vw-3rem))] px-4 text-xs md:h-11 md:max-w-[15rem] md:px-5 md:text-sm lg:max-w-[16rem]",
+          )}
         >
           <ArrowRight className="size-4" />
           {isSubmitting ? "Joining..." : "Join the waitlist"}
