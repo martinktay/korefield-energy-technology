@@ -69,11 +69,6 @@ export function SiteFooter() {
                 </Link>
               </li>
               <li>
-                <Link href="/#instructor" className="transition-colors hover:text-brand-600">
-                  Your instructor
-                </Link>
-              </li>
-              <li>
                 <Link href="/#team" className="transition-colors hover:text-brand-600">
                   Academy team
                 </Link>
