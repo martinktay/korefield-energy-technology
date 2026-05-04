@@ -1,6 +1,6 @@
 ﻿import type { Metadata } from "next";
 import Image from "next/image";
-import { CalendarDays, CheckCircle2, Flame, Mail, Menu, MessageSquare, Phone, Rocket, School, Users, Video, X } from "lucide-react";
+import { CalendarDays, CheckCircle2, Flame, Mail, MapPin, Menu, MessageSquare, Phone, Rocket, School, Users, Video, X } from "lucide-react";
 import { ComingSoonWaitlistForm } from "@/components/waitlist/coming-soon-waitlist-form";
 
 export const metadata: Metadata = {
@@ -472,51 +472,125 @@ export default function LandingPage() {
         </section>
       </main>
 
-      <footer className="border-t border-white/10 bg-[#020202] px-4 py-14 text-white/75 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-6xl">
-          <div className="grid gap-10 md:grid-cols-[1.2fr_0.8fr_0.9fr]">
-            <div>
-              <div className="inline-flex items-center gap-3">
-                <Image
-                  src="/images/korefield-logo.png"
-                  alt="KoreField"
-                  width={44}
-                  height={44}
-                  className="h-11 w-11 rounded-xl object-cover shadow-md shadow-[#95d400]/10"
-                />
-                <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#95d400]">KoreField Academy</p>
-                  <p className="text-xl font-black tracking-tight text-white">Build Real AI Systems</p>
-                </div>
+      <footer className="border-t border-white/10 bg-[#020202] px-4 py-16 text-white/75 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-16 grid grid-cols-1 gap-12 md:grid-cols-12">
+            <div className="md:col-span-5">
+              <span className="mb-6 block text-2xl font-extrabold tracking-tight text-[#95d400]">
+                KoreField Energy &amp; Technology (KETL)
+              </span>
+              <p className="mb-6 max-w-sm text-sm leading-relaxed text-white/60">
+                KoreField Academy—programs and platform under active development—aligned with the same engineering standards as our enterprise practice.
+              </p>
+              <div className="mb-2 flex items-center gap-2 text-sm font-bold text-[#95d400]">
+                <MapPin className="size-4 shrink-0" aria-hidden />
+                <span>Lagos, Nigeria</span>
               </div>
-              <p className="mt-4 max-w-md text-sm leading-relaxed text-white/65">
-                The Academy focuses on practical, affordable AI education, live instruction, and a pathway that connects learning to real opportunity.
+              <p className="max-w-sm pl-6 text-xs font-medium leading-relaxed text-white/55">
+                <span className="text-white/45">This site:</span> academy.korefield.com
+                <span className="mx-1.5 text-white/25" aria-hidden>
+                  ·
+                </span>
+                <a href="https://korefield.com/" className="font-bold text-[#95d400] hover:underline">
+                  korefield.com
+                </a>
               </p>
             </div>
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/45">Quick Links</p>
-              <div className="mt-4 flex flex-col gap-3 text-sm">
-                <a className="hover:text-[#95d400] transition-colors" href="#program">Program</a>
-                <a className="hover:text-[#95d400] transition-colors" href="#academy-philosophy">Philosophy</a>
-                <a className="hover:text-[#95d400] transition-colors" href="#instructor">Instructor</a>
-                <a className="hover:text-[#95d400] transition-colors" href="#team">Team</a>
-                <a className="hover:text-[#95d400] transition-colors" href="#waitlist">Waitlist</a>
-                <a className="hover:text-[#95d400] transition-colors" href="https://korefield.com/">Official Site</a>
-              </div>
+            <div className="md:col-span-2">
+              <h4 className="mb-6 text-sm font-bold uppercase tracking-widest text-white/90">Expertise</h4>
+              <ul className="space-y-4 text-sm font-medium text-white/60">
+                <li>
+                  <a className="transition-colors hover:text-[#95d400]" href="https://korefield.com/services">
+                    Enterprise AI
+                  </a>
+                </li>
+                <li>
+                  <a className="transition-colors hover:text-[#95d400]" href="https://korefield.com/services">
+                    Automation
+                  </a>
+                </li>
+                <li>
+                  <a className="transition-colors hover:text-[#95d400]" href="https://korefield.com/services">
+                    Data Strategy
+                  </a>
+                </li>
+                <li>
+                  <a className="transition-colors hover:text-[#95d400]" href="https://korefield.com/services">
+                    Integration
+                  </a>
+                </li>
+              </ul>
             </div>
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/45">Contact</p>
-              <div className="mt-4 flex flex-col gap-3 text-sm">
-                <a className="hover:text-[#95d400] transition-colors" href="https://wa.me/2347033075594?text=Hello%20KoreField%2C%20I%20want%20to%20join%20the%20Academy.">WhatsApp: +234 703 307 5594</a>
-                <a className="hover:text-[#95d400] transition-colors" href="mailto:enquiry@korefield.com">enquiry@korefield.com</a>
-                <p>32 Oyelegunde Street, Beckley Estate, U-Turn Bus Stop, Lagos State, Nigeria</p>
-                <a className="hover:text-[#95d400] transition-colors" href="https://academy.korefield.com/">academy.korefield.com</a>
+            <div className="md:col-span-2">
+              <h4 className="mb-6 text-sm font-bold uppercase tracking-widest text-white/90">Ecosystem</h4>
+              <ul className="space-y-4 text-sm font-medium text-white/60">
+                <li>
+                  <a className="transition-colors hover:text-[#95d400]" href="https://academy.korefield.com/">
+                    KoreField Academy
+                  </a>
+                </li>
+                <li>
+                  <a className="transition-colors hover:text-[#95d400]" href="https://korefield.com/about">
+                    About Us
+                  </a>
+                </li>
+                <li>
+                  <a className="transition-colors hover:text-[#95d400]" href="https://korefield.com/use-cases">
+                    Solutions
+                  </a>
+                </li>
+                <li>
+                  <a className="transition-colors hover:text-[#95d400]" href="https://korefield.com/contact">
+                    Contact
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div className="md:col-span-3">
+              <h4 className="mb-6 text-sm font-bold uppercase tracking-widest text-white/90">Connect</h4>
+              <div className="mb-6 flex gap-4">
+                <a
+                  className="flex size-10 items-center justify-center rounded-full bg-white/10 transition-all hover:bg-[#95d400] hover:text-[#020202]"
+                  href="https://wa.me/2347033075594"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="WhatsApp +234 703 307 5594"
+                >
+                  <MessageSquare className="size-4" />
+                </a>
+                <a
+                  className="flex size-10 items-center justify-center rounded-full bg-white/10 transition-all hover:bg-[#95d400] hover:text-[#020202]"
+                  href="mailto:enquiry@korefield.com"
+                  aria-label="Email enquiry@korefield.com"
+                >
+                  <Mail className="size-4" />
+                </a>
+              </div>
+              <div className="text-[10px] uppercase tracking-tighter text-white/40">
+                Network Status: <span className="font-bold text-emerald-500">Operational</span>
               </div>
             </div>
           </div>
-          <div className="mt-10 flex flex-col gap-3 border-t border-white/10 pt-6 text-xs text-white/45 sm:flex-row sm:items-center sm:justify-between">
-            <p>KoreField Academy is under active development.</p>
-            <p>Lagos, Nigeria · academy.korefield.com · Connected to korefield.com</p>
+          <div className="flex flex-col gap-6 border-t border-white/10 pt-8 md:flex-row md:items-center md:justify-between">
+            <div className="max-w-md">
+              <p className="mb-1 text-sm font-bold text-white">
+                © {new Date().getFullYear()} KoreField Energy &amp; Technology Ltd (KETL).
+              </p>
+              <p className="text-[10px] uppercase tracking-widest text-white/40">
+                32 Oye Elegunde Street, Beckley Estate, U-Turn Bus Stop, Lagos State, Nigeria.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-6 text-[10px] font-bold uppercase tracking-widest text-white/45">
+              <a className="transition-colors hover:text-[#95d400]" href="https://korefield.com/legal">
+                Privacy Policy
+              </a>
+              <a className="transition-colors hover:text-[#95d400]" href="https://korefield.com/legal">
+                Terms of Service
+              </a>
+              <a className="transition-colors hover:text-[#95d400]" href="https://korefield.com/legal">
+                Security
+              </a>
+            </div>
           </div>
         </div>
       </footer>
