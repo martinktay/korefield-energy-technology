@@ -478,7 +478,7 @@ export default function LandingPage() {
                       />
                     </div>
                   </div>
-                  <div className="text-left">
+                  <div className="text-center sm:text-left">
                     <h3 className="font-sans text-2xl font-bold text-[#003d37]">Martin K. Tay</h3>
                     <p className="mt-1 text-xs font-bold uppercase tracking-[0.16em] text-[#4c616c]">Founder and Lead Engineer</p>
                     <p className="mt-4 text-sm leading-relaxed text-[#434652]">
@@ -490,12 +490,18 @@ export default function LandingPage() {
 
               <article className="rounded-3xl border border-[#c3c6d4]/20 bg-[#f4faff] p-4 shadow-sm sm:p-6">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
-                  <div className="mx-auto flex aspect-square w-full max-w-[9.5rem] items-center justify-center rounded-2xl border border-[#003d37]/10 bg-[linear-gradient(145deg,#dceee4,#f7fbfd)] p-1.5 shadow-md shadow-[#111d23]/5 sm:mx-0 sm:max-w-[11rem]">
-                    <div className="flex h-full w-full items-center justify-center rounded-[0.95rem] bg-white/80 font-sans text-3xl font-extrabold tracking-tight text-[#003d37] sm:text-4xl">
-                      AE
+                  <div className="mx-auto w-full max-w-[9.5rem] overflow-hidden rounded-2xl border border-[#003d37]/10 bg-[#d7e4ec] p-1.5 shadow-md shadow-[#111d23]/5 sm:mx-0 sm:max-w-[11rem]">
+                    <div className="relative aspect-square overflow-hidden rounded-[0.95rem]">
+                      <Image
+                        src="/images/abigail-emmanuel.png"
+                        alt="Abigail Emmanuel, Mathematics and English instructor"
+                        fill
+                        sizes="11rem"
+                        className="object-cover object-[50%_12%]"
+                      />
                     </div>
                   </div>
-                  <div className="text-left">
+                  <div className="text-center sm:text-left">
                     <h3 className="font-sans text-2xl font-bold text-[#003d37]">Abigail Emmanuel</h3>
                     <p className="mt-1 text-xs font-bold uppercase tracking-[0.16em] text-[#4c616c]">Principal Tutor — Mathematics &amp; English</p>
                     <p className="mt-4 text-sm leading-relaxed text-[#434652]">
@@ -507,12 +513,18 @@ export default function LandingPage() {
 
               <article className="rounded-3xl border border-[#c3c6d4]/20 bg-[#f4faff] p-4 shadow-sm sm:p-6">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
-                  <div className="mx-auto flex aspect-square w-full max-w-[9.5rem] items-center justify-center rounded-2xl border border-[#003d37]/10 bg-[linear-gradient(145deg,#d7e4ec,#eef6fa)] p-1.5 shadow-md shadow-[#111d23]/5 sm:mx-0 sm:max-w-[11rem]">
-                    <div className="flex h-full w-full items-center justify-center rounded-[0.95rem] bg-white/80 font-sans text-3xl font-extrabold tracking-tight text-[#003d37] sm:text-4xl">
-                      MO
+                  <div className="mx-auto w-full max-w-[9.5rem] overflow-hidden rounded-2xl border border-[#003d37]/10 bg-[#d7e4ec] p-1.5 shadow-md shadow-[#111d23]/5 sm:mx-0 sm:max-w-[11rem]">
+                    <div className="relative aspect-square overflow-hidden rounded-[0.95rem]">
+                      <Image
+                        src="/images/michael-ogu.png"
+                        alt="Michael Ogu, AI and ML instructor"
+                        fill
+                        sizes="11rem"
+                        className="object-cover object-[50%_18%]"
+                      />
                     </div>
                   </div>
-                  <div className="text-left">
+                  <div className="text-center sm:text-left">
                     <h3 className="font-sans text-2xl font-bold text-[#003d37]">Michael Ogu</h3>
                     <p className="mt-1 text-xs font-bold uppercase tracking-[0.16em] text-[#4c616c]">Senior AI/ML Instructor &amp; Mentor</p>
                     <p className="mt-4 text-sm leading-relaxed text-[#434652]">
@@ -529,7 +541,7 @@ export default function LandingPage() {
                       NA
                     </div>
                   </div>
-                  <div className="text-left">
+                  <div className="text-center sm:text-left">
                     <h3 className="font-sans text-2xl font-bold text-[#003d37]">Ngo Alalibo</h3>
                     <p className="mt-1 text-xs font-bold uppercase tracking-[0.16em] text-[#4c616c]">Technical Partner</p>
                     <p className="mt-4 text-sm leading-relaxed text-[#434652]">
@@ -596,151 +608,151 @@ export default function LandingPage() {
         </section>
       </main>
 
-      <footer className="border-t border-white/10 bg-[#020202] px-4 py-16 text-white/75 sm:px-6 lg:px-8">
+      <footer className="border-t border-[#c3c6d4]/35 bg-[#e9f6fd] px-4 py-16 text-[#434652] sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <div className="mb-16 grid grid-cols-1 gap-12 md:grid-cols-12">
+          <div className="mb-16 grid grid-cols-1 gap-12 text-center md:grid-cols-12 md:text-left">
             <div className="md:col-span-4">
-              <span className="mb-6 block text-2xl font-extrabold tracking-tight text-[#95d400]">
+              <span className="mb-6 block text-2xl font-extrabold tracking-tight text-[#003d37]">
                 KoreField Energy &amp; Technology (KETL)
               </span>
-              <p className="mb-6 max-w-sm text-sm leading-relaxed text-white/60">
+              <p className="mx-auto mb-6 max-w-sm text-sm leading-relaxed text-[#4c616c] md:mx-0">
                 KoreField Academy—programs and platform under active development—aligned with the same engineering standards as our enterprise practice.
               </p>
-              <div className="mb-2 flex items-center gap-2 text-sm font-bold text-[#95d400]">
+              <div className="mb-2 flex items-center justify-center gap-2 text-sm font-bold text-[#003d37] md:justify-start">
                 <MapPin className="size-4 shrink-0" aria-hidden />
                 <span>Lagos, Nigeria</span>
               </div>
-              <p className="max-w-sm pl-6 text-xs font-medium leading-relaxed text-white/55">
-                <span className="text-white/45">This site:</span>{" "}
-                <span className="text-white/70">academy.korefield.com</span>
-                <span className="mx-2 text-white/30" aria-hidden>
+              <p className="mx-auto max-w-sm text-xs font-medium leading-relaxed text-[#4c616c] md:mx-0 md:pl-6">
+                <span className="text-[#4c616c]/80">This site:</span>{" "}
+                <span className="text-[#111d23]">academy.korefield.com</span>
+                <span className="mx-2 text-[#c3c6d4]" aria-hidden>
                   ·
                 </span>
-                <a href="https://korefield.com/" className="font-bold text-[#95d400] hover:underline">
+                <a href="https://korefield.com/" className="font-bold text-[#003d37] hover:underline">
                   korefield.com
                 </a>
               </p>
             </div>
             <div className="md:col-span-2">
-              <h4 className="mb-6 text-sm font-bold uppercase tracking-widest text-white/90">Academy</h4>
-              <p className="mb-3 text-[10px] font-bold uppercase tracking-wider text-white/35">Bootcamp &amp; LMS</p>
-              <ul className="space-y-3 text-sm font-medium text-white/60">
+              <h4 className="mb-6 text-sm font-bold uppercase tracking-widest text-[#111d23]">Academy</h4>
+              <p className="mb-3 text-[10px] font-bold uppercase tracking-wider text-[#4c616c]/80">Bootcamp &amp; LMS</p>
+              <ul className="space-y-3 text-sm font-medium text-[#4c616c]">
                 <li>
-                  <a className="transition-colors hover:text-[#95d400]" href="#program">
+                  <a className="transition-colors hover:text-[#003d37]" href="#program">
                     Program overview
                   </a>
                 </li>
                 <li>
-                  <a className="transition-colors hover:text-[#95d400]" href="#academy-philosophy">
+                  <a className="transition-colors hover:text-[#003d37]" href="#academy-philosophy">
                     Philosophy &amp; approach
                   </a>
                 </li>
                 <li>
-                  <a className="transition-colors hover:text-[#95d400]" href="#outcomes">
+                  <a className="transition-colors hover:text-[#003d37]" href="#outcomes">
                     Skills &amp; outcomes
                   </a>
                 </li>
                 <li>
-                  <a className="transition-colors hover:text-[#95d400]" href="#industry-tools">
+                  <a className="transition-colors hover:text-[#003d37]" href="#industry-tools">
                     Tools we teach
                   </a>
                 </li>
                 <li>
-                  <a className="transition-colors hover:text-[#95d400]" href="#instructor">
+                  <a className="transition-colors hover:text-[#003d37]" href="#instructor">
                     Your instructor
                   </a>
                 </li>
                 <li>
-                  <a className="transition-colors hover:text-[#95d400]" href="#team">
+                  <a className="transition-colors hover:text-[#003d37]" href="#team">
                     Academy team
                   </a>
                 </li>
                 <li>
-                  <a className="transition-colors hover:text-[#95d400]" href="#waitlist">
+                  <a className="transition-colors hover:text-[#003d37]" href="#waitlist">
                     Join waitlist
                   </a>
                 </li>
               </ul>
-              <p className="mb-2 mt-6 text-[10px] font-bold uppercase tracking-wider text-white/35">On this site</p>
-              <ul className="space-y-2.5 text-xs font-medium text-white/50">
+              <p className="mb-2 mt-6 text-[10px] font-bold uppercase tracking-wider text-[#4c616c]/80">On this site</p>
+              <ul className="space-y-2.5 text-xs font-medium text-[#4c616c]">
                 <li>
-                  <Link href="/pricing" className="transition-colors hover:text-[#95d400]">
+                  <Link href="/pricing" className="transition-colors hover:text-[#003d37]">
                     Pricing &amp; enrollment
                   </Link>
                 </li>
                 <li>
-                  <Link href="/team" className="transition-colors hover:text-[#95d400]">
+                  <Link href="/team" className="transition-colors hover:text-[#003d37]">
                     Team page
                   </Link>
                 </li>
                 <li>
-                  <Link href="/careers" className="transition-colors hover:text-[#95d400]">
+                  <Link href="/careers" className="transition-colors hover:text-[#003d37]">
                     Careers
                   </Link>
                 </li>
                 <li>
-                  <Link href="/learner/login" className="transition-colors hover:text-[#95d400]">
+                  <Link href="/learner/login" className="transition-colors hover:text-[#003d37]">
                     Learner login
                   </Link>
                 </li>
               </ul>
             </div>
             <div className="md:col-span-2">
-              <h4 className="mb-6 text-sm font-bold uppercase tracking-widest text-white/90">Expertise</h4>
-              <p className="mb-3 text-[10px] font-bold uppercase tracking-wider text-white/35">KETL enterprise practice</p>
-              <ul className="space-y-3 text-sm font-medium text-white/60">
+              <h4 className="mb-6 text-sm font-bold uppercase tracking-widest text-[#111d23]">Expertise</h4>
+              <p className="mb-3 text-[10px] font-bold uppercase tracking-wider text-[#4c616c]/80">KETL enterprise practice</p>
+              <ul className="space-y-3 text-sm font-medium text-[#4c616c]">
                 <li>
-                  <a className="transition-colors hover:text-[#95d400]" href="https://korefield.com/services">
+                  <a className="transition-colors hover:text-[#003d37]" href="https://korefield.com/services">
                     Enterprise AI
                   </a>
                 </li>
                 <li>
-                  <a className="transition-colors hover:text-[#95d400]" href="https://korefield.com/services">
+                  <a className="transition-colors hover:text-[#003d37]" href="https://korefield.com/services">
                     Automation
                   </a>
                 </li>
                 <li>
-                  <a className="transition-colors hover:text-[#95d400]" href="https://korefield.com/services">
+                  <a className="transition-colors hover:text-[#003d37]" href="https://korefield.com/services">
                     Data Strategy
                   </a>
                 </li>
                 <li>
-                  <a className="transition-colors hover:text-[#95d400]" href="https://korefield.com/services">
+                  <a className="transition-colors hover:text-[#003d37]" href="https://korefield.com/services">
                     Integration
                   </a>
                 </li>
               </ul>
             </div>
             <div className="md:col-span-2">
-              <h4 className="mb-6 text-sm font-bold uppercase tracking-widest text-white/90">Ecosystem</h4>
-              <ul className="space-y-3 text-sm font-medium text-white/60">
+              <h4 className="mb-6 text-sm font-bold uppercase tracking-widest text-[#111d23]">Ecosystem</h4>
+              <ul className="space-y-3 text-sm font-medium text-[#4c616c]">
                 <li>
-                  <Link href="/" className="transition-colors hover:text-[#95d400]">
+                  <Link href="/" className="transition-colors hover:text-[#003d37]">
                     KoreField Academy
                   </Link>
                 </li>
                 <li>
-                  <a className="transition-colors hover:text-[#95d400]" href="https://korefield.com/about">
+                  <a className="transition-colors hover:text-[#003d37]" href="https://korefield.com/about">
                     About Us
                   </a>
                 </li>
                 <li>
-                  <a className="transition-colors hover:text-[#95d400]" href="https://korefield.com/use-cases">
+                  <a className="transition-colors hover:text-[#003d37]" href="https://korefield.com/use-cases">
                     Solutions
                   </a>
                 </li>
                 <li>
-                  <a className="transition-colors hover:text-[#95d400]" href="https://korefield.com/contact">
+                  <a className="transition-colors hover:text-[#003d37]" href="https://korefield.com/contact">
                     Contact
                   </a>
                 </li>
               </ul>
             </div>
             <div className="md:col-span-2">
-              <h4 className="mb-6 text-sm font-bold uppercase tracking-widest text-white/90">Connect</h4>
-              <div className="mb-4 flex gap-4">
+              <h4 className="mb-6 text-sm font-bold uppercase tracking-widest text-[#111d23]">Connect</h4>
+              <div className="mb-4 flex justify-center gap-4 md:justify-start">
                 <a
-                  className="flex size-10 items-center justify-center rounded-full bg-white/10 transition-all hover:bg-[#95d400] hover:text-[#020202]"
+                  className="flex size-10 items-center justify-center rounded-full border border-[#c3c6d4]/50 bg-white text-[#003d37] shadow-sm transition-all hover:border-[#003d37] hover:bg-[#003d37] hover:text-white"
                   href="https://wa.me/2347033075594"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -749,47 +761,47 @@ export default function LandingPage() {
                   <MessageSquare className="size-4" />
                 </a>
                 <a
-                  className="flex size-10 items-center justify-center rounded-full bg-white/10 transition-all hover:bg-[#95d400] hover:text-[#020202]"
+                  className="flex size-10 items-center justify-center rounded-full border border-[#c3c6d4]/50 bg-white text-[#003d37] shadow-sm transition-all hover:border-[#003d37] hover:bg-[#003d37] hover:text-white"
                   href="mailto:enquiry@korefield.com"
                   aria-label="Email enquiry@korefield.com"
                 >
                   <Mail className="size-4" />
                 </a>
               </div>
-              <ul className="space-y-2 text-sm text-white/55">
+              <ul className="space-y-2 text-sm text-[#4c616c]">
                 <li>
-                  <a className="transition-colors hover:text-[#95d400]" href="https://wa.me/2347033075594" target="_blank" rel="noopener noreferrer">
+                  <a className="transition-colors hover:text-[#003d37]" href="https://wa.me/2347033075594" target="_blank" rel="noopener noreferrer">
                     WhatsApp +234 703 307 5594
                   </a>
                 </li>
                 <li>
-                  <a className="transition-colors hover:text-[#95d400]" href="mailto:enquiry@korefield.com">
+                  <a className="transition-colors hover:text-[#003d37]" href="mailto:enquiry@korefield.com">
                     enquiry@korefield.com
                   </a>
                 </li>
               </ul>
-              <div className="mt-5 text-[10px] uppercase tracking-tighter text-white/40">
-                Network Status: <span className="font-bold text-emerald-500">Operational</span>
+              <div className="mt-5 text-[10px] uppercase tracking-tighter text-[#4c616c]/80">
+                Network Status: <span className="font-bold text-emerald-600">Operational</span>
               </div>
             </div>
           </div>
-          <div className="flex flex-col gap-6 border-t border-white/10 pt-8 md:flex-row md:items-center md:justify-between">
-            <div className="max-w-md">
-              <p className="mb-1 text-sm font-bold text-white">
+          <div className="flex flex-col gap-6 border-t border-[#c3c6d4]/35 pt-8 text-center md:flex-row md:items-center md:justify-between md:text-left">
+            <div className="max-w-md md:max-w-md">
+              <p className="mb-1 text-sm font-bold text-[#111d23]">
                 © {new Date().getFullYear()} KoreField Energy &amp; Technology Ltd (KETL).
               </p>
-              <p className="text-[10px] uppercase tracking-widest text-white/40">
+              <p className="text-[10px] uppercase tracking-widest text-[#4c616c]">
                 32 Oye Elegunde Street, Beckley Estate, U-Turn Bus Stop, Lagos State, Nigeria.
               </p>
             </div>
-            <div className="flex flex-wrap gap-6 text-[10px] font-bold uppercase tracking-widest text-white/45">
-              <a className="transition-colors hover:text-[#95d400]" href="https://korefield.com/legal">
+            <div className="flex flex-wrap justify-center gap-6 text-[10px] font-bold uppercase tracking-widest text-[#4c616c] md:justify-end">
+              <a className="transition-colors hover:text-[#003d37]" href="https://korefield.com/legal">
                 Privacy Policy
               </a>
-              <a className="transition-colors hover:text-[#95d400]" href="https://korefield.com/legal">
+              <a className="transition-colors hover:text-[#003d37]" href="https://korefield.com/legal">
                 Terms of Service
               </a>
-              <a className="transition-colors hover:text-[#95d400]" href="https://korefield.com/legal">
+              <a className="transition-colors hover:text-[#003d37]" href="https://korefield.com/legal">
                 Security
               </a>
             </div>
