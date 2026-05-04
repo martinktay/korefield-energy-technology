@@ -494,7 +494,7 @@ export default function LandingPage() {
                     <div className="relative aspect-square overflow-hidden rounded-[0.95rem]">
                       <Image
                         src="/images/abigail-emmanuel.png"
-                        alt="Abigail Emmanuel, Mathematics and English instructor"
+                        alt="Abigail Emmanuel, Mathematics tutor"
                         fill
                         sizes="11rem"
                         className="object-cover object-[50%_12%]"
@@ -503,9 +503,9 @@ export default function LandingPage() {
                   </div>
                   <div className="text-center sm:text-left">
                     <h3 className="font-sans text-2xl font-bold text-[#003d37]">Abigail Emmanuel</h3>
-                    <p className="mt-1 text-xs font-bold uppercase tracking-[0.16em] text-[#4c616c]">Principal Tutor — Mathematics &amp; English</p>
+                    <p className="mt-1 text-xs font-bold uppercase tracking-[0.16em] text-[#4c616c]">Mathematics Tutor</p>
                     <p className="mt-4 text-sm leading-relaxed text-[#434652]">
-                      Abigail is an outcomes-driven educator with more than eight years of experience helping learners excel in high-stakes pathways—including Common Entrance, IELTS, and the SAT. She tailors every plan to the student in front of her: strengthening foundations, building confidence, and tracking measurable progress from week to week.
+                      Abigail is a mathematics tutor with more than eight years of experience helping students build clarity and confidence. She meets each learner where they are—strengthening fundamentals, closing gaps with patient explanation, and tracking progress so families see steady improvement over time.
                     </p>
                   </div>
                 </div>
@@ -526,9 +526,9 @@ export default function LandingPage() {
                   </div>
                   <div className="text-center sm:text-left">
                     <h3 className="font-sans text-2xl font-bold text-[#003d37]">Michael Ogu</h3>
-                    <p className="mt-1 text-xs font-bold uppercase tracking-[0.16em] text-[#4c616c]">Senior AI/ML Instructor &amp; Mentor</p>
+                    <p className="mt-1 text-xs font-bold uppercase tracking-[0.16em] text-[#4c616c]">AI/ML Instructor &amp; Mentor</p>
                     <p className="mt-4 text-sm leading-relaxed text-[#434652]">
-                      Michael is a senior AI/ML engineer and long-time mentor who has guided engineers through Springboard and shipped real products with the GitStart community (YC S19). He blends full-stack delivery experience with a BSc in Artificial Intelligence at Johannes Kepler Universität Linz—and leads The Bezalels, a nonprofit in Lagos that teaches programming to underserved learners, aligned with KoreField&apos;s access-first mission.
+                      Michael is a senior AI/ML engineer who brings current, university-level depth into the classroom: he is completing a BSc in Artificial Intelligence at Johannes Kepler Universität Linz alongside active industry work. He has mentored engineers in structured programs and focuses on clear explanations, sound problem-solving habits, and the same professional standards we expect in real delivery teams.
                     </p>
                   </div>
                 </div>
