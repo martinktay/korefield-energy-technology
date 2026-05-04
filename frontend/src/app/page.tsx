@@ -1,5 +1,6 @@
 ﻿import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import {
   CalendarDays,
   CheckCircle2,
@@ -258,7 +259,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section id="program" className="border-y border-[#c3c6d4]/35 bg-white px-4 py-16 sm:px-6 lg:px-8">
+        <section id="program" className="scroll-mt-24 border-y border-[#c3c6d4]/35 bg-white px-4 py-16 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-6xl">
             <div className="text-center">
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#003d37]">Program Overview</p>
@@ -280,7 +281,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section id="academy-philosophy" className="bg-[#e9f6fd] px-4 py-16 sm:px-6 lg:px-8">
+        <section id="academy-philosophy" className="scroll-mt-24 bg-[#e9f6fd] px-4 py-16 sm:px-6 lg:px-8">
           <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
             <div className="text-center lg:text-left">
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#003d37]">About the Academy</p>
@@ -309,7 +310,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="bg-[#e9f6fd] px-4 py-16 sm:px-6 lg:px-8">
+        <section id="industry-tools" className="scroll-mt-24 bg-[#e9f6fd] px-4 py-16 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-6xl">
             <div className="text-center">
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#003d37]">Industry Tools</p>
@@ -378,7 +379,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="bg-[#f4faff] px-4 py-16 sm:px-6 lg:px-8">
+        <section id="outcomes" className="scroll-mt-24 bg-[#f4faff] px-4 py-16 sm:px-6 lg:px-8">
           <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[0.95fr_1.05fr]">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#003662]">What You&apos;ll Learn</p>
@@ -428,7 +429,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section id="instructor" className="bg-[#d7e4ec] px-4 py-16 sm:px-6 lg:px-8">
+        <section id="instructor" className="scroll-mt-24 bg-[#d7e4ec] px-4 py-16 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-4xl text-center">
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#003d37]">Your Instructor</p>
             <div className="mx-auto mt-8 max-w-2xl rounded-3xl border border-[#c3c6d4]/20 bg-white p-5 shadow-sm sm:p-10">
@@ -453,7 +454,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section id="team" className="bg-white px-4 py-16 sm:px-6 lg:px-8">
+        <section id="team" className="scroll-mt-24 bg-white px-4 py-16 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-6xl">
             <div className="mx-auto max-w-3xl text-center">
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#003d37]">Academy Team</p>
@@ -518,7 +519,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section id="waitlist" className="bg-white px-4 py-16 sm:px-6 lg:px-8">
+        <section id="waitlist" className="scroll-mt-24 bg-white px-4 py-16 sm:px-6 lg:px-8">
           <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.92fr_1.08fr]">
             <div className="rounded-3xl border border-[#c3c6d4]/20 bg-[#e3f0f8] p-6 shadow-sm sm:p-10">
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#003d37]">Join the Waitlist</p>
@@ -564,7 +565,7 @@ export default function LandingPage() {
       <footer className="border-t border-white/10 bg-[#020202] px-4 py-16 text-white/75 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="mb-16 grid grid-cols-1 gap-12 md:grid-cols-12">
-            <div className="md:col-span-5">
+            <div className="md:col-span-4">
               <span className="mb-6 block text-2xl font-extrabold tracking-tight text-[#95d400]">
                 KoreField Energy &amp; Technology (KETL)
               </span>
@@ -576,8 +577,9 @@ export default function LandingPage() {
                 <span>Lagos, Nigeria</span>
               </div>
               <p className="max-w-sm pl-6 text-xs font-medium leading-relaxed text-white/55">
-                <span className="text-white/45">This site:</span> academy.korefield.com
-                <span className="mx-1.5 text-white/25" aria-hidden>
+                <span className="text-white/45">This site:</span>{" "}
+                <span className="text-white/70">academy.korefield.com</span>
+                <span className="mx-2 text-white/30" aria-hidden>
                   ·
                 </span>
                 <a href="https://korefield.com/" className="font-bold text-[#95d400] hover:underline">
@@ -586,8 +588,73 @@ export default function LandingPage() {
               </p>
             </div>
             <div className="md:col-span-2">
+              <h4 className="mb-6 text-sm font-bold uppercase tracking-widest text-white/90">Academy</h4>
+              <p className="mb-3 text-[10px] font-bold uppercase tracking-wider text-white/35">Bootcamp &amp; LMS</p>
+              <ul className="space-y-3 text-sm font-medium text-white/60">
+                <li>
+                  <a className="transition-colors hover:text-[#95d400]" href="#program">
+                    Program overview
+                  </a>
+                </li>
+                <li>
+                  <a className="transition-colors hover:text-[#95d400]" href="#academy-philosophy">
+                    Philosophy &amp; approach
+                  </a>
+                </li>
+                <li>
+                  <a className="transition-colors hover:text-[#95d400]" href="#outcomes">
+                    Skills &amp; outcomes
+                  </a>
+                </li>
+                <li>
+                  <a className="transition-colors hover:text-[#95d400]" href="#industry-tools">
+                    Tools we teach
+                  </a>
+                </li>
+                <li>
+                  <a className="transition-colors hover:text-[#95d400]" href="#instructor">
+                    Your instructor
+                  </a>
+                </li>
+                <li>
+                  <a className="transition-colors hover:text-[#95d400]" href="#team">
+                    Academy team
+                  </a>
+                </li>
+                <li>
+                  <a className="transition-colors hover:text-[#95d400]" href="#waitlist">
+                    Join waitlist
+                  </a>
+                </li>
+              </ul>
+              <p className="mb-2 mt-6 text-[10px] font-bold uppercase tracking-wider text-white/35">On this site</p>
+              <ul className="space-y-2.5 text-xs font-medium text-white/50">
+                <li>
+                  <Link href="/pricing" className="transition-colors hover:text-[#95d400]">
+                    Pricing &amp; enrollment
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/team" className="transition-colors hover:text-[#95d400]">
+                    Team page
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/careers" className="transition-colors hover:text-[#95d400]">
+                    Careers
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/learner/login" className="transition-colors hover:text-[#95d400]">
+                    Learner login
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div className="md:col-span-2">
               <h4 className="mb-6 text-sm font-bold uppercase tracking-widest text-white/90">Expertise</h4>
-              <ul className="space-y-4 text-sm font-medium text-white/60">
+              <p className="mb-3 text-[10px] font-bold uppercase tracking-wider text-white/35">KETL enterprise practice</p>
+              <ul className="space-y-3 text-sm font-medium text-white/60">
                 <li>
                   <a className="transition-colors hover:text-[#95d400]" href="https://korefield.com/services">
                     Enterprise AI
@@ -612,11 +679,11 @@ export default function LandingPage() {
             </div>
             <div className="md:col-span-2">
               <h4 className="mb-6 text-sm font-bold uppercase tracking-widest text-white/90">Ecosystem</h4>
-              <ul className="space-y-4 text-sm font-medium text-white/60">
+              <ul className="space-y-3 text-sm font-medium text-white/60">
                 <li>
-                  <a className="transition-colors hover:text-[#95d400]" href="https://academy.korefield.com/">
+                  <Link href="/" className="transition-colors hover:text-[#95d400]">
                     KoreField Academy
-                  </a>
+                  </Link>
                 </li>
                 <li>
                   <a className="transition-colors hover:text-[#95d400]" href="https://korefield.com/about">
@@ -635,9 +702,9 @@ export default function LandingPage() {
                 </li>
               </ul>
             </div>
-            <div className="md:col-span-3">
+            <div className="md:col-span-2">
               <h4 className="mb-6 text-sm font-bold uppercase tracking-widest text-white/90">Connect</h4>
-              <div className="mb-6 flex gap-4">
+              <div className="mb-4 flex gap-4">
                 <a
                   className="flex size-10 items-center justify-center rounded-full bg-white/10 transition-all hover:bg-[#95d400] hover:text-[#020202]"
                   href="https://wa.me/2347033075594"
@@ -655,7 +722,19 @@ export default function LandingPage() {
                   <Mail className="size-4" />
                 </a>
               </div>
-              <div className="text-[10px] uppercase tracking-tighter text-white/40">
+              <ul className="space-y-2 text-sm text-white/55">
+                <li>
+                  <a className="transition-colors hover:text-[#95d400]" href="https://wa.me/2347033075594" target="_blank" rel="noopener noreferrer">
+                    WhatsApp +234 703 307 5594
+                  </a>
+                </li>
+                <li>
+                  <a className="transition-colors hover:text-[#95d400]" href="mailto:enquiry@korefield.com">
+                    enquiry@korefield.com
+                  </a>
+                </li>
+              </ul>
+              <div className="mt-5 text-[10px] uppercase tracking-tighter text-white/40">
                 Network Status: <span className="font-bold text-emerald-500">Operational</span>
               </div>
             </div>
