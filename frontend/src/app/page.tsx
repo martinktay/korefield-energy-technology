@@ -187,10 +187,7 @@ export default function LandingPage() {
               unoptimized
             />
             <span className="flex min-w-0 flex-col leading-none">
-              <span className="text-lg font-black tracking-tight sm:text-xl md:text-2xl">KoreField</span>
-              <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#4c616c] sm:text-[11px]">
-                Energy &amp; Technology
-              </span>
+              <span className="text-lg font-black tracking-tight sm:text-xl md:text-2xl">KoreField Academy</span>
             </span>
           </a>
 
