@@ -459,64 +459,64 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="mt-10 grid grid-cols-1 gap-5 md:gap-6 lg:grid-cols-3 lg:items-stretch lg:gap-6">
-              <article className="mx-auto flex h-full w-full max-w-2xl flex-col rounded-2xl border border-[#c3c6d4]/25 bg-[#f4faff] p-4 shadow-sm sm:p-5 lg:mx-0 lg:max-w-none">
-                <div className="flex flex-row items-start gap-4 sm:gap-5 lg:flex-col lg:items-stretch lg:gap-4">
-                  <div className="relative h-[9.5rem] w-[9.5rem] shrink-0 overflow-hidden rounded-xl border border-[#003d37]/12 bg-[#cfdce6] shadow-inner sm:h-40 sm:w-40 md:h-44 md:w-44 lg:aspect-square lg:h-auto lg:w-full lg:max-w-none">
+            <div className="mt-10 grid grid-cols-1 gap-6 sm:gap-7 lg:grid-cols-3 lg:items-stretch lg:gap-6">
+              <article className="mx-auto flex h-full w-full max-w-lg flex-col rounded-2xl border border-[#c3c6d4]/25 bg-[#f4faff] p-5 shadow-sm sm:max-w-xl sm:p-6 lg:mx-0 lg:max-w-none">
+                <div className="flex w-full flex-col items-center gap-5 text-center sm:gap-6 lg:items-stretch lg:gap-4 lg:text-left">
+                  <div className="relative mx-auto aspect-square w-full max-w-[13.25rem] shrink-0 overflow-hidden rounded-2xl border border-[#003d37]/12 bg-[#cfdce6] shadow-inner sm:max-w-[15rem] lg:mx-0 lg:max-w-none lg:rounded-xl">
                     <Image
                       src="/images/martin-tay-instructor.png"
                       alt="Martin K. Tay"
                       fill
-                      sizes="(max-width: 1023px) 176px, (max-width: 1280px) 28vw, 320px"
+                      sizes="(max-width: 1023px) 240px, (max-width: 1280px) 28vw, 320px"
                       className="object-cover object-[50%_30%]"
                     />
                   </div>
-                  <div className="flex min-h-0 min-w-0 flex-1 flex-col pt-0.5 text-left lg:pt-0">
+                  <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col">
                     <h3 className="font-sans text-lg font-bold leading-tight text-[#003d37] sm:text-xl">Martin K. Tay</h3>
                     <p className="mt-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-[#4c616c]">Founder and Lead Engineer</p>
-                    <p className="mt-3 text-sm leading-relaxed text-[#434652]">
+                    <p className="mt-3 text-sm leading-relaxed text-[#434652] sm:text-[0.9375rem]">
                       Leads the Academy curriculum, live instruction, and project-based learning model with 8+ years across engineering, data science, Oil and Gas, finance, enterprise operations, and applied AI.
                     </p>
                   </div>
                 </div>
               </article>
 
-              <article className="mx-auto flex h-full w-full max-w-2xl flex-col rounded-2xl border border-[#c3c6d4]/25 bg-[#f4faff] p-4 shadow-sm sm:p-5 lg:mx-0 lg:max-w-none">
-                <div className="flex flex-row items-start gap-4 sm:gap-5 lg:flex-col lg:items-stretch lg:gap-4">
-                  <div className="relative h-[9.5rem] w-[9.5rem] shrink-0 overflow-hidden rounded-xl border border-[#003d37]/12 bg-[#cfdce6] shadow-inner sm:h-40 sm:w-40 md:h-44 md:w-44 lg:aspect-square lg:h-auto lg:w-full lg:max-w-none">
+              <article className="mx-auto flex h-full w-full max-w-lg flex-col rounded-2xl border border-[#c3c6d4]/25 bg-[#f4faff] p-5 shadow-sm sm:max-w-xl sm:p-6 lg:mx-0 lg:max-w-none">
+                <div className="flex w-full flex-col items-center gap-5 text-center sm:gap-6 lg:items-stretch lg:gap-4 lg:text-left">
+                  <div className="relative mx-auto aspect-square w-full max-w-[13.25rem] shrink-0 overflow-hidden rounded-2xl border border-[#003d37]/12 bg-[#cfdce6] shadow-inner sm:max-w-[15rem] lg:mx-0 lg:max-w-none lg:rounded-xl">
                     <Image
                       src="/images/abigail-emmanuel.png"
                       alt="Abigail Emmanuel, Mathematics tutor"
                       fill
-                      sizes="(max-width: 1023px) 176px, (max-width: 1280px) 28vw, 320px"
+                      sizes="(max-width: 1023px) 240px, (max-width: 1280px) 28vw, 320px"
                       className="object-cover object-[50%_18%]"
                     />
                   </div>
-                  <div className="flex min-h-0 min-w-0 flex-1 flex-col pt-0.5 text-left lg:pt-0">
+                  <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col">
                     <h3 className="font-sans text-lg font-bold leading-tight text-[#003d37] sm:text-xl">Abigail Emmanuel</h3>
                     <p className="mt-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-[#4c616c]">Mathematics Tutor</p>
-                    <p className="mt-3 text-sm leading-relaxed text-[#434652]">
+                    <p className="mt-3 text-sm leading-relaxed text-[#434652] sm:text-[0.9375rem]">
                       Abigail is a mathematics tutor with more than eight years of experience helping students build clarity and confidence. She meets each learner where they are—strengthening fundamentals, closing gaps with patient explanation, and tracking progress so families see steady improvement over time.
                     </p>
                   </div>
                 </div>
               </article>
 
-              <article className="mx-auto flex h-full w-full max-w-2xl flex-col rounded-2xl border border-[#c3c6d4]/25 bg-[#f4faff] p-4 shadow-sm sm:p-5 lg:mx-0 lg:max-w-none">
-                <div className="flex flex-row items-start gap-4 sm:gap-5 lg:flex-col lg:items-stretch lg:gap-4">
-                  <div className="relative h-[9.5rem] w-[9.5rem] shrink-0 overflow-hidden rounded-xl border border-[#003d37]/12 bg-[#cfdce6] shadow-inner sm:h-40 sm:w-40 md:h-44 md:w-44 lg:aspect-square lg:h-auto lg:w-full lg:max-w-none">
+              <article className="mx-auto flex h-full w-full max-w-lg flex-col rounded-2xl border border-[#c3c6d4]/25 bg-[#f4faff] p-5 shadow-sm sm:max-w-xl sm:p-6 lg:mx-0 lg:max-w-none">
+                <div className="flex w-full flex-col items-center gap-5 text-center sm:gap-6 lg:items-stretch lg:gap-4 lg:text-left">
+                  <div className="relative mx-auto aspect-square w-full max-w-[13.25rem] shrink-0 overflow-hidden rounded-2xl border border-[#003d37]/12 bg-[#cfdce6] shadow-inner sm:max-w-[15rem] lg:mx-0 lg:max-w-none lg:rounded-xl">
                     <Image
                       src="/images/michael-ogu.png"
                       alt="Michael Ogu, AI and ML instructor"
                       fill
-                      sizes="(max-width: 1023px) 176px, (max-width: 1280px) 28vw, 320px"
+                      sizes="(max-width: 1023px) 240px, (max-width: 1280px) 28vw, 320px"
                       className="object-cover object-[50%_22%]"
                     />
                   </div>
-                  <div className="flex min-h-0 min-w-0 flex-1 flex-col pt-0.5 text-left lg:pt-0">
+                  <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col">
                     <h3 className="font-sans text-lg font-bold leading-tight text-[#003d37] sm:text-xl">Michael Ogu</h3>
                     <p className="mt-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-[#4c616c]">AI/ML Instructor &amp; Mentor</p>
-                    <p className="mt-3 text-sm leading-relaxed text-[#434652]">
+                    <p className="mt-3 text-sm leading-relaxed text-[#434652] sm:text-[0.9375rem]">
                       Michael is a senior AI/ML engineer who brings current, university-level depth into the classroom: he is completing a BSc in Artificial Intelligence at Johannes Kepler Universität Linz alongside active industry work. He has mentored engineers in structured programs and focuses on clear explanations, sound problem-solving habits, and the same professional standards we expect in real delivery teams.
                     </p>
                   </div>
