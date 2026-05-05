@@ -6,6 +6,8 @@ name: CI Pipeline
 on:
   pull_request:
     branches: [main, staging, production]
+  push:
+    branches: [main, staging, production]
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -124,6 +126,11 @@ jobs:
         working-directory: frontend
       - run: pnpm test
         working-directory: frontend
+      - name: Next.js production build
+        run: pnpm build
+        working-directory: frontend
+        env:
+          NODE_ENV: production
 
   test-ai-services:
     name: Test — AI Services

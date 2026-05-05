@@ -1,0 +1,47 @@
+# Deploys `frontend/` to Vercel production (e.g. academy.korefield.com).
+#
+# Setup:
+# 1. GitHub repo → Settings → Secrets and variables → Actions:
+#    - VERCEL_TOKEN (Vercel → Account Settings → Tokens)
+#    - VERCEL_ORG_ID, VERCEL_PROJECT_ID (Project → Settings → General)
+# 2. GitHub repo → Settings → Variables → Actions:
+#    - VERCEL_DEPLOY_ENABLED = true   (omit or set false to skip this workflow)
+#
+# Vercel performs the production build on their infrastructure; CI already runs `pnpm build`
+# in `.github/workflows/ci.yml` on every push to main.
+
+name: Deploy Academy — Vercel
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "frontend/**"
+      - ".github/workflows/deploy-vercel-academy.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: vercel-academy-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Vercel production
+    runs-on: ubuntu-latest
+    if: ${{ vars.VERCEL_DEPLOY_ENABLED == 'true' }}
+    environment:
+      name: academy-vercel
+      url: https://academy.korefield.com
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Vercel (remote build)
+        working-directory: frontend
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: npx vercel@latest deploy --prod --yes --token "$VERCEL_TOKEN"
