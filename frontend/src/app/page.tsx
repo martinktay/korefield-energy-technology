@@ -324,70 +324,36 @@ export default function LandingPage() {
                 Learn with the same technologies we use in the Academy curriculum—so what you study matches how modern AI systems are built.
               </p>
             </div>
-            <div className="mt-8 grid gap-3.5 sm:mt-12 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
+            <div className="mt-8 grid grid-cols-2 gap-3 sm:mt-12 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5">
               {(
                 [
-                  {
-                    title: "Python & PyTorch",
-                    body: "Industry-standard AI development with the most widely used ML stack.",
-                    logos: [
-                      { src: "/images/tools/python.png", alt: "Python" },
-                      { src: "/images/tools/pytorch.png", alt: "PyTorch" },
-                    ],
-                  },
-                  {
-                    title: "LangChain & LangGraph",
-                    body: "Production-ready agents and workflows with composable orchestration.",
-                    logos: [
-                      { src: "/images/tools/langchain.png", alt: "LangChain" },
-                      { src: "/images/tools/langgraph.png", alt: "LangGraph" },
-                    ],
-                  },
-                  {
-                    title: "AWS Cloud",
-                    body: "Deploy and scale AI workloads on leading cloud primitives.",
-                    logos: [{ src: "/images/tools/aws.png", alt: "AWS" }],
-                  },
-                  {
-                    title: "Docker & FastAPI",
-                    body: "Containerized services and high-performance APIs for models and agents.",
-                    logos: [
-                      { src: "/images/tools/docker.png", alt: "Docker" },
-                      { src: "/images/tools/fastapi.png", alt: "FastAPI" },
-                    ],
-                  },
-                  {
-                    title: "PostgreSQL & data",
-                    body: "Reliable storage, migrations, and analytics-ready pipelines.",
-                    logos: [{ src: "/images/tools/postgres.png", alt: "PostgreSQL" }],
-                  },
-                  {
-                    title: "TypeScript & Next.js",
-                    body: "Typed, accessible web surfaces learners and staff use every day.",
-                    logos: [{ src: "/images/tools/typescript.png", alt: "TypeScript" }],
-                  },
+                  { name: "Python", src: "/images/tools/python.png" },
+                  { name: "PyTorch", src: "/images/tools/pytorch.png" },
+                  { name: "LangChain", src: "/images/tools/langchain.png" },
+                  { name: "LangGraph", src: "/images/tools/langgraph.png" },
+                  { name: "FastAPI", src: "/images/tools/fastapi.png" },
+                  { name: "Docker", src: "/images/tools/docker.png" },
+                  { name: "PostgreSQL", src: "/images/tools/postgres.png" },
+                  { name: "AWS", src: "/images/tools/aws.png" },
+                  { name: "TypeScript", src: "/images/tools/typescript.png" },
                 ] as const
-              ).map(({ title, body, logos }) => (
+              ).map((tool) => (
                 <div
-                  key={title}
-                  className="mx-auto w-full max-w-[min(18.5rem,calc(100vw-2.5rem))] rounded-2xl border border-[#c3c6d4]/20 bg-white p-4 text-center shadow-sm md:p-5 lg:mx-0 lg:max-w-full lg:p-6"
+                  key={tool.name}
+                  className="rounded-2xl border border-[#c3c6d4]/20 bg-white p-3 text-center shadow-sm sm:p-4"
                 >
-                  <div className="mx-auto mb-4 flex min-h-12 items-center justify-center gap-3 sm:mb-5">
-                    {logos.map((logo) => (
-                      <Image
-                        key={logo.alt}
-                        src={logo.src}
-                        alt={logo.alt}
-                        width={140}
-                        height={40}
-                        className="h-9 w-auto object-contain"
-                        loading="lazy"
-                        unoptimized
-                      />
-                    ))}
+                  <div className="flex h-12 items-center justify-center sm:h-14">
+                    <Image
+                      src={tool.src}
+                      alt={tool.name}
+                      width={160}
+                      height={56}
+                      className="h-10 w-auto object-contain"
+                      loading="lazy"
+                      unoptimized
+                    />
                   </div>
-                  <h3 className="text-lg font-bold text-[#111d23]">{title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-[#4c616c]">{body}</p>
+                  <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.14em] text-[#4c616c]">{tool.name}</p>
                 </div>
               ))}
             </div>
