@@ -4,13 +4,7 @@ import Link from "next/link";
 import {
   CalendarDays,
   CheckCircle2,
-  Cloud,
-  Code2,
-  Container,
-  Database,
-  FileCode2,
   Flame,
-  GitBranch,
   Mail,
   MapPin,
   Menu,
@@ -336,49 +330,61 @@ export default function LandingPage() {
                   {
                     title: "Python & PyTorch",
                     body: "Industry-standard AI development with the most widely used ML stack.",
-                    icon: Code2,
-                    iconWrap: "bg-[#3776ab]/10 text-[#3776ab]",
+                    logos: [
+                      { src: "/images/tools/python.png", alt: "Python" },
+                      { src: "/images/tools/pytorch.png", alt: "PyTorch" },
+                    ],
                   },
                   {
                     title: "LangChain & LangGraph",
                     body: "Production-ready agents and workflows with composable orchestration.",
-                    icon: GitBranch,
-                    iconWrap: "bg-[#111d23]/10 text-[#111d23]",
+                    logos: [
+                      { src: "/images/tools/langchain.png", alt: "LangChain" },
+                      { src: "/images/tools/langgraph.png", alt: "LangGraph" },
+                    ],
                   },
                   {
                     title: "AWS Cloud",
                     body: "Deploy and scale AI workloads on leading cloud primitives.",
-                    icon: Cloud,
-                    iconWrap: "bg-[#ff9900]/12 text-[#ca6c00]",
+                    logos: [{ src: "/images/tools/aws.png", alt: "AWS" }],
                   },
                   {
                     title: "Docker & FastAPI",
                     body: "Containerized services and high-performance APIs for models and agents.",
-                    icon: Container,
-                    iconWrap: "bg-[#2496ed]/10 text-[#2496ed]",
+                    logos: [
+                      { src: "/images/tools/docker.png", alt: "Docker" },
+                      { src: "/images/tools/fastapi.png", alt: "FastAPI" },
+                    ],
                   },
                   {
                     title: "PostgreSQL & data",
                     body: "Reliable storage, migrations, and analytics-ready pipelines.",
-                    icon: Database,
-                    iconWrap: "bg-[#336791]/12 text-[#336791]",
+                    logos: [{ src: "/images/tools/postgres.png", alt: "PostgreSQL" }],
                   },
                   {
                     title: "TypeScript & Next.js",
                     body: "Typed, accessible web surfaces learners and staff use every day.",
-                    icon: FileCode2,
-                    iconWrap: "bg-[#003d37]/10 text-[#003d37]",
+                    logos: [{ src: "/images/tools/typescript.png", alt: "TypeScript" }],
                   },
                 ] as const
-              ).map(({ title, body, icon: Icon, iconWrap }) => (
+              ).map(({ title, body, logos }) => (
                 <div
                   key={title}
                   className="mx-auto w-full max-w-[min(18.5rem,calc(100vw-2.5rem))] rounded-2xl border border-[#c3c6d4]/20 bg-white p-4 text-center shadow-sm md:p-5 lg:mx-0 lg:max-w-full lg:p-6"
                 >
-                  <div
-                    className={`mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-xl sm:mb-4 sm:h-12 sm:w-12 ${iconWrap}`}
-                  >
-                    <Icon className="size-5 sm:size-6" aria-hidden />
+                  <div className="mx-auto mb-4 flex min-h-12 items-center justify-center gap-3 sm:mb-5">
+                    {logos.map((logo) => (
+                      <Image
+                        key={logo.alt}
+                        src={logo.src}
+                        alt={logo.alt}
+                        width={140}
+                        height={40}
+                        className="h-9 w-auto object-contain"
+                        loading="lazy"
+                        unoptimized
+                      />
+                    ))}
                   </div>
                   <h3 className="text-lg font-bold text-[#111d23]">{title}</h3>
                   <p className="mt-2 text-sm leading-relaxed text-[#4c616c]">{body}</p>
