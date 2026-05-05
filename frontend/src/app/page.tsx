@@ -411,8 +411,8 @@ export default function LandingPage() {
                 ))}
               </div>
             </div>
-            <aside className="mx-auto flex w-full max-w-[min(20.5rem,calc(100vw-2.5rem))] flex-col items-center rounded-3xl border border-[#c3c6d4]/25 bg-[#e9f6fd] p-4 shadow-sm md:p-6 lg:mx-0 lg:max-w-none lg:items-stretch lg:self-stretch lg:p-8">
-              <div className="w-full text-center">
+            <aside className="mx-auto flex w-full max-w-[min(20.5rem,calc(100vw-2.5rem))] flex-col items-center rounded-3xl border border-[#c3c6d4]/25 bg-[#e9f6fd] p-4 text-center shadow-sm md:p-6 lg:mx-0 lg:max-w-none lg:self-stretch lg:p-8">
+              <div className="w-full">
                 <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#003d37]">Investment</p>
                 <p className="mt-4 font-sans text-4xl font-extrabold text-[#003d37] sm:text-5xl">{"\u20A6"}180,000</p>
                 <p className="mt-2 text-sm text-[#4c616c]">Early Bird Price</p>
@@ -433,15 +433,15 @@ export default function LandingPage() {
               </div>
               <div className="mt-6 w-full max-w-[19rem] space-y-3 sm:mt-8 sm:space-y-4 lg:max-w-full">
                 {included.map((item) => (
-                  <div key={item} className="flex gap-3 text-sm text-[#111d23]">
-                    <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-[#003d37]" />
+                  <div key={item} className="flex items-start justify-center gap-3 text-sm text-[#111d23]">
+                    <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-[#003d37]" aria-hidden />
                     <span>{item}</span>
                   </div>
                 ))}
               </div>
               <a
                 href={whatsappUrl}
-                className="mt-6 inline-flex w-full max-w-[min(13.5rem,calc(100vw-3rem))] items-center justify-center rounded-lg bg-[#003d37] px-2.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-[#12554f] sm:mt-8 md:px-3 md:text-sm lg:max-w-[14.5rem]"
+                className="mt-6 inline-flex w-full max-w-[min(13.5rem,calc(100vw-3rem))] items-center justify-center rounded-lg bg-[#003d37] px-2.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-[#12554f] sm:mt-8 md:px-3 md:text-sm"
               >
                 Enroll Now
               </a>
