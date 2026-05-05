@@ -172,19 +172,25 @@ export default function LandingPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       <nav className="sticky top-0 z-50 border-b border-[#c3c6d4]/40 bg-[rgba(244,250,255,0.9)] backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-4xl items-center justify-between px-4 sm:px-6 lg:max-w-5xl lg:px-8">
-          <a href="/" className="inline-flex items-center gap-3 font-sans text-xl font-black tracking-tight text-[#003d37]">
+        <div className="mx-auto flex min-h-16 max-w-4xl items-center justify-between gap-3 px-4 py-2 sm:px-6 lg:max-w-6xl lg:gap-4 lg:px-8 xl:max-w-7xl">
+          <a
+            href="https://korefield.com/"
+            className="inline-flex min-w-0 items-center gap-3 font-sans text-[#003d37] sm:gap-4"
+          >
             <Image
-              src="/images/korefield-logo.png"
-              alt="KoreField"
-              width={36}
-              height={36}
-              className="h-9 w-9 rounded-xl object-cover shadow-md shadow-[#003d37]/15"
+              src="https://korefield.com/logo.svg"
+              alt="KoreField Logo"
+              width={64}
+              height={64}
+              className="h-12 w-auto shrink-0 sm:h-14 md:h-16"
               priority
+              unoptimized
             />
-            <span className="flex flex-col leading-none">
-              <span className="text-xl font-black tracking-tight text-[#003d37]">KoreField</span>
-              <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#4c616c]">Academy</span>
+            <span className="flex min-w-0 flex-col leading-none">
+              <span className="text-lg font-black tracking-tight sm:text-xl md:text-2xl">KoreField</span>
+              <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#4c616c] sm:text-[11px]">
+                Energy &amp; Technology
+              </span>
             </span>
           </a>
 
@@ -444,79 +450,73 @@ export default function LandingPage() {
         </section>
 
         <section id="team" className="scroll-mt-24 bg-white px-4 py-16 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-4xl lg:max-w-5xl">
+          <div className="mx-auto max-w-6xl xl:max-w-7xl">
             <div className="mx-auto max-w-2xl text-center">
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#003d37]">Academy Team</p>
               <h2 className="mt-2 font-sans text-4xl font-extrabold tracking-tight text-[#111d23]">Built by practitioners who care about access</h2>
-              <p className="mt-4 text-base leading-relaxed text-[#4c616c] sm:text-lg">
+              <p className="mt-4 text-base leading-snug text-[#4c616c] sm:text-lg">
                 The Academy is shaped by lead instructors and specialist faculty who combine rigorous delivery with real care for access—so learners get both world-class standards and human support.
               </p>
             </div>
 
-            <div className="mt-10 grid gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
-              <article className="mx-auto w-full max-w-[min(20.5rem,calc(100vw-2.5rem))] rounded-2xl border border-[#c3c6d4]/20 bg-[#f4faff] p-3.5 shadow-sm md:p-5 lg:mx-0 lg:max-w-full lg:rounded-3xl lg:p-6">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
-                  <div className="mx-auto w-full max-w-[8.5rem] overflow-hidden rounded-2xl border border-[#003d37]/10 bg-[#d7e4ec] p-1.5 shadow-md shadow-[#111d23]/5 sm:mx-0 sm:max-w-[10rem]">
-                    <div className="relative aspect-square overflow-hidden rounded-[0.95rem]">
-                      <Image
-                        src="/images/martin-tay-instructor.png"
-                        alt="Martin K. Tay"
-                        fill
-                        sizes="11rem"
-                        className="object-cover object-[50%_28%]"
-                      />
-                    </div>
+            <div className="mt-10 grid grid-cols-1 gap-4 md:gap-5 lg:grid-cols-3">
+              <article className="mx-auto w-full max-w-2xl rounded-2xl border border-[#c3c6d4]/20 bg-[#f4faff] p-3 shadow-sm sm:p-4 lg:mx-0 lg:max-w-none">
+                <div className="flex flex-row items-start gap-4 sm:gap-5">
+                  <div className="relative h-[9.5rem] w-[9.5rem] shrink-0 overflow-hidden rounded-xl border border-[#003d37]/10 bg-[#d7e4ec] shadow-sm sm:h-40 sm:w-40 md:h-44 md:w-44">
+                    <Image
+                      src="/images/martin-tay-instructor.png"
+                      alt="Martin K. Tay"
+                      fill
+                      sizes="(max-width: 639px) 152px, (max-width: 767px) 160px, 176px"
+                      className="object-cover object-[50%_28%]"
+                    />
                   </div>
-                  <div className="text-center sm:text-left">
-                    <h3 className="font-sans text-2xl font-bold text-[#003d37]">Martin K. Tay</h3>
-                    <p className="mt-1 text-xs font-bold uppercase tracking-[0.16em] text-[#4c616c]">Founder and Lead Engineer</p>
-                    <p className="mt-4 text-sm leading-relaxed text-[#434652]">
+                  <div className="min-w-0 flex-1 pt-0.5 text-left">
+                    <h3 className="font-sans text-lg font-bold leading-tight text-[#003d37] sm:text-xl">Martin K. Tay</h3>
+                    <p className="mt-1 text-[11px] font-bold uppercase tracking-[0.16em] text-[#4c616c]">Founder and Lead Engineer</p>
+                    <p className="mt-2 text-sm leading-snug text-[#434652]">
                       Leads the Academy curriculum, live instruction, and project-based learning model with 8+ years across engineering, data science, Oil and Gas, finance, enterprise operations, and applied AI.
                     </p>
                   </div>
                 </div>
               </article>
 
-              <article className="mx-auto w-full max-w-[min(21rem,calc(100vw-2.5rem))] rounded-2xl border border-[#c3c6d4]/20 bg-[#f4faff] p-3.5 shadow-sm md:p-5 lg:mx-0 lg:max-w-full lg:rounded-3xl lg:p-6">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
-                  <div className="mx-auto w-full max-w-[8.5rem] overflow-hidden rounded-2xl border border-[#003d37]/10 bg-[#d7e4ec] p-1.5 shadow-md shadow-[#111d23]/5 sm:mx-0 sm:max-w-[10rem]">
-                    <div className="relative aspect-square overflow-hidden rounded-[0.95rem]">
-                      <Image
-                        src="/images/abigail-emmanuel.png"
-                        alt="Abigail Emmanuel, Mathematics tutor"
-                        fill
-                        sizes="11rem"
-                        className="object-cover object-[50%_12%]"
-                      />
-                    </div>
+              <article className="mx-auto w-full max-w-2xl rounded-2xl border border-[#c3c6d4]/20 bg-[#f4faff] p-3 shadow-sm sm:p-4 lg:mx-0 lg:max-w-none">
+                <div className="flex flex-row items-start gap-4 sm:gap-5">
+                  <div className="relative h-[9.5rem] w-[9.5rem] shrink-0 overflow-hidden rounded-xl border border-[#003d37]/10 bg-[#d7e4ec] shadow-sm sm:h-40 sm:w-40 md:h-44 md:w-44">
+                    <Image
+                      src="/images/abigail-emmanuel.png"
+                      alt="Abigail Emmanuel, Mathematics tutor"
+                      fill
+                      sizes="(max-width: 639px) 152px, (max-width: 767px) 160px, 176px"
+                      className="object-cover object-[50%_12%]"
+                    />
                   </div>
-                  <div className="text-center sm:text-left">
-                    <h3 className="font-sans text-2xl font-bold text-[#003d37]">Abigail Emmanuel</h3>
-                    <p className="mt-1 text-xs font-bold uppercase tracking-[0.16em] text-[#4c616c]">Mathematics Tutor</p>
-                    <p className="mt-4 text-sm leading-relaxed text-[#434652]">
+                  <div className="min-w-0 flex-1 pt-0.5 text-left">
+                    <h3 className="font-sans text-lg font-bold leading-tight text-[#003d37] sm:text-xl">Abigail Emmanuel</h3>
+                    <p className="mt-1 text-[11px] font-bold uppercase tracking-[0.16em] text-[#4c616c]">Mathematics Tutor</p>
+                    <p className="mt-2 text-sm leading-snug text-[#434652]">
                       Abigail is a mathematics tutor with more than eight years of experience helping students build clarity and confidence. She meets each learner where they are—strengthening fundamentals, closing gaps with patient explanation, and tracking progress so families see steady improvement over time.
                     </p>
                   </div>
                 </div>
               </article>
 
-              <article className="mx-auto w-full max-w-[min(21rem,calc(100vw-2.5rem))] rounded-2xl border border-[#c3c6d4]/20 bg-[#f4faff] p-3.5 shadow-sm md:p-5 lg:mx-0 lg:max-w-full lg:rounded-3xl lg:p-6">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
-                  <div className="mx-auto w-full max-w-[8.5rem] overflow-hidden rounded-2xl border border-[#003d37]/10 bg-[#d7e4ec] p-1.5 shadow-md shadow-[#111d23]/5 sm:mx-0 sm:max-w-[10rem]">
-                    <div className="relative aspect-square overflow-hidden rounded-[0.95rem]">
-                      <Image
-                        src="/images/michael-ogu.png"
-                        alt="Michael Ogu, AI and ML instructor"
-                        fill
-                        sizes="11rem"
-                        className="object-cover object-[50%_18%]"
-                      />
-                    </div>
+              <article className="mx-auto w-full max-w-2xl rounded-2xl border border-[#c3c6d4]/20 bg-[#f4faff] p-3 shadow-sm sm:p-4 lg:mx-0 lg:max-w-none">
+                <div className="flex flex-row items-start gap-4 sm:gap-5">
+                  <div className="relative h-[9.5rem] w-[9.5rem] shrink-0 overflow-hidden rounded-xl border border-[#003d37]/10 bg-[#d7e4ec] shadow-sm sm:h-40 sm:w-40 md:h-44 md:w-44">
+                    <Image
+                      src="/images/michael-ogu.png"
+                      alt="Michael Ogu, AI and ML instructor"
+                      fill
+                      sizes="(max-width: 639px) 152px, (max-width: 767px) 160px, 176px"
+                      className="object-cover object-[50%_18%]"
+                    />
                   </div>
-                  <div className="text-center sm:text-left">
-                    <h3 className="font-sans text-2xl font-bold text-[#003d37]">Michael Ogu</h3>
-                    <p className="mt-1 text-xs font-bold uppercase tracking-[0.16em] text-[#4c616c]">AI/ML Instructor &amp; Mentor</p>
-                    <p className="mt-4 text-sm leading-relaxed text-[#434652]">
+                  <div className="min-w-0 flex-1 pt-0.5 text-left">
+                    <h3 className="font-sans text-lg font-bold leading-tight text-[#003d37] sm:text-xl">Michael Ogu</h3>
+                    <p className="mt-1 text-[11px] font-bold uppercase tracking-[0.16em] text-[#4c616c]">AI/ML Instructor &amp; Mentor</p>
+                    <p className="mt-2 text-sm leading-snug text-[#434652]">
                       Michael is a senior AI/ML engineer who brings current, university-level depth into the classroom: he is completing a BSc in Artificial Intelligence at Johannes Kepler Universität Linz alongside active industry work. He has mentored engineers in structured programs and focuses on clear explanations, sound problem-solving habits, and the same professional standards we expect in real delivery teams.
                     </p>
                   </div>
