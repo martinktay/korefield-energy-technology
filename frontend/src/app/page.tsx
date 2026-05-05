@@ -251,16 +251,14 @@ export default function LandingPage() {
             <div className="mx-auto mt-10 flex w-full max-w-[min(15rem,calc(100vw-2.5rem))] flex-col justify-center gap-2 md:max-w-xl md:flex-row md:gap-3">
               <a
                 href={whatsappUrl}
-                className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-[#003d37] px-2.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-[#12554f] sm:gap-2 sm:px-3 sm:text-sm"
+                className="inline-flex items-center justify-center rounded-lg bg-[#003d37] px-2.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-[#12554f] sm:px-3 sm:text-sm"
               >
-                <MessageSquare className="size-4 shrink-0 sm:size-5" />
                 Enroll via WhatsApp
               </a>
               <a
                 href="#waitlist"
-                className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-[#cfe6f2] px-2.5 py-2 text-xs font-semibold text-[#003d37] transition-colors hover:bg-[#bdd8e6] sm:gap-2 sm:px-3 sm:text-sm"
+                className="inline-flex items-center justify-center rounded-lg bg-[#cfe6f2] px-2.5 py-2 text-xs font-semibold text-[#003d37] transition-colors hover:bg-[#bdd8e6] sm:px-3 sm:text-sm"
               >
-                <Mail className="size-4 shrink-0 sm:size-5" />
                 Join Waitlist
               </a>
             </div>
