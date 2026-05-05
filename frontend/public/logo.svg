@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">KoreField AI Logo</title>
+  <desc id="desc">Connected multi-colored intelligence nodes with a central AI Agent hub.</desc>
+  
+  <!-- Connections -->
+  <g stroke-width="18" stroke-linecap="round" opacity="0.5">
+    <line x1="376" y1="256" x2="256" y2="256" stroke="#06b6d4" />
+    <line x1="316" y1="360" x2="256" y2="256" stroke="#6366f1" />
+    <line x1="196" y1="360" x2="256" y2="256" stroke="#10b981" />
+    <line x1="136" y1="256" x2="256" y2="256" stroke="#f59e0b" />
+    <line x1="196" y1="152" x2="256" y2="256" stroke="#f43f5e" />
+    <line x1="316" y1="152" x2="256" y2="256" stroke="#8b5cf6" />
+  </g>
+
+  <!-- Outer Nodes -->
+  <circle cx="376" cy="256" r="32" fill="#06b6d4" />
+  <circle cx="316" cy="360" r="32" fill="#6366f1" />
+  <circle cx="196" cy="360" r="32" fill="#10b981" />
+  <circle cx="136" cy="256" r="32" fill="#f59e0b" />
+  <circle cx="196" cy="152" r="32" fill="#f43f5e" />
+  <circle cx="316" cy="152" r="32" fill="#8b5cf6" />
+
+  <!-- Central Agent Hub -->
+  <circle cx="256" cy="256" r="72" fill="#1e293b" stroke="#ffffff" stroke-width="5" />
+  
+  <!-- AI Agent Bot Symbol -->
+  <g transform="translate(226, 228)">
+    <!-- Bot Head -->
+    <rect x="0" y="5" width="60" height="48" rx="14" fill="#06b6d4" />
+    <!-- Eyes -->
+    <circle cx="18" cy="24" r="7" fill="#ffffff" />
+    <circle cx="42" cy="24" r="7" fill="#ffffff" />
+    <circle cx="18" cy="24" r="3" fill="#1e293b" />
+    <circle cx="42" cy="24" r="3" fill="#1e293b" />
+    <!-- Mouth -->
+    <rect x="18" y="38" width="24" height="4" rx="2" fill="#ffffff" opacity="0.8" />
+    <!-- Antenna -->
+    <line x1="30" y1="5" x2="30" y2="-8" stroke="#ffffff" stroke-width="5" stroke-linecap="round" />
+    <circle cx="30" cy="-12" r="6" fill="#ffffff" />
+  </g>
+</svg>

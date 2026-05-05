@@ -178,7 +178,7 @@ export default function LandingPage() {
             className="inline-flex min-w-0 items-center gap-3 font-sans text-[#003d37] sm:gap-4"
           >
             <Image
-              src="https://korefield.com/logo.svg"
+              src="/logo.svg"
               alt="KoreField Logo"
               width={64}
               height={64}
