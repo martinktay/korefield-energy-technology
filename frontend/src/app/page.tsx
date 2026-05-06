@@ -168,7 +168,7 @@ export default function LandingPage() {
         <div className="mx-auto flex min-h-16 max-w-4xl items-center justify-between gap-3 px-4 py-2 sm:px-6 lg:max-w-6xl lg:gap-4 lg:px-8 xl:max-w-7xl">
           <a
             href="https://korefield.com/"
-            className="inline-flex min-w-0 items-center gap-3 font-sans text-[#003d37] sm:gap-4"
+            className="inline-flex min-w-0 items-center gap-2 font-sans text-[#003d37] sm:gap-3"
           >
             <Image
               src="/logo.svg"
@@ -347,7 +347,7 @@ export default function LandingPage() {
                       alt={tool.name}
                       width={160}
                       height={56}
-                      className="h-10 w-auto object-contain"
+                      className={`h-10 w-auto object-contain ${tool.name === "Python" ? "scale-[2.35]" : ""}`}
                       loading="lazy"
                       unoptimized
                     />
@@ -553,7 +553,7 @@ export default function LandingPage() {
           <div className="mb-12 grid grid-cols-1 gap-10 text-center md:grid-cols-12 md:text-left">
             <div className="md:col-span-5">
               <Link href="/" className="mx-auto mb-5 inline-flex items-center justify-center gap-3 md:mx-0 md:justify-start">
-                <Image src="/logo.svg" alt="KoreField Academy logo" width={56} height={56} className="h-12 w-auto" />
+                <Image src="/logo.svg" alt="KoreField Academy logo" width={72} height={72} className="h-14 w-auto sm:h-16" />
                 <span className="text-2xl font-extrabold tracking-tight text-[#003d37]">KoreField Academy</span>
               </Link>
               <p className="mx-auto max-w-sm text-sm leading-relaxed text-[#4c616c] md:mx-0">
