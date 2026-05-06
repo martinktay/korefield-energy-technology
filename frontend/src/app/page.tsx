@@ -6,7 +6,6 @@ import {
   CheckCircle2,
   Flame,
   Mail,
-  MapPin,
   Menu,
   MessageSquare,
   Phone,
@@ -559,16 +558,6 @@ export default function LandingPage() {
               </Link>
               <p className="mx-auto max-w-sm text-sm leading-relaxed text-[#4c616c] md:mx-0">
                 Hands-on AI bootcamps, learner support, and practical engineering education from KoreField Energy &amp; Technology Ltd.
-              </p>
-              <div className="mt-5 flex items-center justify-center gap-2 text-sm font-bold text-[#003d37] md:justify-start">
-                <MapPin className="size-4 shrink-0" aria-hidden />
-                <span>Lagos, Nigeria</span>
-              </div>
-              <p className="mx-auto mt-1 max-w-sm text-xs font-medium leading-relaxed text-[#4c616c] md:mx-0 md:pl-6">
-                <span className="text-[#4c616c]/80">Academy site:</span>{" "}
-                <a className="font-semibold text-[#111d23] hover:text-[#003d37]" href="https://academy.korefield.com">
-                  academy.korefield.com
-                </a>
               </p>
             </div>
 

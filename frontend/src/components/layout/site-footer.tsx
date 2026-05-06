@@ -7,7 +7,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Mail, MapPin, MessageSquare } from "lucide-react";
+import { Mail, MessageSquare } from "lucide-react";
 
 const PORTAL_PREFIXES = ["/learner", "/instructor", "/admin", "/super-admin", "/corporate"];
 
@@ -30,16 +30,6 @@ export function SiteFooter() {
             </Link>
             <p className="max-w-sm text-body-sm leading-relaxed text-surface-600">
               Hands-on AI bootcamps, learner support, and practical engineering education from KoreField Energy &amp; Technology Ltd.
-            </p>
-            <div className="mt-4 flex items-center gap-2 text-sm font-bold text-brand-700">
-              <MapPin className="size-4 shrink-0" aria-hidden />
-              <span>Lagos, Nigeria</span>
-            </div>
-            <p className="mt-1 max-w-sm text-xs font-medium leading-relaxed text-surface-500">
-              <span className="text-surface-400">Academy site:</span>{" "}
-              <a className="font-semibold text-surface-700 hover:text-brand-700" href="https://academy.korefield.com">
-                academy.korefield.com
-              </a>
             </p>
           </div>
 
