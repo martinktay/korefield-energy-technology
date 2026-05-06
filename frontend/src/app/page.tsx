@@ -324,7 +324,7 @@ export default function LandingPage() {
                 Learn with the same technologies we use in the Academy curriculum—so what you study matches how modern AI systems are built.
               </p>
             </div>
-            <div className="mt-8 grid grid-cols-2 gap-3 sm:mt-12 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5">
+            <div className="mx-auto mt-8 grid max-w-4xl grid-cols-2 gap-2.5 sm:mt-12 sm:grid-cols-3 sm:gap-3 md:grid-cols-4 lg:grid-cols-5">
               {(
                 [
                   { name: "Python", src: "/images/tools/python.png" },
@@ -333,14 +333,14 @@ export default function LandingPage() {
                   { name: "LangGraph", src: "/images/tools/langgraph.png" },
                   { name: "FastAPI", src: "/images/tools/fastapi.png" },
                   { name: "Docker", src: "/images/tools/docker.png" },
-                  { name: "PostgreSQL", src: "/images/tools/postgres.png" },
-                  { name: "AWS", src: "/images/tools/aws.png" },
-                  { name: "TypeScript", src: "/images/tools/typescript.png" },
+                  { name: "PostgreSQL", src: "/images/tools/postgres.png", hideLabel: true },
+                  { name: "AWS", src: "/images/tools/aws.png", hideLabel: true },
+                  { name: "TypeScript", src: "/images/tools/typescript.png", hideLabel: true },
                 ] as const
               ).map((tool) => (
                 <div
                   key={tool.name}
-                  className="rounded-2xl border border-[#c3c6d4]/20 bg-white p-3 text-center shadow-sm sm:p-4"
+                  className="rounded-2xl border border-[#c3c6d4]/20 bg-white p-2.5 text-center shadow-sm sm:p-3"
                 >
                   <div className="flex h-12 items-center justify-center sm:h-14">
                     <Image
@@ -353,7 +353,9 @@ export default function LandingPage() {
                       unoptimized
                     />
                   </div>
-                  <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.14em] text-[#4c616c]">{tool.name}</p>
+                  {!("hideLabel" in tool && tool.hideLabel) && (
+                    <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.14em] text-[#4c616c]">{tool.name}</p>
+                  )}
                 </div>
               ))}
             </div>
