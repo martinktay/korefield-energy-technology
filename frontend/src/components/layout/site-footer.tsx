@@ -1,10 +1,10 @@
 /**
  * @file site-footer.tsx
- * Public pages (not `/`, not portals): KoreField Academy branding, in-page anchors,
- * academy routes, enrollment contact, and on-site legal links only.
+ * Public Academy pages footer with brand, enrollment contact, navigation, and legal links.
  */
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Mail, MapPin, MessageSquare } from "lucide-react";
@@ -23,110 +23,28 @@ export function SiteFooter() {
     <footer className="border-t border-surface-200 bg-surface-50">
       <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:max-w-5xl lg:px-8">
         <div className="mb-12 grid grid-cols-1 gap-10 md:grid-cols-12">
-          <div className="md:col-span-4">
-            <p className="text-xl font-extrabold tracking-tight text-brand-700">KoreField Academy</p>
-            <p className="mt-3 max-w-sm text-body-sm leading-relaxed text-surface-600">
-              Live bootcamps, learner support, and the Academy platform—focused on hands-on AI and engineering skills for students and lifelong learners.
+          <div className="md:col-span-5">
+            <Link href="/" className="mb-4 inline-flex items-center gap-3">
+              <Image src="/logo.svg" alt="KoreField Academy logo" width={56} height={56} className="h-12 w-auto" />
+              <span className="text-xl font-extrabold tracking-tight text-brand-700">KoreField Academy</span>
+            </Link>
+            <p className="max-w-sm text-body-sm leading-relaxed text-surface-600">
+              Hands-on AI bootcamps, learner support, and practical engineering education from KoreField Energy &amp; Technology Ltd.
             </p>
             <div className="mt-4 flex items-center gap-2 text-sm font-bold text-brand-700">
               <MapPin className="size-4 shrink-0" aria-hidden />
               <span>Lagos, Nigeria</span>
             </div>
             <p className="mt-1 max-w-sm text-xs font-medium leading-relaxed text-surface-500">
-              <span className="text-surface-400">Academy site</span>{" "}
-              <span className="font-semibold text-surface-700">academy.korefield.com</span>
+              <span className="text-surface-400">Academy site:</span>{" "}
+              <a className="font-semibold text-surface-700 hover:text-brand-700" href="https://academy.korefield.com">
+                academy.korefield.com
+              </a>
             </p>
           </div>
 
           <div className="md:col-span-3">
-            <h4 className="text-xs font-bold uppercase tracking-widest text-surface-900">On this page</h4>
-            <p className="mb-3 mt-1 text-[10px] font-bold uppercase tracking-wider text-surface-400">Program &amp; cohort</p>
-            <ul className="space-y-2.5 text-body-sm font-medium text-surface-600">
-              <li>
-                <Link href="/#program" className="transition-colors hover:text-brand-600">
-                  Program overview
-                </Link>
-              </li>
-              <li>
-                <Link href="/#academy-philosophy" className="transition-colors hover:text-brand-600">
-                  Philosophy &amp; approach
-                </Link>
-              </li>
-              <li>
-                <Link href="/#outcomes" className="transition-colors hover:text-brand-600">
-                  Skills &amp; outcomes
-                </Link>
-              </li>
-              <li>
-                <Link href="/#industry-tools" className="transition-colors hover:text-brand-600">
-                  Tools we teach
-                </Link>
-              </li>
-              <li>
-                <Link href="/#team" className="transition-colors hover:text-brand-600">
-                  Academy team
-                </Link>
-              </li>
-              <li>
-                <Link href="/#waitlist" className="transition-colors hover:text-brand-600">
-                  Join waitlist
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div className="md:col-span-3">
-            <h4 className="text-xs font-bold uppercase tracking-widest text-surface-900">Academy</h4>
-            <p className="mb-3 mt-1 text-[10px] font-bold uppercase tracking-wider text-surface-400">Pages on this site</p>
-            <ul className="space-y-2.5 text-body-sm font-medium text-surface-600">
-              <li>
-                <Link href="/" className="transition-colors hover:text-brand-600">
-                  Academy home
-                </Link>
-              </li>
-              <li>
-                <Link href="/pricing" className="transition-colors hover:text-brand-600">
-                  Pricing &amp; enrollment
-                </Link>
-              </li>
-              <li>
-                <Link href="/team" className="transition-colors hover:text-brand-600">
-                  Team
-                </Link>
-              </li>
-              <li>
-                <Link href="/careers" className="transition-colors hover:text-brand-600">
-                  Careers at the Academy
-                </Link>
-              </li>
-              <li>
-                <Link href="/learner/login" className="transition-colors hover:text-brand-600">
-                  Learner login
-                </Link>
-              </li>
-            </ul>
-            <p className="mb-2 mt-6 text-[10px] font-bold uppercase tracking-wider text-surface-400">Policies</p>
-            <ul className="flex flex-wrap gap-x-4 gap-y-1 text-xs font-medium text-surface-500">
-              <li>
-                <Link href="/privacy" className="hover:text-brand-600">
-                  Privacy
-                </Link>
-              </li>
-              <li>
-                <Link href="/terms" className="hover:text-brand-600">
-                  Terms
-                </Link>
-              </li>
-              <li>
-                <Link href="/cookies" className="hover:text-brand-600">
-                  Cookies
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div className="md:col-span-2">
-            <h4 className="text-xs font-bold uppercase tracking-widest text-surface-900">Enrollment</h4>
+            <h4 className="text-xs font-bold uppercase tracking-widest text-surface-900">Enrollment Support</h4>
             <div className="mt-4 flex gap-3">
               <a
                 className="flex size-10 items-center justify-center rounded-full bg-surface-200 text-surface-700 transition-all hover:bg-brand-600 hover:text-white"
@@ -162,9 +80,63 @@ export function SiteFooter() {
                 </a>
               </li>
             </ul>
-            <p className="mt-4 text-[10px] uppercase tracking-tighter text-surface-400">
-              Academy platform status: <span className="font-bold text-emerald-600">Operational</span>
-            </p>
+          </div>
+
+          <div className="md:col-span-2">
+            <h4 className="text-xs font-bold uppercase tracking-widest text-surface-900">Program</h4>
+            <ul className="mt-4 space-y-2.5 text-body-sm font-medium text-surface-600">
+              <li>
+                <Link href="/#program" className="transition-colors hover:text-brand-600">
+                  Overview
+                </Link>
+              </li>
+              <li>
+                <Link href="/#industry-tools" className="transition-colors hover:text-brand-600">
+                  Industry tools
+                </Link>
+              </li>
+              <li>
+                <Link href="/#outcomes" className="transition-colors hover:text-brand-600">
+                  Skills &amp; outcomes
+                </Link>
+              </li>
+              <li>
+                <Link href="/#waitlist" className="transition-colors hover:text-brand-600">
+                  Join waitlist
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div className="md:col-span-2">
+            <h4 className="text-xs font-bold uppercase tracking-widest text-surface-900">Academy</h4>
+            <ul className="mt-4 space-y-2.5 text-body-sm font-medium text-surface-600">
+              <li>
+                <Link href="/" className="transition-colors hover:text-brand-600">
+                  Academy home
+                </Link>
+              </li>
+              <li>
+                <Link href="/pricing" className="transition-colors hover:text-brand-600">
+                  Pricing &amp; enrollment
+                </Link>
+              </li>
+              <li>
+                <Link href="/team" className="transition-colors hover:text-brand-600">
+                  Team
+                </Link>
+              </li>
+              <li>
+                <Link href="/careers" className="transition-colors hover:text-brand-600">
+                  Careers
+                </Link>
+              </li>
+              <li>
+                <Link href="/learner/login" className="transition-colors hover:text-brand-600">
+                  Learner login
+                </Link>
+              </li>
+            </ul>
           </div>
         </div>
 
@@ -183,8 +155,8 @@ export function SiteFooter() {
             <Link className="transition-colors hover:text-brand-600" href="/terms">
               Terms of Service
             </Link>
-            <Link className="transition-colors hover:text-brand-600" href="/privacy">
-              Security &amp; data
+            <Link className="transition-colors hover:text-brand-600" href="/cookies">
+              Cookies
             </Link>
           </div>
         </div>

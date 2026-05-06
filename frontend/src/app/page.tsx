@@ -551,108 +551,29 @@ export default function LandingPage() {
 
       <footer className="border-t border-[#c3c6d4]/35 bg-[#e9f6fd] px-4 py-16 text-[#434652] sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl lg:max-w-5xl">
-          <div className="mb-16 grid grid-cols-1 gap-12 text-center md:grid-cols-12 md:text-left">
-            <div className="md:col-span-4">
-              <span className="mb-6 block text-2xl font-extrabold tracking-tight text-[#003d37]">KoreField Academy</span>
-              <p className="mx-auto mb-6 max-w-sm text-sm leading-relaxed text-[#4c616c] md:mx-0">
-                Live bootcamps, learner support, and the Academy platform—focused on hands-on AI and engineering skills for students and lifelong learners.
+          <div className="mb-12 grid grid-cols-1 gap-10 text-center md:grid-cols-12 md:text-left">
+            <div className="md:col-span-5">
+              <Link href="/" className="mx-auto mb-5 inline-flex items-center justify-center gap-3 md:mx-0 md:justify-start">
+                <Image src="/logo.svg" alt="KoreField Academy logo" width={56} height={56} className="h-12 w-auto" />
+                <span className="text-2xl font-extrabold tracking-tight text-[#003d37]">KoreField Academy</span>
+              </Link>
+              <p className="mx-auto max-w-sm text-sm leading-relaxed text-[#4c616c] md:mx-0">
+                Hands-on AI bootcamps, learner support, and practical engineering education from KoreField Energy &amp; Technology Ltd.
               </p>
-              <div className="mb-2 flex items-center justify-center gap-2 text-sm font-bold text-[#003d37] md:justify-start">
+              <div className="mt-5 flex items-center justify-center gap-2 text-sm font-bold text-[#003d37] md:justify-start">
                 <MapPin className="size-4 shrink-0" aria-hidden />
                 <span>Lagos, Nigeria</span>
               </div>
-              <p className="mx-auto max-w-sm text-xs font-medium leading-relaxed text-[#4c616c] md:mx-0 md:pl-6">
-                <span className="text-[#4c616c]/80">Academy site</span>{" "}
-                <span className="font-semibold text-[#111d23]">academy.korefield.com</span>
+              <p className="mx-auto mt-1 max-w-sm text-xs font-medium leading-relaxed text-[#4c616c] md:mx-0 md:pl-6">
+                <span className="text-[#4c616c]/80">Academy site:</span>{" "}
+                <a className="font-semibold text-[#111d23] hover:text-[#003d37]" href="https://academy.korefield.com">
+                  academy.korefield.com
+                </a>
               </p>
             </div>
+
             <div className="md:col-span-3">
-              <h4 className="mb-6 text-sm font-bold uppercase tracking-widest text-[#111d23]">On this page</h4>
-              <p className="mb-3 text-[10px] font-bold uppercase tracking-wider text-[#4c616c]/80">Program &amp; cohort</p>
-              <ul className="space-y-3 text-sm font-medium text-[#4c616c]">
-                <li>
-                  <a className="transition-colors hover:text-[#003d37]" href="#program">
-                    Program overview
-                  </a>
-                </li>
-                <li>
-                  <a className="transition-colors hover:text-[#003d37]" href="#academy-philosophy">
-                    Philosophy &amp; approach
-                  </a>
-                </li>
-                <li>
-                  <a className="transition-colors hover:text-[#003d37]" href="#outcomes">
-                    Skills &amp; outcomes
-                  </a>
-                </li>
-                <li>
-                  <a className="transition-colors hover:text-[#003d37]" href="#industry-tools">
-                    Tools we teach
-                  </a>
-                </li>
-                <li>
-                  <a className="transition-colors hover:text-[#003d37]" href="#team">
-                    Academy team
-                  </a>
-                </li>
-                <li>
-                  <a className="transition-colors hover:text-[#003d37]" href="#waitlist">
-                    Join waitlist
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div className="md:col-span-3">
-              <h4 className="mb-6 text-sm font-bold uppercase tracking-widest text-[#111d23]">Academy</h4>
-              <p className="mb-3 text-[10px] font-bold uppercase tracking-wider text-[#4c616c]/80">Pages on this site</p>
-              <ul className="space-y-3 text-sm font-medium text-[#4c616c]">
-                <li>
-                  <Link href="/" className="transition-colors hover:text-[#003d37]">
-                    Academy home
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/pricing" className="transition-colors hover:text-[#003d37]">
-                    Pricing &amp; enrollment
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/team" className="transition-colors hover:text-[#003d37]">
-                    Team
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/careers" className="transition-colors hover:text-[#003d37]">
-                    Careers at the Academy
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/learner/login" className="transition-colors hover:text-[#003d37]">
-                    Learner login
-                  </Link>
-                </li>
-              </ul>
-              <p className="mb-2 mt-6 text-[10px] font-bold uppercase tracking-wider text-[#4c616c]/80">Policies</p>
-              <ul className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-xs font-medium text-[#4c616c] md:justify-start">
-                <li>
-                  <Link href="/privacy" className="transition-colors hover:text-[#003d37]">
-                    Privacy
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/terms" className="transition-colors hover:text-[#003d37]">
-                    Terms
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/cookies" className="transition-colors hover:text-[#003d37]">
-                    Cookies
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div className="md:col-span-2">
-              <h4 className="mb-6 text-sm font-bold uppercase tracking-widest text-[#111d23]">Enrollment</h4>
+              <h4 className="mb-5 text-sm font-bold uppercase tracking-widest text-[#111d23]">Enrollment Support</h4>
               <div className="mb-4 flex justify-center gap-4 md:justify-start">
                 <a
                   className="flex size-10 items-center justify-center rounded-full border border-[#c3c6d4]/50 bg-white text-[#003d37] shadow-sm transition-all hover:border-[#003d37] hover:bg-[#003d37] hover:text-white"
@@ -671,7 +592,7 @@ export default function LandingPage() {
                   <Mail className="size-4" />
                 </a>
               </div>
-              <ul className="space-y-2 text-sm text-[#4c616c]">
+              <ul className="space-y-2.5 text-sm font-medium text-[#4c616c]">
                 <li>
                   <a className="transition-colors hover:text-[#003d37]" href="https://wa.me/2347033075594" target="_blank" rel="noopener noreferrer">
                     WhatsApp +234 703 307 5594
@@ -688,9 +609,63 @@ export default function LandingPage() {
                   </a>
                 </li>
               </ul>
-              <p className="mt-5 text-[10px] uppercase tracking-tighter text-[#4c616c]/80">
-                Academy platform status: <span className="font-bold text-emerald-600">Operational</span>
-              </p>
+            </div>
+
+            <div className="md:col-span-2">
+              <h4 className="mb-5 text-sm font-bold uppercase tracking-widest text-[#111d23]">Program</h4>
+              <ul className="space-y-2.5 text-sm font-medium text-[#4c616c]">
+                <li>
+                  <a className="transition-colors hover:text-[#003d37]" href="#program">
+                    Overview
+                  </a>
+                </li>
+                <li>
+                  <a className="transition-colors hover:text-[#003d37]" href="#industry-tools">
+                    Industry tools
+                  </a>
+                </li>
+                <li>
+                  <a className="transition-colors hover:text-[#003d37]" href="#outcomes">
+                    Skills &amp; outcomes
+                  </a>
+                </li>
+                <li>
+                  <a className="transition-colors hover:text-[#003d37]" href="#waitlist">
+                    Join waitlist
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div className="md:col-span-2">
+              <h4 className="mb-5 text-sm font-bold uppercase tracking-widest text-[#111d23]">Academy</h4>
+              <ul className="space-y-2.5 text-sm font-medium text-[#4c616c]">
+                <li>
+                  <Link href="/" className="transition-colors hover:text-[#003d37]">
+                    Academy home
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/pricing" className="transition-colors hover:text-[#003d37]">
+                    Pricing &amp; enrollment
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/team" className="transition-colors hover:text-[#003d37]">
+                    Team
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/careers" className="transition-colors hover:text-[#003d37]">
+                    Careers
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/learner/login" className="transition-colors hover:text-[#003d37]">
+                    Learner login
+                  </Link>
+                </li>
+              </ul>
             </div>
           </div>
           <div className="flex flex-col gap-6 border-t border-[#c3c6d4]/35 pt-8 text-center md:flex-row md:items-center md:justify-between md:text-left">
@@ -710,8 +685,8 @@ export default function LandingPage() {
               <Link className="transition-colors hover:text-[#003d37]" href="/terms">
                 Terms of Service
               </Link>
-              <Link className="transition-colors hover:text-[#003d37]" href="/privacy">
-                Security &amp; data
+              <Link className="transition-colors hover:text-[#003d37]" href="/cookies">
+                Cookies
               </Link>
             </div>
           </div>
