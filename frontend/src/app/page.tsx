@@ -394,15 +394,15 @@ export default function LandingPage() {
               ).map((tool) => (
                 <div
                   key={tool.name}
-                  className="rounded-2xl border border-[#c3c6d4]/20 bg-white p-2.5 text-center shadow-sm sm:p-3"
+                  className="rounded-2xl border border-[#c3c6d4]/20 bg-white p-3 text-center shadow-sm sm:p-3.5"
                 >
-                  <div className="flex h-12 items-center justify-center sm:h-14">
+                  <div className="flex h-14 items-center justify-center sm:h-16">
                     <Image
                       src={tool.src}
                       alt={tool.name}
                       width={160}
                       height={56}
-                      className={`h-10 w-auto object-contain ${tool.name === "Python" ? "scale-[2.35]" : ""}`}
+                      className={`w-auto object-contain ${tool.name === "Python" ? "h-12 sm:h-14" : "h-10 sm:h-11"}`}
                       loading="lazy"
                       unoptimized
                     />
@@ -739,4 +739,3 @@ export default function LandingPage() {
     </div>
   );
 }
-
