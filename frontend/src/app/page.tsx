@@ -381,7 +381,7 @@ export default function LandingPage() {
             <div className="mx-auto mt-8 grid max-w-4xl grid-cols-2 gap-2.5 sm:mt-12 sm:grid-cols-3 sm:gap-3 md:grid-cols-4 lg:grid-cols-5">
               {(
                 [
-                  { name: "Python", src: "/images/tools/python.png" },
+                  { name: "Python", src: "/images/tools/python.svg", hideLabel: true },
                   { name: "PyTorch", src: "/images/tools/pytorch.png" },
                   { name: "LangChain", src: "/images/tools/langchain.png" },
                   { name: "LangGraph", src: "/images/tools/langgraph.png" },
@@ -402,7 +402,7 @@ export default function LandingPage() {
                       alt={tool.name}
                       width={160}
                       height={56}
-                      className={`w-auto object-contain ${tool.name === "Python" ? "h-12 sm:h-14" : "h-10 sm:h-11"}`}
+                      className="h-10 w-auto object-contain sm:h-11"
                       loading="lazy"
                       unoptimized
                     />
