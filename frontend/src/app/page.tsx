@@ -4,7 +4,10 @@ import Link from "next/link";
 import {
   CalendarDays,
   CheckCircle2,
+  Briefcase,
+  Building2,
   Flame,
+  GraduationCap,
   Mail,
   Menu,
   MessageSquare,
@@ -18,14 +21,17 @@ import {
 import { ComingSoonWaitlistForm } from "@/components/waitlist/coming-soon-waitlist-form";
 
 export const metadata: Metadata = {
-  title: "KoreField Academy | AI Holiday Bootcamp",
-  description: "Join KoreField Academy's affordable AI Holiday Bootcamp for senior secondary students to learn Python, build AI agents, and prepare for real tech opportunities.",
+  title: "KoreField Academy | Powered by KoreField AI Agency",
+  description: "KoreField Academy is the talent arm of KoreField AI Agency, offering live AI bootcamps for senior secondary students plus corporate training and NYSC-ready acceleration tracks.",
   keywords: [
     "KoreField Academy",
     "AI Holiday Bootcamp",
+    "KoreField AI Agency",
     "AI classes for students",
     "Python bootcamp Nigeria",
     "AI education Lagos",
+    "corporate AI training Nigeria",
+    "NYSC AI program",
     "affordable tech education Nigeria",
     "tech career training",
     "secondary school coding bootcamp",
@@ -34,8 +40,8 @@ export const metadata: Metadata = {
     canonical: "https://academy.korefield.com",
   },
   openGraph: {
-    title: "KoreField Academy | AI Holiday Bootcamp",
-    description: "Affordable AI education for students who want to learn Python, build AI agents, and prepare for real tech opportunities.",
+    title: "KoreField Academy | Powered by KoreField AI Agency",
+    description: "Live AI bootcamps, corporate training, and practical acceleration tracks from KoreField Academy, the talent arm of KoreField AI Agency.",
     url: "https://academy.korefield.com",
     siteName: "KoreField Academy",
     type: "website",
@@ -50,8 +56,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "KoreField Academy | AI Holiday Bootcamp",
-    description: "Affordable AI education for students who want to learn Python, build AI agents, and prepare for real tech opportunities.",
+    title: "KoreField Academy | Powered by KoreField AI Agency",
+    description: "Live AI bootcamps, corporate training, and practical acceleration tracks from KoreField Academy.",
     images: ["https://korefield.com/images/sovereign-ai-viz.png"],
   },
 };
@@ -79,6 +85,27 @@ const included = [
   "Certificate of completion",
   "Direct mentorship from an AI Engineer",
   "Access to the KoreField community",
+];
+
+const academyTracks = [
+  {
+    title: "Student Bootcamp",
+    description:
+      "An 8-week live cohort for SS1-3 students who want to build Python skills, AI agents, and LangChain projects with clear guidance and support.",
+    icon: GraduationCap,
+  },
+  {
+    title: "Corporate Training",
+    description:
+      "Custom programmes for executives and teams who need practical AI fluency, workflow automation, and hands-on delivery that maps to real business goals.",
+    icon: Briefcase,
+  },
+  {
+    title: "NYSC & Sector Tracks",
+    description:
+      "Acceleration paths for corps members and professionals in energy, aviation, logistics, finance, and other sectors where applied AI matters.",
+    icon: Building2,
+  },
 ];
 
 const structuredData = {
@@ -227,23 +254,23 @@ export default function LandingPage() {
           <div className="relative mx-auto max-w-4xl text-center lg:max-w-5xl">
             <div className="mb-8 inline-flex max-w-[calc(100vw-2rem)] items-center gap-1.5 rounded-full border border-[#003d37]/15 bg-[#dceef3] px-3 py-1.5 text-[10px] font-bold uppercase leading-tight tracking-[0.14em] text-[#003d37] md:gap-2 md:px-4 md:py-2 md:text-xs md:tracking-[0.18em]">
               <Flame className="size-3.5 shrink-0 sm:size-4" />
-              AI Holiday Bootcamp Now Enrolling
+              Powered by KoreField AI Agency
             </div>
             <h1 className="font-sans text-5xl font-extrabold leading-none tracking-tight text-[#003d37] sm:text-6xl lg:text-7xl">
               KoreField Academy
             </h1>
             <p className="mt-6 font-sans text-2xl font-bold tracking-tight text-[#111d23] sm:text-3xl">
-              Build real AI systems, not just theory.
+              Learn the systems behind modern AI.
             </p>
             <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-[#4c616c]">
-              An intensive 8-week bootcamp designed for senior secondary students who want to learn Python, build AI agents, and work on real-world projects, led by a practising AI Engineer and Data Scientist.
+              KoreField Academy is the talent arm of KoreField AI Agency. Our flagship 8-week bootcamp is built for senior secondary students, while corporate training and NYSC-ready acceleration tracks extend the same practical approach to organisations and professionals.
             </p>
             <div className="mx-auto mt-10 flex w-full max-w-[min(15rem,calc(100vw-2.5rem))] flex-col justify-center gap-2 md:max-w-xl md:flex-row md:gap-3">
               <a
-                href={whatsappUrl}
+                href="#academy-tracks"
                 className="inline-flex items-center justify-center rounded-lg bg-[#003d37] px-2.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-[#12554f] sm:px-3 sm:text-sm"
               >
-                Enroll via WhatsApp
+                Explore Academy Tracks
               </a>
               <a
                 href="#waitlist"
@@ -255,6 +282,34 @@ export default function LandingPage() {
             <p className="mt-8 text-sm text-[#434652]">
               <span className="font-bold text-[#003d37]">{"\u20A6"}180,000</span> Early Bird Price · Limited Slots
             </p>
+          </div>
+        </section>
+
+        <section id="academy-tracks" className="border-y border-[#c3c6d4]/35 bg-white px-4 py-16 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-6xl">
+            <div className="mx-auto max-w-2xl text-center">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#003d37]">Powered by KoreField AI Agency</p>
+              <h2 className="mt-2 font-sans text-3xl font-extrabold tracking-tight text-[#111d23] sm:text-4xl">
+                Academy paths for students, teams, and working professionals
+              </h2>
+              <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-[#4c616c] sm:text-lg">
+                The Academy is the people engine behind KoreField. We use the same practical teaching style across youth bootcamps, executive training, and sector-specific acceleration.
+              </p>
+            </div>
+            <div className="mt-8 grid gap-3 sm:mt-10 md:grid-cols-3 md:gap-4">
+              {academyTracks.map((track) => {
+                const Icon = track.icon;
+                return (
+                  <article key={track.title} className="rounded-3xl border border-[#c3c6d4]/20 bg-[#f7fbfd] p-5 shadow-sm md:p-6">
+                    <div className="mb-4 flex size-11 items-center justify-center rounded-2xl bg-[#dceef3] text-[#003d37]">
+                      <Icon className="size-5" />
+                    </div>
+                    <h3 className="text-lg font-bold text-[#003d37]">{track.title}</h3>
+                    <p className="mt-3 text-sm leading-relaxed text-[#4c616c]">{track.description}</p>
+                  </article>
+                );
+              })}
+            </div>
           </div>
         </section>
 
@@ -557,7 +612,7 @@ export default function LandingPage() {
                 <span className="text-2xl font-extrabold tracking-tight text-[#003d37]">KoreField Academy</span>
               </Link>
               <p className="mx-auto max-w-sm text-sm leading-relaxed text-[#4c616c] md:mx-0">
-                Hands-on AI bootcamps, learner support, and practical engineering education from KoreField Energy &amp; Technology Ltd.
+                The talent arm of KoreField AI Agency, delivering live bootcamps, corporate training, and practical engineering education from KoreField Energy &amp; Technology Ltd.
               </p>
             </div>
 
@@ -684,6 +739,4 @@ export default function LandingPage() {
     </div>
   );
 }
-
-
 
