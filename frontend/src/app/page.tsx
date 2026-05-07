@@ -390,6 +390,7 @@ export default function LandingPage() {
                   { name: "PostgreSQL", src: "/images/tools/postgres.png", hideLabel: true },
                   { name: "AWS", src: "/images/tools/aws.png", hideLabel: true },
                   { name: "TypeScript", src: "/images/tools/typescript.png", hideLabel: true },
+                  { name: "GitHub", src: "/images/tools/github.png", hideLabel: true },
                 ] as const
               ).map((tool) => (
                 <div
