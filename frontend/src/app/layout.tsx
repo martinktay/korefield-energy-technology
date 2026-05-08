@@ -29,6 +29,20 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://academy.korefield.com",
   },
+  icons: {
+    icon: [
+      {
+        url: "/logo.svg",
+        type: "image/svg+xml",
+      },
+      {
+        url: "/images/korefield-logo.png",
+        type: "image/png",
+        sizes: "32x32",
+      },
+    ],
+    apple: "/images/korefield-logo.png",
+  },
   openGraph: {
     type: "website",
     url: "https://academy.korefield.com",
