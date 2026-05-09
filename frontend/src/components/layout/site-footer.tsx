@@ -73,7 +73,7 @@ export function SiteFooter() {
           </div>
 
           <div className="md:col-span-2">
-            <h4 className="text-xs font-bold uppercase tracking-widest text-surface-900">Program</h4>
+            <h4 className="text-xs font-bold uppercase tracking-widest text-surface-900">Programs</h4>
             <ul className="mt-4 space-y-2.5 text-body-sm font-medium text-surface-600">
               <li>
                 <Link href="/#program" className="transition-colors hover:text-brand-600">
@@ -81,18 +81,18 @@ export function SiteFooter() {
                 </Link>
               </li>
               <li>
-                <Link href="/#industry-tools" className="transition-colors hover:text-brand-600">
-                  Industry tools
+                <Link href="/#schools" className="transition-colors hover:text-brand-600">
+                  Schools
                 </Link>
               </li>
               <li>
-                <Link href="/#outcomes" className="transition-colors hover:text-brand-600">
-                  Skills &amp; outcomes
+                <Link href="/#corporate-training" className="transition-colors hover:text-brand-600">
+                  Corporate Training
                 </Link>
               </li>
               <li>
-                <Link href="/#waitlist" className="transition-colors hover:text-brand-600">
-                  Join waitlist
+                <Link href="/#contact" className="transition-colors hover:text-brand-600">
+                  Contact
                 </Link>
               </li>
             </ul>

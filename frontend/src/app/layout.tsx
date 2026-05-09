@@ -11,20 +11,21 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL("https://academy.korefield.com"),
   title: {
-    default: "KoreField Academy",
+    default: "KoreField Academy | Practical AI, Coding & Digital Skills Training",
     template: "%s | KoreField Academy",
   },
-  description: "KoreField Academy delivers applied AI education, bootcamps, and workforce training for Africa's next generation of builders.",
+  description: "KoreField Academy is the talent development front door for KoreField Energy & Technology, offering practical AI, coding, digital skills, school programmes, corporate training, and bootcamps.",
   applicationName: "KoreField Academy",
   keywords: [
     "KoreField Academy",
-    "AI Holiday Bootcamp",
+    "practical AI training Nigeria",
     "AI bootcamp Nigeria",
-    "Python for students",
+    "Python bootcamp Nigeria",
     "AI training Lagos",
-    "machine learning bootcamp",
-    "secondary school AI program",
-    "KETL Academy",
+    "coding bootcamp Nigeria",
+    "school AI program",
+    "corporate AI training Nigeria",
+    "digital skills training",
   ],
   alternates: {
     canonical: "https://academy.korefield.com",
@@ -46,8 +47,8 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: "https://academy.korefield.com",
-    title: "KoreField Academy",
-    description: "Applied AI education, bootcamps, and workforce training for Africa's next generation of builders.",
+    title: "KoreField Academy | Practical AI, Coding & Digital Skills Training",
+    description: "Practical AI, coding, digital skills, school programmes, and corporate training from KoreField Academy.",
     siteName: "KoreField Academy",
     locale: "en_NG",
     images: [
@@ -61,8 +62,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "KoreField Academy",
-    description: "Applied AI education, bootcamps, and workforce training for Africa's next generation of builders.",
+    title: "KoreField Academy | Practical AI, Coding & Digital Skills Training",
+    description: "Practical AI, coding, digital skills, school programmes, and corporate training from KoreField Academy.",
     images: ["https://korefield.com/images/sovereign-ai-viz.png"],
   },
   robots: {

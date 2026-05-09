@@ -21,27 +21,26 @@ import {
 import { ComingSoonWaitlistForm } from "@/components/waitlist/coming-soon-waitlist-form";
 
 export const metadata: Metadata = {
-  title: "KoreField Academy | Powered by KoreField AI Agency",
-  description: "KoreField Academy is the talent arm of KoreField AI Agency, offering live AI bootcamps for senior secondary students plus corporate training and NYSC-ready acceleration tracks.",
+  title: "KoreField Academy | Practical AI, Coding & Digital Skills Training",
+  description: "KoreField Academy is the talent development front door for KoreField Energy & Technology, offering practical AI, coding, digital skills, school programmes, corporate training, and bootcamps.",
   keywords: [
     "KoreField Academy",
-    "AI Holiday Bootcamp",
-    "KoreField AI Agency",
-    "AI classes for students",
+    "practical AI training Nigeria",
+    "AI bootcamp Nigeria",
     "Python bootcamp Nigeria",
     "AI education Lagos",
     "corporate AI training Nigeria",
+    "school AI program",
     "NYSC AI program",
-    "affordable tech education Nigeria",
-    "tech career training",
-    "secondary school coding bootcamp",
+    "digital skills training",
+    "coding bootcamp Nigeria",
   ],
   alternates: {
     canonical: "https://academy.korefield.com",
   },
   openGraph: {
-    title: "KoreField Academy | Powered by KoreField AI Agency",
-    description: "Live AI bootcamps, corporate training, and practical acceleration tracks from KoreField Academy, the talent arm of KoreField AI Agency.",
+    title: "KoreField Academy | Practical AI, Coding & Digital Skills Training",
+    description: "Practical AI bootcamps, school programmes, corporate training, and talent development from KoreField Academy.",
     url: "https://academy.korefield.com",
     siteName: "KoreField Academy",
     type: "website",
@@ -56,8 +55,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "KoreField Academy | Powered by KoreField AI Agency",
-    description: "Live AI bootcamps, corporate training, and practical acceleration tracks from KoreField Academy.",
+    title: "KoreField Academy | Practical AI, Coding & Digital Skills Training",
+    description: "Practical AI bootcamps, school programmes, corporate training, and talent development from KoreField Academy.",
     images: ["https://korefield.com/images/sovereign-ai-viz.png"],
   },
 };
@@ -93,6 +92,12 @@ const academyTracks = [
     description:
       "An 8-week live cohort for SS1-3 students who want to build Python skills, AI agents, and LangChain projects with clear guidance and support.",
     icon: GraduationCap,
+  },
+  {
+    title: "Schools Programme",
+    description:
+      "Practical sessions for schools that want to introduce AI, coding, and digital skills through assemblies, clubs, workshops, and after-school programmes.",
+    icon: School,
   },
   {
     title: "Corporate Training",
@@ -152,7 +157,7 @@ const structuredData = {
         price: "180000",
         priceCurrency: "NGN",
         availability: "https://schema.org/InStock",
-        url: "https://academy.korefield.com/#waitlist",
+        url: "https://academy.korefield.com/#contact",
       },
       instructor: {
         "@type": "Person",
@@ -164,10 +169,13 @@ const structuredData = {
 };
 
 const navLinks = [
-  { href: "#program", label: "Program" },
-  { href: "#academy-philosophy", label: "Philosophy" },
+  { href: "#home", label: "Home" },
+  { href: "#program", label: "Programs" },
+  { href: "#schools", label: "Schools" },
+  { href: "#corporate-training", label: "Corporate Training" },
+  { href: "/pricing", label: "Pricing" },
   { href: "#team", label: "Team" },
-  { href: "#waitlist", label: "Waitlist", active: true },
+  { href: "#contact", label: "Contact", active: true },
 ];
 
 function NavLink({ href, label, active = false }: { href: string; label: string; active?: boolean }) {
@@ -186,7 +194,7 @@ function NavLink({ href, label, active = false }: { href: string; label: string;
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-[#f4faff] text-[#111d23]">
+    <div id="home" className="min-h-screen bg-[#f4faff] text-[#111d23]">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
@@ -260,23 +268,23 @@ export default function LandingPage() {
               KoreField Academy
             </h1>
             <p className="mt-6 font-sans text-2xl font-bold tracking-tight text-[#111d23] sm:text-3xl">
-              Learn the systems behind modern AI.
+              Practical AI, coding, and digital skills for the people who will use and build AI.
             </p>
             <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-[#4c616c]">
-              KoreField Academy is the talent arm of KoreField AI Agency. Our flagship 8-week bootcamp is built for senior secondary students, while corporate training and NYSC-ready acceleration tracks extend the same practical approach to organisations and professionals.
+              KoreField Academy is the talent development front door for KoreField Energy &amp; Technology. Our flagship 8-week bootcamp is built for senior secondary students, while school programmes, corporate training, and NYSC-ready acceleration tracks extend the same practical approach to organisations and professionals.
             </p>
             <div className="mx-auto mt-10 flex w-full max-w-[min(15rem,calc(100vw-2.5rem))] flex-col justify-center gap-2 md:max-w-xl md:flex-row md:gap-3">
               <a
-                href="#academy-tracks"
+                href="#program"
                 className="inline-flex items-center justify-center rounded-lg bg-[#003d37] px-2.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-[#12554f] sm:px-3 sm:text-sm"
               >
-                Explore Academy Tracks
+                View Programs
               </a>
               <a
-                href="#waitlist"
+                href="#contact"
                 className="inline-flex items-center justify-center rounded-lg bg-[#cfe6f2] px-2.5 py-2 text-xs font-semibold text-[#003d37] transition-colors hover:bg-[#bdd8e6] sm:px-3 sm:text-sm"
               >
-                Join Waitlist
+                Join the Bootcamp
               </a>
             </div>
             <p className="mt-8 text-sm text-[#434652]">
@@ -285,18 +293,18 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section id="academy-tracks" className="border-y border-[#c3c6d4]/35 bg-white px-4 py-16 sm:px-6 lg:px-8">
+        <section id="corporate-training" className="border-y border-[#c3c6d4]/35 bg-white px-4 py-16 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-6xl">
             <div className="mx-auto max-w-2xl text-center">
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#003d37]">Powered by KoreField AI Agency</p>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#003d37]">Corporate Training</p>
               <h2 className="mt-2 font-sans text-3xl font-extrabold tracking-tight text-[#111d23] sm:text-4xl">
-                Academy paths for students, teams, and working professionals
+                Practical training for teams, operators, and future talent
               </h2>
               <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-[#4c616c] sm:text-lg">
-                The Academy is the people engine behind KoreField. We use the same practical teaching style across youth bootcamps, executive training, and sector-specific acceleration.
+                Schools, organisations, and working teams can learn with the same technologies we use to deliver practical AI systems, so what you study matches how modern AI is applied in real environments.
               </p>
             </div>
-            <div className="mt-8 grid gap-3 sm:mt-10 md:grid-cols-3 md:gap-4">
+            <div className="mt-8 grid gap-3 sm:mt-10 md:grid-cols-2 xl:grid-cols-4 md:gap-4">
               {academyTracks.map((track) => {
                 const Icon = track.icon;
                 return (
@@ -316,8 +324,8 @@ export default function LandingPage() {
         <section id="program" className="scroll-mt-24 border-y border-[#c3c6d4]/35 bg-white px-4 py-16 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-4xl lg:max-w-5xl">
             <div className="text-center">
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#003d37]">Program Overview</p>
-              <h2 className="mt-2 font-sans text-3xl font-extrabold tracking-tight text-[#111d23] sm:text-4xl">What You&apos;re Signing Up For</h2>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#003d37]">Programs</p>
+              <h2 className="mt-2 font-sans text-3xl font-extrabold tracking-tight text-[#111d23] sm:text-4xl">What you&apos;re signing up for</h2>
             </div>
             <div className="mt-8 grid gap-2.5 sm:mt-10 sm:grid-cols-2 sm:gap-3 lg:grid-cols-4">
               {overview.map((item) => {
@@ -338,29 +346,29 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section id="academy-philosophy" className="scroll-mt-24 bg-[#e9f6fd] px-4 py-16 sm:px-6 lg:px-8">
+        <section id="schools" className="scroll-mt-24 bg-[#e9f6fd] px-4 py-16 sm:px-6 lg:px-8">
           <div className="mx-auto grid max-w-4xl gap-8 lg:max-w-5xl lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
             <div className="text-center lg:text-left">
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#003d37]">About the Academy</p>
-              <h2 className="mt-2 font-sans text-3xl font-extrabold tracking-tight text-[#111d23] sm:text-4xl">A practical path into tech that does not break the bank</h2>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#003d37]">Schools</p>
+              <h2 className="mt-2 font-sans text-3xl font-extrabold tracking-tight text-[#111d23] sm:text-4xl">Bring practical AI into classrooms and school programmes</h2>
             </div>
             <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
               <div className="mx-auto w-full max-w-[min(19rem,calc(100vw-2.5rem))] rounded-2xl border border-[#c3c6d4]/20 bg-white p-4 shadow-sm md:p-5 lg:mx-0 lg:max-w-full lg:p-6">
-                <h3 className="text-lg font-bold text-[#003d37]">Affordable by Design</h3>
+                <h3 className="text-lg font-bold text-[#003d37]">School Workshops</h3>
                 <p className="mt-3 text-sm leading-relaxed text-[#4c616c]">
-                  KoreField Academy exists for families who want serious tech education without paying luxury-school prices. We keep the offer focused: live teaching, real projects, mentorship, and a clear learning path.
+                  We help schools introduce AI, coding, and digital skills through workshops, clubs, assemblies, and after-school programmes that feel practical rather than theoretical.
                 </p>
               </div>
               <div className="mx-auto w-full max-w-[min(19rem,calc(100vw-2.5rem))] rounded-2xl border border-[#c3c6d4]/20 bg-white p-4 shadow-sm md:p-5 lg:mx-0 lg:max-w-full lg:p-6">
-                <h3 className="text-lg font-bold text-[#003d37]">Job-Ready Thinking</h3>
+                <h3 className="text-lg font-bold text-[#003d37]">Teacher Support</h3>
                 <p className="mt-3 text-sm leading-relaxed text-[#4c616c]">
-                  Our philosophy is simple: students should learn skills that can grow into internships, freelance work, scholarships, and future jobs. The goal is not just to finish lessons, but to build confidence with tools used in the real world.
+                  We support school teams with ready-to-run session outlines, project ideas, and practical delivery support so teachers can keep the programme alive after the first visit.
                 </p>
               </div>
               <div className="mx-auto w-full max-w-[min(19rem,calc(100vw-2.5rem))] rounded-2xl border border-[#c3c6d4]/20 bg-white p-4 shadow-sm sm:col-span-2 md:p-5 lg:mx-0 lg:max-w-full lg:p-6">
-                <h3 className="text-lg font-bold text-[#003d37]">Talent First, Platform Next</h3>
+                <h3 className="text-lg font-bold text-[#003d37]">Student Pathways</h3>
                 <p className="mt-3 text-sm leading-relaxed text-[#4c616c]">
-                  While the full LMS is being completed, this first cohort runs live via Google Meet so students can begin now. Early learners will move into the platform when it launches, carrying their project work and community access with them.
+                  Students can move from school exposure into the full Academy bootcamp, keeping their project work, community access, and long-term learning path connected to KoreField.
                 </p>
               </div>
             </div>
@@ -561,22 +569,22 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section id="waitlist" className="scroll-mt-24 bg-white px-4 py-16 sm:px-6 lg:px-8">
+        <section id="contact" className="scroll-mt-24 bg-white px-4 py-16 sm:px-6 lg:px-8">
           <div className="mx-auto grid max-w-4xl gap-6 sm:gap-8 lg:max-w-5xl lg:grid-cols-[0.92fr_1.08fr]">
             <div className="mx-auto w-full max-w-[min(22rem,calc(100vw-2.5rem))] rounded-2xl border border-[#c3c6d4]/20 bg-[#e3f0f8] p-4 shadow-sm md:p-6 lg:mx-0 lg:max-w-none lg:rounded-3xl lg:p-8 xl:p-10">
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#003d37]">Join the Waitlist</p>
-              <h2 className="mt-3 font-sans text-2xl font-extrabold tracking-tight text-[#111d23] sm:text-4xl">Get notified about enrollment updates</h2>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#003d37]">Contact &amp; Enrollment</p>
+              <h2 className="mt-3 font-sans text-2xl font-extrabold tracking-tight text-[#111d23] sm:text-4xl">Get notified about programs, training, and early-bird updates</h2>
               <p className="mt-4 text-base leading-relaxed text-[#4c616c] sm:text-lg">
-                Join the list for enrollment updates, curriculum previews, and early-bird offers.
+                Join the list for enrolment updates, curriculum previews, school training requests, and early-bird offers.
               </p>
               <div className="mt-5 space-y-3 sm:mt-6 sm:space-y-4">
                 <div className="rounded-lg border border-[#c3c6d4]/15 bg-white p-3 sm:rounded-xl sm:p-4">
-                  <div className="mb-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-[#4c616c] sm:mb-2 sm:text-[11px] sm:tracking-[0.16em]">Why Join Early</div>
-                  <p className="text-sm leading-relaxed text-[#434652]">Secure early access to updates while the Academy platform and inaugural cohort are being finalized.</p>
+                  <div className="mb-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-[#4c616c] sm:mb-2 sm:text-[11px] sm:tracking-[0.16em]">Request School Training</div>
+                  <p className="text-sm leading-relaxed text-[#434652]">Tell us the year group, subject focus, and timeline so we can propose a practical school programme.</p>
                 </div>
                 <div className="rounded-lg border border-[#c3c6d4]/15 bg-white p-3 sm:rounded-xl sm:p-4">
-                  <div className="mb-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-[#4c616c] sm:mb-2 sm:text-[11px] sm:tracking-[0.16em]">What You Receive</div>
-                  <p className="text-sm leading-relaxed text-[#434652]">Enrollment updates, curriculum previews, and early-bird offers only.</p>
+                  <div className="mb-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-[#4c616c] sm:mb-2 sm:text-[11px] sm:tracking-[0.16em]">Request Corporate Training</div>
+                  <p className="text-sm leading-relaxed text-[#434652]">Share your team size and business goal so we can scope a tailored AI training or workflow sprint.</p>
                 </div>
               </div>
             </div>
@@ -657,7 +665,7 @@ export default function LandingPage() {
             </div>
 
             <div className="md:col-span-2">
-              <h4 className="mb-5 text-sm font-bold uppercase tracking-widest text-[#111d23]">Program</h4>
+              <h4 className="mb-5 text-sm font-bold uppercase tracking-widest text-[#111d23]">Programs</h4>
               <ul className="space-y-2.5 text-sm font-medium text-[#4c616c]">
                 <li>
                   <a className="transition-colors hover:text-[#003d37]" href="#program">
@@ -665,18 +673,18 @@ export default function LandingPage() {
                   </a>
                 </li>
                 <li>
-                  <a className="transition-colors hover:text-[#003d37]" href="#industry-tools">
-                    Industry tools
+                  <a className="transition-colors hover:text-[#003d37]" href="#schools">
+                    Schools
                   </a>
                 </li>
                 <li>
-                  <a className="transition-colors hover:text-[#003d37]" href="#outcomes">
-                    Skills &amp; outcomes
+                  <a className="transition-colors hover:text-[#003d37]" href="#corporate-training">
+                    Corporate Training
                   </a>
                 </li>
                 <li>
-                  <a className="transition-colors hover:text-[#003d37]" href="#waitlist">
-                    Join waitlist
+                  <a className="transition-colors hover:text-[#003d37]" href="#contact">
+                    Contact
                   </a>
                 </li>
               </ul>

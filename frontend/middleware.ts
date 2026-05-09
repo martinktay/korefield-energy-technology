@@ -5,6 +5,12 @@ const PUBLIC_FILE = /\.(.*)$/;
 function isPublicPath(pathname: string) {
   return (
     pathname === "/" ||
+    pathname === "/pricing" ||
+    pathname === "/team" ||
+    pathname === "/careers" ||
+    pathname === "/privacy" ||
+    pathname === "/terms" ||
+    pathname === "/cookies" ||
     pathname.startsWith("/_next/") ||
     pathname === "/favicon.ico" ||
     pathname === "/robots.txt" ||
