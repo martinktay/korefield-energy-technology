@@ -401,17 +401,17 @@ export default function LandingPage() {
                   { name: "GitHub", src: "/images/tools/github.png", hideLabel: true },
                 ] as const
               ).map((tool) => (
-                <div
-                  key={tool.name}
-                  className="rounded-2xl border border-[#c3c6d4]/20 bg-white p-3 text-center shadow-sm sm:p-3.5"
-                >
-                  <div className="flex h-14 items-center justify-center sm:h-16">
+                  <div
+                    key={tool.name}
+                    className="rounded-2xl border border-[#c3c6d4]/20 bg-white p-3 text-center shadow-sm sm:p-3.5"
+                  >
+                  <div className={`flex h-14 items-center justify-center sm:h-16 ${tool.name === "Python" ? "pt-0.5" : ""}`}>
                     <Image
                       src={tool.src}
                       alt={tool.name}
                       width={160}
                       height={56}
-                      className="h-10 w-auto object-contain sm:h-11"
+                      className={tool.name === "Python" ? "h-11 w-auto object-contain sm:h-12" : "h-10 w-auto object-contain sm:h-11"}
                       loading="lazy"
                       unoptimized
                     />
