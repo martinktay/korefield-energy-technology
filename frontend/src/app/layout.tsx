@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     default: "KoreField Academy | Practical AI, Coding & Digital Skills Training",
     template: "%s | KoreField Academy",
   },
-  description: "KoreField Academy is the talent development front door for KoreField Energy & Technology, offering practical AI, coding, digital skills, school programmes, corporate training, and bootcamps.",
+  description: "KoreField Academy delivers hands-on AI, coding, data, and digital skills training for students, schools, professionals, and teams in Nigeria, with applied projects and a roadmap for AI-supported learning.",
   applicationName: "KoreField Academy",
   keywords: [
     "KoreField Academy",
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     type: "website",
     url: "https://academy.korefield.com",
     title: "KoreField Academy | Practical AI, Coding & Digital Skills Training",
-    description: "Practical AI, coding, digital skills, school programmes, and corporate training from KoreField Academy.",
+    description: "Hands-on AI, coding, data, and digital skills training for students, schools, professionals, and teams in Nigeria.",
     siteName: "KoreField Academy",
     locale: "en_NG",
     images: [
@@ -59,7 +59,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "KoreField Academy | Practical AI, Coding & Digital Skills Training",
-    description: "Practical AI, coding, digital skills, school programmes, and corporate training from KoreField Academy.",
+    description: "Hands-on AI, coding, data, and digital skills training for students, schools, professionals, and teams in Nigeria.",
     images: ["https://korefield.com/images/sovereign-ai-viz.png"],
   },
   robots: {

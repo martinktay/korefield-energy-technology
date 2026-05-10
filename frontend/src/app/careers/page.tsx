@@ -204,7 +204,7 @@ const openings: JobOpening[] = [
     department: "AI Services",
     type: "Full-time",
     location: "Remote",
-    description: "Build and maintain the 11 AI agents powering KoreField Academy using LangChain, LangGraph, and LangSmith. Develop RAG pipelines for the Tutor Agent, implement multi-step workflows for certification validation and market intelligence, and ensure prompt safety with guardrails.",
+    description: "Build and maintain the AI services and agent roadmap for KoreField Academy using LangChain, LangGraph, and LangSmith. Develop RAG pipelines for tutor support, implement multi-step workflows for certification validation and market intelligence, and ensure prompt safety with guardrails.",
     responsibilities: [
       "Develop learner-side agents: Tutor, Assignment Feedback, Dropout Risk, Career Support",
       "Build faculty-side agents: Instructor Insight, Assessor Support, Certification Validation",

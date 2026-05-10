@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
 
 const leadership = [
-  { name: "Martin Tay", role: "Founder & CEO", bio: "Visionary behind KoreField Academy. Passionate about building Africa's AI workforce through applied, competency-based learning.", initials: "MT", color: "bg-brand-600" },
+  { name: "Martin Tay", role: "Founder & CEO", bio: "Visionary behind KoreField Academy. Passionate about building Africa's AI workforce through practical, project-based learning.", initials: "MT", color: "bg-brand-600" },
   { name: "Esi Owusu", role: "Chief Operating Officer", bio: "Oversees platform operations, enrollment strategy, and regional expansion across 54+ African countries.", initials: "EO", color: "bg-surface-800" },
   { name: "Nana Adjei", role: "Head of Administration", bio: "Manages user operations, curriculum publishing, payment oversight, and certificate administration.", initials: "NA", color: "bg-purple-600" },
 ];
@@ -63,7 +63,7 @@ export default function TeamPage() {
           <Badge variant="secondary" className="mb-4 bg-brand-700/40 text-brand-100 border border-brand-500/40 hover:bg-brand-700/40">Our People</Badge>
           <h1 className="text-display-lg text-white">Meet the Team</h1>
           <p className="mt-4 text-body-lg text-surface-200 max-w-xl mx-auto">
-            The educators, engineers, and operators building Africa&apos;s applied AI learning platform.
+            The educators, engineers, and operators building a practical AI education and talent-development platform for Africa.
           </p>
         </div>
       </header>

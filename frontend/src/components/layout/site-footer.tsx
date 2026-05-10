@@ -29,7 +29,7 @@ export function SiteFooter() {
               <span className="text-xl font-extrabold tracking-tight text-brand-700">KoreField Academy</span>
             </Link>
             <p className="max-w-sm text-body-sm leading-relaxed text-surface-600">
-              The talent arm of KoreField AI Agency, delivering live bootcamps, corporate training, learner support, and practical engineering education from KoreField Energy &amp; Technology Ltd.
+              The practical AI education and talent-development arm of KoreField, delivering hands-on AI, coding, data, and digital skills training through KoreField Energy &amp; Technology Ltd.
             </p>
           </div>
 
