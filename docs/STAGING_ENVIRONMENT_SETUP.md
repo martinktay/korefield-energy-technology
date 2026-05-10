@@ -120,9 +120,21 @@ FRONTEND_URL=<staging frontend URL>
 
 Health-check expectation:
 
-```text
-GET /health
+```bash
+curl -s https://<staging-backend>/health
 ```
+
+Expected JSON includes:
+
+```json
+{
+  "status": "healthy",
+  "service": "backend",
+  "timestamp": "<ISO-8601 timestamp>"
+}
+```
+
+This is a process liveness check only. It does not verify database readiness; add a future `/ready` endpoint if operations require dependency-level readiness.
 
 Logging expectation:
 

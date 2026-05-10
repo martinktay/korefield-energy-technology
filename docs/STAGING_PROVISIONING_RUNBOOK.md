@@ -29,7 +29,7 @@ Evidence from the repository and live verification:
 - Terraform has staging definitions, but no live AWS resources were verified.
 - Backend and AI services both have Dockerfiles.
 - AI services expose `GET /health`.
-- Backend exposes port `3001`, but no backend `GET /health` route was found in `backend/src`.
+- Backend exposes `GET /health` as an unauthenticated process liveness check.
 - Workers are SQS consumers and are not required for the Phase 3A diagnostic onboarding smoke tests.
 - Redis is used by AI tutor/cap/cache paths, but Phase 3A diagnostic onboarding does not require Redis and Redis failures are designed to fail open in later tutor paths.
 
@@ -253,11 +253,23 @@ EMAIL_DLQ_URL=
 PAYMENT_EVENTS_QUEUE_URL=
 ```
 
-Health-check warning:
+Health-check expectation:
 
-- The infrastructure config expects `GET /health`, but no backend health route was found in `backend/src`.
-- Until a backend health route is added in a separate code pass, use a TCP health check if the host supports it, or use a lightweight existing route only if it returns `2xx` without authentication.
-- Do not claim backend staging is healthy until an operator verifies a public `2xx` response.
+```bash
+curl -s https://<staging-backend>/health
+```
+
+Expected JSON includes:
+
+```json
+{
+  "status": "healthy",
+  "service": "backend",
+  "timestamp": "<ISO-8601 timestamp>"
+}
+```
+
+This is a lightweight liveness check only. It proves the backend process can respond over HTTPS; it does not verify database readiness. Add a separate `/ready` endpoint later if staging or production operations require DB dependency checks.
 
 Suggested public URL shape:
 
@@ -268,12 +280,13 @@ https://korefield-academy-backend-staging.onrender.com
 Pass checkpoint:
 
 ```bash
-curl -i https://<staging-backend>
+curl -i https://<staging-backend>/health
 ```
 
 Expected:
 
-- Service responds over HTTPS.
+- Service returns HTTP `200`.
+- Response contains `status=healthy` and `service=backend`.
 - Logs are visible in the provider dashboard.
 - Backend can connect to staging PostgreSQL.
 
@@ -626,7 +639,7 @@ Before Phase 3A validation:
 - [ ] AI-service staging service created.
 - [ ] Staging Postgres database created.
 - [ ] `STAGING_DATABASE_URL` verified with `psql`.
-- [ ] Backend staging URL responds over HTTPS.
+- [ ] Backend `/health` returns `status=healthy`.
 - [ ] AI-service `/health` returns `status=healthy`.
 - [ ] Frontend staging URL loads.
 - [ ] All AI feature flags are off by default.
@@ -644,12 +657,12 @@ If any item remains unchecked, Phase 3A remains code-ready but staging validatio
 
 ### Backend Staging Options
 
-| Option             | Operational fit                                                    | Ease of deployment                                                       | Lowest-cost suitability                                          | Observability/logging             | Production isolation            | AI-failure testing                                    | Main risks                                                            | Recommendation                       |
-| ------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------------ | ---------------------------------------------------------------- | --------------------------------- | ------------------------------- | ----------------------------------------------------- | --------------------------------------------------------------------- | ------------------------------------ |
-| Render Web Service | Strong fit: Dockerfile, public HTTPS URL, env vars, health checks. | High. Connect repo and root `backend`.                                   | Good for a small always-on staging backend.                      | Dashboard logs and deploy events. | Separate service and env vars.  | Indirect; backend stays running while AI URL changes. | Backend lacks confirmed `/health`; use TCP or add health route later. | Recommended.                         |
-| Railway            | Good Docker/service fit.                                           | High. CLI/dashboard deploys and logs.                                    | Good for small staging.                                          | Logs available in dashboard/CLI.  | Separate project/service.       | Indirect; backend independent.                        | Less repo-specific evidence than Render.                              | Acceptable fallback.                 |
-| Fly.io             | Good Docker fit.                                                   | Medium. Needs app config and flyctl setup.                               | Good for small VM-style apps.                                    | Logs and Machines observability.  | Separate app.                   | Indirect; backend independent.                        | More operator setup than Render.                                      | Fallback if Fly is already approved. |
-| AWS App Runner/ECS | Existing Terraform points toward AWS/ECS.                          | Medium to low for first staging because live AWS resources are unproven. | Likely overbuilt for Phase 3A if using full ECS/RDS/Redis stack. | CloudWatch when configured.       | Strong if separate account/env. | Indirect; can stop AI service.                        | More setup, IAM, ingress, cost, and workflow risk.                    | Defer unless AWS is mandated.        |
+| Option             | Operational fit                                                    | Ease of deployment                                                       | Lowest-cost suitability                                          | Observability/logging             | Production isolation            | AI-failure testing                                    | Main risks                                                              | Recommendation                       |
+| ------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------------ | ---------------------------------------------------------------- | --------------------------------- | ------------------------------- | ----------------------------------------------------- | ----------------------------------------------------------------------- | ------------------------------------ |
+| Render Web Service | Strong fit: Dockerfile, public HTTPS URL, env vars, health checks. | High. Connect repo and root `backend`.                                   | Good for a small always-on staging backend.                      | Dashboard logs and deploy events. | Separate service and env vars.  | Indirect; backend stays running while AI URL changes. | `/health` is liveness only; add `/ready` later if DB checks are needed. | Recommended.                         |
+| Railway            | Good Docker/service fit.                                           | High. CLI/dashboard deploys and logs.                                    | Good for small staging.                                          | Logs available in dashboard/CLI.  | Separate project/service.       | Indirect; backend independent.                        | Less repo-specific evidence than Render.                                | Acceptable fallback.                 |
+| Fly.io             | Good Docker fit.                                                   | Medium. Needs app config and flyctl setup.                               | Good for small VM-style apps.                                    | Logs and Machines observability.  | Separate app.                   | Indirect; backend independent.                        | More operator setup than Render.                                        | Fallback if Fly is already approved. |
+| AWS App Runner/ECS | Existing Terraform points toward AWS/ECS.                          | Medium to low for first staging because live AWS resources are unproven. | Likely overbuilt for Phase 3A if using full ECS/RDS/Redis stack. | CloudWatch when configured.       | Strong if separate account/env. | Indirect; can stop AI service.                        | More setup, IAM, ingress, cost, and workflow risk.                      | Defer unless AWS is mandated.        |
 
 ### AI-Service Staging Options
 

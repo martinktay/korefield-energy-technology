@@ -20,6 +20,7 @@ import { EmailModule } from './email/email.module';
 import { ProgressModule } from './progress/progress.module';
 import { LogsModule } from './logs/logs.module';
 import { LaunchWaitlistModule } from './launch-waitlist/launch-waitlist.module';
+import { HealthController } from './health.controller';
 
 @Module({
   imports: [
@@ -38,5 +39,6 @@ import { LaunchWaitlistModule } from './launch-waitlist/launch-waitlist.module';
     LogsModule,
     LaunchWaitlistModule,
   ],
+  controllers: [HealthController],
 })
 export class AppModule {}
