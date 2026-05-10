@@ -76,7 +76,7 @@ const faqs = [
   },
   {
     q: "How does region-aware pricing work?",
-    a: "Our Pricing Intelligence Engine adjusts prices based on your billing country and local purchasing power. You'll see your personalized price after selecting your country during registration.",
+    a: "Programme pricing may vary by billing country, local purchasing power, scholarships, and cohort structure. You'll see the applicable price after selecting your country during registration.",
   },
   {
     q: "Can I switch payment plans?",
@@ -104,6 +104,9 @@ export default function PricingPage() {
           <div className="flex items-center gap-4">
             <Link href="/" className="text-body-sm text-surface-600 hover:text-surface-900 transition-colors">
               Home
+            </Link>
+            <Link href="/learner/login" className="text-body-sm text-surface-600 hover:text-surface-900 transition-colors">
+              Learner login
             </Link>
             <Link
               href="/learner/register"
@@ -195,7 +198,7 @@ export default function PricingPage() {
           ))}
         </div>
         <p className="mt-4 text-center text-caption text-surface-400">
-          Prices shown are base USD rates. Your final price is personalized based on billing country and purchasing power.
+          Prices shown are base USD rates. Your final price may vary based on billing country, purchasing power, scholarships, and cohort structure.
         </p>
       </section>
 

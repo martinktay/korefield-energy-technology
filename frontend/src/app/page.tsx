@@ -23,8 +23,8 @@ import {
 import { ComingSoonWaitlistForm } from "@/components/waitlist/coming-soon-waitlist-form";
 
 export const metadata: Metadata = {
-  title: "KoreField Academy | Corporate AI Training, NYSC AI Program & AI Bootcamp Nigeria",
-  description: "KoreField Academy is the flagship talent arm of KoreField, delivering corporate AI training in Nigeria, NYSC AI acceleration, professional sector tracks, and student AI bootcamps.",
+  title: "KoreField Academy | Practical AI, Coding & Digital Skills Training",
+  description: "KoreField Academy delivers hands-on AI, coding, data, and digital skills training for students, schools, professionals, and teams in Nigeria, with applied projects and a roadmap for AI-supported learning.",
   keywords: [
     "KoreField Academy",
     "practical AI training Nigeria",
@@ -41,8 +41,8 @@ export const metadata: Metadata = {
     canonical: "https://academy.korefield.com",
   },
   openGraph: {
-    title: "KoreField Academy | Practical AI Education for Nigeria",
-    description: "Corporate AI training, NYSC AI acceleration, professional sector tracks, and student AI bootcamps built around practical AI delivery.",
+    title: "KoreField Academy | Practical AI, Coding & Digital Skills Training",
+    description: "Hands-on AI, coding, data, and digital skills training for students, schools, professionals, and teams in Nigeria.",
     url: "https://academy.korefield.com",
     siteName: "KoreField Academy",
     type: "website",
@@ -57,8 +57,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "KoreField Academy | Corporate AI Training & AI Bootcamp Nigeria",
-    description: "Corporate AI training Nigeria, NYSC AI program, sector tracks, and student AI bootcamps from KoreField Academy.",
+    title: "KoreField Academy | Practical AI, Coding & Digital Skills Training",
+    description: "Practical AI education, corporate AI training, school programmes, and student AI bootcamps from KoreField Academy.",
     images: ["https://korefield.com/images/sovereign-ai-viz.png"],
   },
 };
@@ -176,6 +176,7 @@ const navLinks = [
   { href: "#learning-model", label: "Learning Model" },
   { href: "#industry-tools", label: "Tools" },
   { href: "#team", label: "Team" },
+  { href: "/pricing", label: "Pricing" },
   { href: "#contact", label: "Contact", active: true },
 ];
 
@@ -229,12 +230,20 @@ export default function LandingPage() {
             ))}
           </div>
 
-          <a
-            href={whatsappUrl}
-            className="hidden rounded-lg bg-[#003d37] px-3 py-1.5 text-sm font-bold tracking-tight text-white transition-colors hover:bg-[#12554f] md:inline-flex"
-          >
-            Enroll Now
-          </a>
+          <div className="hidden items-center gap-2 md:flex">
+            <Link
+              href="/learner/login"
+              className="rounded-lg border border-[#003d37]/20 px-3 py-1.5 text-sm font-bold tracking-tight text-[#003d37] transition-colors hover:bg-[#dceef3]"
+            >
+              Learner login
+            </Link>
+            <Link
+              href="/learner/register"
+              className="rounded-lg bg-[#003d37] px-3 py-1.5 text-sm font-bold tracking-tight text-white transition-colors hover:bg-[#12554f]"
+            >
+              Create free account
+            </Link>
+          </div>
 
           <details className="group relative md:hidden">
             <summary className="flex h-11 w-11 cursor-pointer list-none items-center justify-center rounded-full border border-[#003d37]/15 bg-white/80 text-[#003d37] [&::-webkit-details-marker]:hidden">
@@ -248,12 +257,20 @@ export default function LandingPage() {
                   <NavLink key={link.label} href={link.href} label={link.label} active={link.active} />
                 ))}
               </div>
-              <a
-                href={whatsappUrl}
-                className="mx-auto mt-6 flex w-full max-w-[13.5rem] items-center justify-center rounded-lg bg-[#003d37] px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-[#12554f] sm:text-sm"
-              >
-                Enroll Now
-              </a>
+              <div className="mt-6 grid gap-2">
+                <Link
+                  href="/learner/register"
+                  className="mx-auto flex w-full max-w-[13.5rem] items-center justify-center rounded-lg bg-[#003d37] px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-[#12554f] sm:text-sm"
+                >
+                  Create free account
+                </Link>
+                <Link
+                  href="/learner/login"
+                  className="mx-auto flex w-full max-w-[13.5rem] items-center justify-center rounded-lg border border-[#003d37]/20 px-3 py-2 text-xs font-semibold text-[#003d37] transition-colors hover:bg-[#dceef3] sm:text-sm"
+                >
+                  Learner login
+                </Link>
+              </div>
             </div>
           </details>
         </div>
@@ -272,27 +289,33 @@ export default function LandingPage() {
               KoreField Academy
             </h1>
             <p className="mt-6 font-sans text-2xl font-bold tracking-tight text-[#111d23] sm:text-3xl">
-              Practical AI education for teams, corps members, professionals, and students.
+              Practical AI education for students, schools, professionals, and teams.
             </p>
             <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-[#4c616c]">
-              KoreField Academy develops the talent pipeline behind KoreField&apos;s applied AI work: corporate AI training in Nigeria, NYSC AI acceleration, professional and sector AI tracks, and student bootcamps that teach people to build usable AI systems.
+              KoreField Academy delivers hands-on AI, coding, data, and digital skills training for Nigeria-first learners and organisations, with applied projects, responsible AI practice, and a platform roadmap for AI-supported tutoring, feedback, and progress insight.
             </p>
             <div className="mx-auto mt-10 flex w-full max-w-[min(15rem,calc(100vw-2.5rem))] flex-col justify-center gap-2 md:max-w-xl md:flex-row md:gap-3">
+              <Link
+                href="/learner/register"
+                className="inline-flex items-center justify-center rounded-lg bg-[#003d37] px-2.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-[#12554f] sm:px-3 sm:text-sm"
+              >
+                Create free account
+              </Link>
+              <Link
+                href="/pricing"
+                className="inline-flex items-center justify-center rounded-lg bg-[#cfe6f2] px-2.5 py-2 text-xs font-semibold text-[#003d37] transition-colors hover:bg-[#bdd8e6] sm:px-3 sm:text-sm"
+              >
+                View pricing
+              </Link>
               <a
                 href={whatsappUrl}
-                className="inline-flex items-center justify-center rounded-lg bg-[#003d37] px-2.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-[#12554f] sm:px-3 sm:text-sm"
+                className="inline-flex items-center justify-center rounded-lg border border-[#003d37]/20 bg-white/70 px-2.5 py-2 text-xs font-semibold text-[#003d37] transition-colors hover:bg-white sm:px-3 sm:text-sm"
               >
                 Discuss Training
               </a>
-              <a
-                href="https://korefield.com/"
-                className="inline-flex items-center justify-center rounded-lg bg-[#cfe6f2] px-2.5 py-2 text-xs font-semibold text-[#003d37] transition-colors hover:bg-[#bdd8e6] sm:px-3 sm:text-sm"
-              >
-                Visit korefield.com
-              </a>
             </div>
             <p className="mt-8 text-sm text-[#434652]">
-              <span className="font-bold text-[#003d37]">Corporate, NYSC, professional, sector, and student pathways</span> · Lagos-based, Nigeria-first delivery
+              <span className="font-bold text-[#003d37]">School, student, professional, corporate, and NYSC pathways</span> · Lagos-based, Nigeria-first delivery
             </p>
           </div>
         </section>
@@ -305,7 +328,7 @@ export default function LandingPage() {
                 Built for the people who will use, manage, and build AI
               </h2>
               <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-[#4c616c] sm:text-lg">
-                Every KoreField Academy pathway is tied to practical delivery: workflow redesign, AI agents, automation, data literacy, governance, and real project outputs.
+                Every KoreField Academy pathway is tied to practical delivery: workflow redesign, responsible AI practice, automation, data literacy, governance, and real project outputs.
               </p>
             </div>
             <div className="mt-8 grid gap-3 sm:mt-10 md:grid-cols-2 xl:grid-cols-4 md:gap-4">
@@ -571,7 +594,7 @@ export default function LandingPage() {
               Academy platform and program tracks under active development
             </div>
             <p className="mx-auto mt-5 max-w-3xl text-base leading-relaxed text-[#4c616c] sm:text-lg">
-              KoreField Academy is expanding from its live student bootcamp into a wider talent platform for corporate AI training, NYSC acceleration, and professional sector tracks. Early cohorts run live while the full platform is completed.
+              KoreField Academy is expanding from its live student bootcamp into a wider talent-development platform for corporate AI training, NYSC acceleration, and professional sector tracks. Early cohorts run live while the full platform is completed, with AI-supported tutoring, structured feedback, and progress insight on the roadmap.
             </p>
           </div>
         </section>
