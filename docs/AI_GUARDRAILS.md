@@ -85,6 +85,51 @@ All AI agents in the KoreField Academy ecosystem are advisory only. They assist 
 | Faculty agents (Instructor Insight, Assessor Support, Cert Validation) | Instructors, Assessors | Assigned cohort/pod data |
 | Executive agents (Market, Pricing, Expansion, Academic) | Super Admin only | Platform-wide aggregated data |
 
+## Phase 1 Feature Flags and Environment Wiring
+
+Phase 1 adds safety wiring only. These flags must remain off in production until the related learner-facing, instructor-facing, or corporate-facing capability has passed staging QA, cost checks, human-override checks, and rollback validation.
+
+| Capability | Frontend env var | Production default |
+|------------|------------------|--------------------|
+| AI diagnostic onboarding | `NEXT_PUBLIC_FEATURE_AI_DIAGNOSTIC_ONBOARDING` | `false` |
+| Contextual lesson tutor | `NEXT_PUBLIC_FEATURE_AI_LESSON_TUTOR` | `false` |
+| AI-assisted submission feedback | `NEXT_PUBLIC_FEATURE_AI_SUBMISSION_FEEDBACK` | `false` |
+| Adaptive next-step recommendations | `NEXT_PUBLIC_FEATURE_AI_ADAPTIVE_RECOMMENDATIONS` | `false` |
+| Instructor AI insights | `NEXT_PUBLIC_FEATURE_AI_INSTRUCTOR_INSIGHTS` | `false` |
+| Corporate/school cohort AI insights | `NEXT_PUBLIC_FEATURE_AI_CORPORATE_COHORT_INSIGHTS` | `false` |
+| Low-data mode | `NEXT_PUBLIC_FEATURE_LOW_DATA_MODE` | `false` |
+| Offline progress sync | `NEXT_PUBLIC_FEATURE_OFFLINE_PROGRESS_SYNC` | `false` |
+
+Accepted truthy values are `true`, `1`, `yes`, and `on`. Missing, misspelled, or unsupported values are treated as off.
+
+### Canonical AI Service URLs
+
+`NEXT_PUBLIC_AI_SERVICES_URL` is the canonical browser-visible frontend variable for the FastAPI AI services base URL.
+
+| Environment | Expected value |
+|-------------|----------------|
+| Local frontend | `http://localhost:8000` |
+| Staging frontend | Staging AI services URL |
+| Production frontend | Production AI services URL |
+
+`NEXT_PUBLIC_AI_URL` is deprecated and accepted only as a temporary compatibility alias when `NEXT_PUBLIC_AI_SERVICES_URL` is absent. New deployments must use `NEXT_PUBLIC_AI_SERVICES_URL`.
+
+Backend AI services continue to use server-side secrets and configuration such as `OPENAI_API_KEY`, LangSmith settings, Redis, database, queue, and infrastructure variables. Browser-exposed `NEXT_PUBLIC_*` values must never contain secrets.
+
+### Staging Verification
+
+Before enabling any AI-native flag outside local development:
+
+1. Confirm `NEXT_PUBLIC_AI_SERVICES_URL` points to the correct staging AI services base URL.
+2. Confirm all Phase 1 flags are off by default in the staging frontend.
+3. Run frontend unit tests and build.
+4. Smoke test existing learner registration, onboarding, lesson, progress, instructor, and corporate pages with AI services unavailable.
+5. Confirm ordinary learning flows still work and no AI failure blocks progress.
+
+### Rollback Behavior
+
+If AI services fail, time out, or exceed budget limits, disable the related feature flag immediately. Existing non-AI learner, instructor, and corporate flows must remain available. AI client failures should be treated as recoverable by callers unless a future feature explicitly requires human-supervised handling.
+
 
 ## Unit Economics Safeguards (Cohort-Based)
 

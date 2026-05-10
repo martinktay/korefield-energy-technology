@@ -1,6 +1,57 @@
-/** @file agent-api.ts — Typed API client for executive AI agent endpoints. */
+/** @file agent-api.ts — Typed API client for AI service endpoints. */
 
-const AI_BASE = process.env.NEXT_PUBLIC_AI_URL || "http://localhost:8000";
+const DEFAULT_AI_BASE_URL = "http://localhost:8000";
+const DEFAULT_AI_TIMEOUT_MS = 12_000;
+
+type AgentEnv = Record<string, string | undefined>;
+type AgentFetch = typeof fetch;
+
+export interface AgentRequestOptions {
+  env?: AgentEnv;
+  fetcher?: AgentFetch;
+  timeoutMs?: number;
+}
+
+export class AiServiceError extends Error {
+  constructor(
+    message: string,
+    public status: number,
+    public body?: unknown,
+  ) {
+    super(message);
+    this.name = "AiServiceError";
+  }
+
+  get isRecoverable(): boolean {
+    return this.status === 408 || this.status === 429 || this.status >= 500;
+  }
+}
+
+export class AiServiceNetworkError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "AiServiceNetworkError";
+  }
+}
+
+export class AiServiceTimeoutError extends Error {
+  constructor(url: string) {
+    super(`AI service request timed out: ${url}`);
+    this.name = "AiServiceTimeoutError";
+  }
+}
+
+export function resolveAiServicesBaseUrl(env: AgentEnv = process.env): string {
+  return env.NEXT_PUBLIC_AI_SERVICES_URL || env.NEXT_PUBLIC_AI_URL || DEFAULT_AI_BASE_URL;
+}
+
+export function isAiServiceRecoverableError(error: unknown): boolean {
+  return (
+    error instanceof AiServiceTimeoutError ||
+    error instanceof AiServiceNetworkError ||
+    (error instanceof AiServiceError && error.isRecoverable)
+  );
+}
 
 // --- Shared response types (mirror Pydantic models) ---
 
@@ -54,30 +105,58 @@ export interface WorkforceReportRequest {
 
 // --- Helper ---
 
-async function agentFetch<T>(
+export async function agentFetch<T>(
   path: string,
   body: unknown,
   userRole: string,
   userId: string,
+  options: AgentRequestOptions = {},
 ): Promise<T> {
-  const res = await fetch(`${AI_BASE}${path}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-user-role": userRole,
-      "x-user-id": userId,
-    },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) {
-    const msg = res.status === 403
-      ? "Access restricted to Super Admin role"
-      : `Report generation failed (${res.status})`;
-    const err = new Error(msg);
-    (err as Error & { status: number }).status = res.status;
-    throw err;
+  const baseUrl = resolveAiServicesBaseUrl(options.env);
+  const url = `${baseUrl}${path}`;
+  const fetcher = options.fetcher ?? fetch;
+  const timeoutMs = options.timeoutMs ?? DEFAULT_AI_TIMEOUT_MS;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const res = await fetcher(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-user-role": userRole,
+        "x-user-id": userId,
+      },
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
+
+    if (!res.ok) {
+      let responseBody: unknown;
+      try {
+        responseBody = await res.json();
+      } catch {
+        responseBody = undefined;
+      }
+
+      const msg = res.status === 403
+        ? "Access restricted to Super Admin role"
+        : `AI service request failed (${res.status})`;
+      throw new AiServiceError(msg, res.status, responseBody);
+    }
+
+    return res.json();
+  } catch (err) {
+    if (err instanceof AiServiceError) throw err;
+    if (err instanceof DOMException && err.name === "AbortError") {
+      throw new AiServiceTimeoutError(url);
+    }
+    throw new AiServiceNetworkError(
+      err instanceof Error ? err.message : "AI service request failed",
+    );
+  } finally {
+    clearTimeout(timer);
   }
-  return res.json();
 }
 
 // --- Endpoint functions ---
@@ -86,12 +165,14 @@ export async function generateStrategyReport(
   params: StrategyReportRequest = {},
   userRole = "super-admin",
   userId = "",
+  options?: AgentRequestOptions,
 ): Promise<AgentReportResponse> {
   return agentFetch<AgentReportResponse>(
     "/ai/executive/strategy-report",
     params,
     userRole,
     userId,
+    options,
   );
 }
 
@@ -99,12 +180,14 @@ export async function generateGrowthReport(
   params: GrowthReportRequest = {},
   userRole = "super-admin",
   userId = "",
+  options?: AgentRequestOptions,
 ): Promise<AgentReportResponse> {
   return agentFetch<AgentReportResponse>(
     "/ai/executive/growth-report",
     params,
     userRole,
     userId,
+    options,
   );
 }
 
@@ -112,12 +195,14 @@ export async function generateProductReport(
   params: ProductReportRequest = {},
   userRole = "super-admin",
   userId = "",
+  options?: AgentRequestOptions,
 ): Promise<AgentReportResponse> {
   return agentFetch<AgentReportResponse>(
     "/ai/executive/product-report",
     params,
     userRole,
     userId,
+    options,
   );
 }
 
@@ -125,11 +210,13 @@ export async function generateWorkforceReport(
   params: WorkforceReportRequest = {},
   userRole = "super-admin",
   userId = "",
+  options?: AgentRequestOptions,
 ): Promise<AgentReportResponse> {
   return agentFetch<AgentReportResponse>(
     "/ai/executive/workforce-report",
     params,
     userRole,
     userId,
+    options,
   );
 }

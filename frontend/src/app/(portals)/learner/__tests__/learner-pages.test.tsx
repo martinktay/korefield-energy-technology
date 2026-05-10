@@ -3,12 +3,18 @@ import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { getFeatureFlags } from "@/lib/feature-flags";
+
+const navigationState = vi.hoisted(() => ({
+  lessonId: "LSN-aie-101",
+  routerPush: vi.fn(),
+}));
 
 // Mock next/navigation for all pages that use useParams/usePathname/useRouter
 vi.mock("next/navigation", () => ({
   usePathname: () => "/learner",
-  useParams: () => ({ trackId: "TRK-ai-eng-001", lessonId: "LSN-001", podId: "POD-001" }),
-  useRouter: () => ({ push: vi.fn(), replace: vi.fn(), back: vi.fn(), prefetch: vi.fn() }),
+  useParams: () => ({ trackId: "TRK-ai-eng-001", lessonId: navigationState.lessonId, podId: "POD-001" }),
+  useRouter: () => ({ push: navigationState.routerPush, replace: vi.fn(), back: vi.fn(), prefetch: vi.fn() }),
   useSearchParams: () => new URLSearchParams(),
 }));
 
@@ -33,6 +39,9 @@ import CertificatesPage from "../certificates/page";
 
 afterEach(() => {
   cleanup();
+  vi.restoreAllMocks();
+  navigationState.lessonId = "LSN-aie-101";
+  navigationState.routerPush.mockReset();
 });
 
 /** Wraps a component in QueryClientProvider for tests */
@@ -83,6 +92,25 @@ describe("OnboardingPage", () => {
     render(<OnboardingPage />);
     expect(screen.getByText("Welcome to KoreField")).toBeInTheDocument();
   });
+
+  it("keeps the current rule-based onboarding path when AI flags are off", async () => {
+    expect(getFeatureFlags({}).ai_diagnostic_onboarding).toBe(false);
+
+    render(<OnboardingPage />);
+
+    await userEvent.click(screen.getByLabelText("Nigeria"));
+    await userEvent.click(screen.getByRole("button", { name: "Next" }));
+    await userEvent.click(screen.getByLabelText("Student"));
+    await userEvent.click(screen.getByRole("button", { name: "Next" }));
+    await userEvent.click(screen.getByLabelText("Build AI applications"));
+    await userEvent.click(screen.getByRole("button", { name: "Complete" }));
+
+    expect(screen.getByText("You're all set!")).toBeInTheDocument();
+    expect(screen.getByText(/recommend starting with the AI Foundation School/i)).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole("button", { name: "Start AI Foundation School" }));
+    expect(navigationState.routerPush).toHaveBeenCalledWith("/learner/foundation");
+  });
 });
 
 describe("FoundationPage", () => {
@@ -111,12 +139,65 @@ describe("ProgressPage", () => {
     render(<ProgressPage />);
     expect(screen.getByText(/progress/i)).toBeInTheDocument();
   });
+
+  it("shows the existing static next recommended lesson while adaptive recommendations are off", () => {
+    expect(getFeatureFlags({}).ai_adaptive_recommendations).toBe(false);
+
+    render(<ProgressPage />);
+
+    expect(screen.getByText("Next Recommended Lesson")).toBeInTheDocument();
+    expect(screen.getByText("REST API Authentication Patterns")).toBeInTheDocument();
+  });
 });
 
 describe("LessonPage", () => {
   it("renders lesson view", () => {
     render(<LessonPage />);
-    expect(screen.getByText("Lesson Not Found")).toBeInTheDocument();
+    expect(screen.getByText("Variables, Types, and Data Structures")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Learn/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Practice/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Apply/i })).toBeInTheDocument();
+  });
+
+  it("keeps lesson submissions working without AI submission feedback", async () => {
+    expect(getFeatureFlags({}).ai_submission_feedback).toBe(false);
+    vi.stubGlobal("fetch", vi.fn(async () => {
+      throw new Error("AI service unavailable");
+    }));
+
+    render(<LessonPage />);
+
+    await userEvent.click(screen.getByRole("button", { name: /Apply/i }));
+    await userEvent.type(screen.getByPlaceholderText("Paste or type your deliverable here..."), "My deliverable draft");
+    await userEvent.click(screen.getByRole("button", { name: /Submit Deliverable/i }));
+
+    expect(screen.getByText("Deliverable Submitted")).toBeInTheDocument();
+    expect(screen.queryByText(/AI feedback/i)).not.toBeInTheDocument();
+  });
+
+  it("keeps the coding lab path visible while the AI tutor flag is off", async () => {
+    expect(getFeatureFlags({}).ai_lesson_tutor).toBe(false);
+    navigationState.lessonId = "LSN-aie-102";
+
+    render(<LessonPage />);
+
+    await userEvent.click(screen.getByRole("button", { name: /Practice/i }));
+
+    expect(screen.getByText("Code Editor")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Run/i })).toBeInTheDocument();
+    expect(screen.queryByText(/AI Tutor/i)).not.toBeInTheDocument();
+  });
+
+  it("keeps the quiz path intact while adaptive AI is off", async () => {
+    expect(getFeatureFlags({}).ai_adaptive_recommendations).toBe(false);
+    navigationState.lessonId = "LSN-aie-103";
+
+    render(<LessonPage />);
+
+    await userEvent.click(screen.getByRole("button", { name: /Practice/i }));
+
+    expect(screen.getByRole("heading", { name: /Python for AI .* Module Assessment/i })).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: /^A\b/i }).length).toBeGreaterThan(0);
   });
 });
 
