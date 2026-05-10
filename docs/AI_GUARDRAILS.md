@@ -130,6 +130,59 @@ Before enabling any AI-native flag outside local development:
 
 If AI services fail, time out, or exceed budget limits, disable the related feature flag immediately. Existing non-AI learner, instructor, and corporate flows must remain available. AI client failures should be treated as recoverable by callers unless a future feature explicitly requires human-supervised handling.
 
+## Phase 2 Frontend AI Client Wiring
+
+Phase 2 adds typed frontend client contracts and operational safety for existing backend AI endpoints. It does not enable any learner-facing AI product behavior. All learner, instructor, and corporate AI-native flags remain off by default until the related Phase 3 or Phase 4 feature has passed staging QA and cost review.
+
+### Frontend-Relevant Endpoint Map
+
+| Endpoint | Purpose | Request shape | Response shape | Access assumption | Metering/cost implication | Frontend readiness |
+|----------|---------|---------------|----------------|-------------------|---------------------------|--------------------|
+| `POST /ai/tutor/lesson` | RAG lesson explanation and hints | `learner_id`, `module_id`, `lesson_id`, `query`, optional `learner_tier`, `cohort_id`, `checkpoint_responses` | `explanation`, `key_concepts`, `confidence`, `pacing`, `retrieval_hits`, `telemetry` | Learner scope; caller must only send the learner's own context | AI cap check, tutor cache, LLM metering via AWE records | Ready as an inert typed client only; UI remains disabled |
+| `POST /ai/tutor/summarize` | Lesson recap summarization | `learner_id`, `lesson_id`, `lesson_content` | `summary`, `key_takeaways`, `confidence`, `telemetry` | Learner scope; caller must only summarize authorized lesson content | LLM call; backend telemetry returned, metering depends on invocation metadata | Ready as an inert typed client only |
+| `POST /ai/feedback/analyze` | Structured submission feedback | `learner_id`, `submission_id`, `assessment_id`, `submission_content`, optional `rubric` | `strengths`, `improvements`, `rubric_alignment`, `overall_score`, `confidence`, `processing_time_ms`, `telemetry` | Learner/instructor workflow; AI feedback is advisory and not final grading | Higher-cost feedback model path; 60s backend SLA | Ready as an inert typed client only; human review UI not built yet |
+| `POST /ai/dropout/evaluate` | Compute dropout risk and possible intervention recommendation | `learner_id`, `enrollment_id`, engagement `signals` | `record_id`, `risk_score`, `risk_level`, `intervention_triggered`, optional recommendation, `signals_summary`, `telemetry` | Instructor/faculty scope, not ordinary learner UI | May run LangGraph intervention and write DB records; LLM fallback possible for intervention | Typed client available for future controlled dashboards, not learner-facing use |
+| `GET /ai/dropout/risk/{learner_id}` | Retrieve latest dropout risk score | path `learner_id` | same dropout risk response | Instructor/faculty scope; caller must enforce cohort assignment | DB read; no new LLM call | Typed client available for future controlled dashboards |
+| `POST /ai/career/guidance` | Skill-gap and career guidance | `learner_id`, `track_id`, optional completed modules, interests, project interest, Foundation Module 2 flag | `skill_gaps`, `suggested_focus_areas`, `job_market_alignment`, optional `learning_emphasis`, `confidence`, `telemetry` | Learner scope for own guidance; instructor/admin use requires role checks | LLM call with fallback text; AWE metering through `career_support` agent type | Ready as an inert typed client only |
+
+### Frontend Client Policy
+
+`frontend/src/lib/agent-api.ts` is the shared frontend AI service client. It resolves the AI services base URL from `NEXT_PUBLIC_AI_SERVICES_URL`, with `NEXT_PUBLIC_AI_URL` accepted only as a deprecated compatibility alias.
+
+The client provides bounded retry and fallback semantics:
+
+1. Retry only recoverable failures: timeout, network failure, HTTP `408`, HTTP `429`, and HTTP `5xx`.
+2. Do not retry non-recoverable `4xx` validation, authorization, or guardrail failures.
+3. Default retry behavior is one retry with exponential backoff; callers can lower or disable retries for latency-sensitive paths.
+4. All timeouts are bounded. Feedback analysis uses a longer timeout because the backend endpoint has a 60-second SLA.
+5. AI client errors must be caught by future feature callers and converted into non-blocking fallback UI. Ordinary learner progress must never depend on AI success.
+
+### Observability Hook Contract
+
+The frontend client accepts an optional `onEvent` callback. It emits lightweight request events with:
+
+- endpoint name and path
+- HTTP method
+- attempt number and retry limit
+- request duration in milliseconds
+- success/failure status
+- recoverable/non-recoverable classification
+- timeout classification
+- HTTP status where available
+- optional trace ID passthrough via `x-trace-id`
+
+This hook is intentionally vendor-neutral. Future analytics, tracing, or cost dashboards should consume these events without duplicating backend AWE metering. Backend model usage, token estimates, model routing, and estimated cost remain owned by `ai-services/agents/llm_factory.py` and persisted as AWE records.
+
+### Remaining Before Phase 3
+
+Phase 2 does not add UI, feature rollout, learner-visible tutor behavior, AI diagnostic onboarding, AI feedback rendering, adaptive recommendations, or instructor/corporate intelligence. Before Phase 3 starts, each caller must still define:
+
+1. Exact feature flag gate.
+2. Non-AI fallback content and user messaging.
+3. Human-review or override path where required.
+4. Cost quota behavior for the relevant learner tier or cohort.
+5. Mobile and low-bandwidth behavior for the visible feature.
+
 
 ## Unit Economics Safeguards (Cohort-Based)
 
