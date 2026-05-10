@@ -10,6 +10,11 @@ const navigationState = vi.hoisted(() => ({
   routerPush: vi.fn(),
 }));
 
+const apiMocks = vi.hoisted(() => ({
+  apiFetch: vi.fn(),
+  generateDiagnosticOnboarding: vi.fn(),
+}));
+
 // Mock next/navigation for all pages that use useParams/usePathname/useRouter
 vi.mock("next/navigation", () => ({
   usePathname: () => "/learner",
@@ -23,6 +28,14 @@ vi.mock("next/link", () => ({
   default: ({ children, href, ...props }: { children: React.ReactNode; href: string; [key: string]: unknown }) => (
     <a href={href} {...props}>{children}</a>
   ),
+}));
+
+vi.mock("@/lib/api", () => ({
+  apiFetch: apiMocks.apiFetch,
+}));
+
+vi.mock("@/lib/agent-api", () => ({
+  generateDiagnosticOnboarding: apiMocks.generateDiagnosticOnboarding,
 }));
 
 import LearnerDashboard from "../page";
@@ -40,6 +53,10 @@ import CertificatesPage from "../certificates/page";
 afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
+  vi.unstubAllEnvs();
+  localStorage.clear();
+  apiMocks.apiFetch.mockReset();
+  apiMocks.generateDiagnosticOnboarding.mockReset();
   navigationState.lessonId = "LSN-aie-101";
   navigationState.routerPush.mockReset();
 });
@@ -110,6 +127,107 @@ describe("OnboardingPage", () => {
 
     await userEvent.click(screen.getByRole("button", { name: "Start AI Foundation School" }));
     expect(navigationState.routerPush).toHaveBeenCalledWith("/learner/foundation");
+  });
+
+  it("shows diagnostic onboarding when the AI diagnostic flag is on", async () => {
+    vi.stubEnv("NEXT_PUBLIC_FEATURE_AI_DIAGNOSTIC_ONBOARDING", "true");
+    apiMocks.generateDiagnosticOnboarding.mockResolvedValue({
+      learner_id: "LRN-local-onboarding",
+      starting_level: "beginner",
+      recommended_track: "AI Engineering and Intelligent Systems",
+      recommended_path: "AI Foundation School",
+      weak_area_tags: ["prompting_basics", "python_foundations"],
+      rationale: "Your project goal fits AI Engineering, and Foundation School will build the basics first.",
+      focus_areas: ["AI vocabulary", "Python basics"],
+      confidence: "medium",
+      source: "ai",
+      created_at: "2026-05-10T00:00:00Z",
+      telemetry: { workflow: "diagnostic_onboarding", status: "completed" },
+    });
+    apiMocks.apiFetch.mockResolvedValue({});
+
+    render(<OnboardingPage />);
+
+    expect(screen.getByText(/Diagnostic step/i)).toBeInTheDocument();
+
+    await userEvent.click(screen.getByLabelText("Nigeria"));
+    await userEvent.click(screen.getByRole("button", { name: "Next" }));
+    await userEvent.click(screen.getByLabelText("Student"));
+    await userEvent.click(screen.getByRole("button", { name: "Next" }));
+    await userEvent.click(screen.getByLabelText("Build AI applications"));
+    await userEvent.click(screen.getByRole("button", { name: "Next" }));
+    await userEvent.click(screen.getByLabelText("Beginner"));
+    await userEvent.click(screen.getByLabelText("New to AI"));
+    await userEvent.click(screen.getByLabelText("Steady"));
+    await userEvent.type(screen.getByLabelText(/What do you want to build/i), "A farm advisory assistant");
+    await userEvent.click(screen.getByRole("button", { name: "Next" }));
+    await userEvent.click(screen.getByLabelText(/Clear instructions that guide an AI response/i));
+    await userEvent.click(screen.getByLabelText(/Use data to check whether the answer is reliable/i));
+    await userEvent.click(screen.getByLabelText(/A reusable set of instructions and tools/i));
+    await userEvent.click(screen.getByRole("button", { name: "Complete diagnostic" }));
+
+    expect(await screen.findByText("Your recommended starting point")).toBeInTheDocument();
+    expect(screen.getByText("AI Foundation School")).toBeInTheDocument();
+    expect(screen.getByText(/Why this path fits you/i)).toBeInTheDocument();
+    expect(apiMocks.generateDiagnosticOnboarding).toHaveBeenCalledWith(
+      expect.objectContaining({
+        country: "Nigeria",
+        learner_role: "Student",
+        project_interest: "A farm advisory assistant",
+      }),
+      "learner",
+      "LRN-local-onboarding",
+      expect.any(Object),
+    );
+    expect(apiMocks.apiFetch).toHaveBeenCalledWith(
+      "/enrollment/diagnostic-results",
+      expect.objectContaining({ method: "POST" }),
+    );
+  });
+
+  it("falls back to a rule-based diagnostic result when AI diagnostic fails", async () => {
+    vi.stubEnv("NEXT_PUBLIC_FEATURE_AI_DIAGNOSTIC_ONBOARDING", "true");
+    apiMocks.generateDiagnosticOnboarding.mockRejectedValue(new Error("AI timeout"));
+    apiMocks.apiFetch.mockResolvedValue({});
+
+    render(<OnboardingPage />);
+
+    await userEvent.click(screen.getByLabelText("Ghana"));
+    await userEvent.click(screen.getByRole("button", { name: "Next" }));
+    await userEvent.click(screen.getByLabelText("Software Developer"));
+    await userEvent.click(screen.getByRole("button", { name: "Next" }));
+    await userEvent.click(screen.getByLabelText("Transition into data science"));
+    await userEvent.click(screen.getByRole("button", { name: "Next" }));
+    await userEvent.click(screen.getByLabelText("Intermediate"));
+    await userEvent.click(screen.getByLabelText("Some AI basics"));
+    await userEvent.click(screen.getByLabelText("Fast"));
+    await userEvent.click(screen.getByRole("button", { name: "Next" }));
+    await userEvent.click(screen.getByLabelText(/Clear instructions that guide an AI response/i));
+    await userEvent.click(screen.getByLabelText(/Use data to check whether the answer is reliable/i));
+    await userEvent.click(screen.getByLabelText(/A reusable set of instructions and tools/i));
+    await userEvent.click(screen.getByRole("button", { name: "Complete diagnostic" }));
+
+    expect(await screen.findByText("Your recommended starting point")).toBeInTheDocument();
+    expect(screen.getByText(/Based on your answers, Foundation School is the safest starting point/i)).toBeInTheDocument();
+    expect(apiMocks.apiFetch).toHaveBeenCalledWith(
+      "/enrollment/diagnostic-results",
+      expect.objectContaining({
+        body: expect.stringContaining('"source":"fallback"'),
+      }),
+    );
+  });
+
+  it("preserves diagnostic onboarding draft answers locally", async () => {
+    vi.stubEnv("NEXT_PUBLIC_FEATURE_AI_DIAGNOSTIC_ONBOARDING", "true");
+
+    render(<OnboardingPage />);
+
+    await userEvent.click(screen.getByLabelText("Kenya"));
+    await userEvent.click(screen.getByRole("button", { name: "Next" }));
+    await userEvent.click(screen.getByLabelText("Educator"));
+
+    expect(localStorage.getItem("kf_ai_diagnostic_onboarding_v1")).toContain("Kenya");
+    expect(localStorage.getItem("kf_ai_diagnostic_onboarding_v1")).toContain("Educator");
   });
 });
 

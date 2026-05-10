@@ -135,9 +135,44 @@ model Learner {
   certificates        Certificate[]
   certification_eligibilities CertificationEligibility[]
   lesson_progress     LearnerLessonProgress[]
+  diagnostic_results  LearnerDiagnosticResult[]
 
   @@index([user_id])
   @@map("learners")
+}
+
+model LearnerDiagnosticResult {
+  id                       String   @id @default("")
+  learner_id               String
+  country                  String?
+  learner_role             String?
+  prior_coding_background  String?
+  prior_ai_background      String?
+  learning_goals           String[] @default([])
+  project_interest         String?
+  preferred_pace           String?
+  profile_signals          Json     @default("{}")
+  diagnostic_answers       Json     @default("[]")
+  starting_level           String
+  recommended_track        String
+  recommended_path         String
+  weak_area_tags           String[] @default([])
+  rationale                String
+  focus_areas              String[] @default([])
+  confidence               String
+  source                   String   @default("fallback")
+  telemetry                Json     @default("{}")
+  override_active          Boolean  @default(false)
+  override_by              String?
+  override_reason          String?
+  override_at              DateTime?
+  created_at               DateTime @default(now())
+
+  learner Learner @relation(fields: [learner_id], references: [id], onDelete: Cascade)
+
+  @@index([learner_id])
+  @@index([created_at])
+  @@map("learner_diagnostic_results")
 }
 
 model Track {

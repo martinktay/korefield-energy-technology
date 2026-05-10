@@ -26,6 +26,7 @@ import { AssignPodDto } from './dto/assign-pod.dto';
 import { ActivatePodDto } from './dto/activate-pod.dto';
 import { EvaluateGateDto } from './dto/evaluate-gate.dto';
 import { UpdateLearnerDto } from './dto/update-learner.dto';
+import { CreateDiagnosticResultDto } from './dto/create-diagnostic-result.dto';
 
 /**
  * Enrollment controller managing the learner journey from registration through progression.
@@ -45,6 +46,12 @@ export class EnrollmentController {
   @Post('onboard')
   async onboard(@Body() dto: OnboardLearnerDto) {
     return this.enrollmentService.onboardLearner(dto);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post('diagnostic-results')
+  async recordDiagnosticResult(@Body() dto: CreateDiagnosticResultDto) {
+    return this.enrollmentService.recordDiagnosticResult(dto);
   }
 
   @UseGuards(AuthGuard('jwt'))

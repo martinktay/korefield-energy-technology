@@ -183,6 +183,72 @@ Phase 2 does not add UI, feature rollout, learner-visible tutor behavior, AI dia
 4. Cost quota behavior for the relevant learner tier or cohort.
 5. Mobile and low-bandwidth behavior for the visible feature.
 
+## Phase 3A Diagnostic Onboarding
+
+Phase 3A enables a learner-visible diagnostic onboarding flow only when `NEXT_PUBLIC_FEATURE_AI_DIAGNOSTIC_ONBOARDING` is explicitly enabled. The existing rule-based onboarding flow remains the default and must continue to work when the flag is off.
+
+### Behavior
+
+When the flag is on, onboarding collects a small mobile-friendly signal set:
+
+- country
+- learner role or professional background
+- learning goals
+- prior coding background
+- prior AI background
+- optional project interest
+- preferred pace
+- three lightweight baseline diagnostic answers
+
+The diagnostic produces a learner-readable summary:
+
+- recommended starting point
+- recommended track/path
+- plain-language rationale
+- first focus areas
+- weak-area tags
+- confidence
+
+The diagnostic is advisory only. It cannot change curriculum, certify ability, decide employment readiness, bypass Foundation School, or override a human instructor/admin decision.
+
+### Backend Endpoints
+
+| Endpoint | Purpose | Failure behavior |
+|----------|---------|------------------|
+| `POST /ai/onboarding/diagnostic` | Generates the structured diagnostic result using the low-cost diagnostic model route and existing learner guardrails | Returns a structured fallback result when the LLM is unavailable or returns invalid JSON; rejects unsafe prompt-injection input |
+| `POST /enrollment/diagnostic-results` | Persists the diagnostic result for later tutor/recommendation phases | Best-effort from the frontend; persistence failure must not block onboarding completion |
+
+### Persisted Fields
+
+Diagnostic results are stored in `learner_diagnostic_results` with:
+
+- learner ID
+- profile signals
+- diagnostic answers
+- starting level
+- recommended track
+- recommended path
+- weak-area tags
+- rationale
+- focus areas
+- confidence
+- source: `ai` or `fallback`
+- telemetry JSON
+- created timestamp
+- override-ready fields: `override_active`, `override_by`, `override_reason`, `override_at`
+
+### Fallback and Offline Resilience
+
+If the AI service times out, returns a recoverable failure, exceeds budget/capacity, or is disabled, the frontend creates a rule-based fallback result and lets the learner continue. Draft diagnostic answers are saved in browser `localStorage` under a versioned key so a refresh or short connection drop does not wipe the form on the same device.
+
+### Cost and Quota Notes
+
+The diagnostic is a single bounded request at onboarding completion. The AI service routes `diagnostic_onboarding` to `gpt-4o-mini` through `llm_factory.py` and uses existing AWE metering when an LLM call succeeds. There is no open-ended conversation, no background polling, and no unlimited retry loop.
+
+### Remaining Before AI-Native Claim Readiness
+
+Phase 3A alone supports an "AI-assisted diagnostic onboarding" claim only where the flag is live and verified. The Academy still must ship contextual lesson tutor help, AI-assisted submission feedback, adaptive next-step recommendations, instructor intelligence, cohort intelligence, cost dashboards, human override workflows, and production low-bandwidth validation before claiming a fully AI-native learner experience.
+
 
 ## Unit Economics Safeguards (Cohort-Based)
 

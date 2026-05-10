@@ -50,6 +50,7 @@ MODEL_PRICING: dict[str, dict[str, float]] = {
 AGENT_MODEL_MAP: dict[str, str] = {
     "tutor_hint":        "gpt-4o-mini",
     "tutor_summarize":   "gpt-4o-mini",
+    "diagnostic_onboarding": "gpt-4o-mini",
     "dropout_risk":      "gpt-4o-mini",
     "feedback_analysis": "gpt-4o",
     "executive_report":  "gpt-4o",

@@ -7,6 +7,7 @@ import {
   analyzeSubmissionFeedback,
   deliverTutorLesson,
   evaluateDropoutRisk,
+  generateDiagnosticOnboarding,
   getCareerGuidance,
   getLearnerDropoutRisk,
   generateStrategyReport,
@@ -165,6 +166,71 @@ describe("agent-api AI service wiring", () => {
           lesson_id: "LSN-001",
           query: "Explain prompts",
           learner_tier: "foundation",
+        }),
+      }),
+    );
+  });
+
+  it("posts typed diagnostic onboarding requests to the backend diagnostic endpoint", async () => {
+    const fetcher = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        learner_id: "LRN-001",
+        starting_level: "beginner",
+        recommended_track: "AI Engineering and Intelligent Systems",
+        recommended_path: "AI Foundation School",
+        weak_area_tags: ["ai_vocabulary"],
+        rationale: "Foundation first fits your current goals.",
+        focus_areas: ["AI basics"],
+        confidence: "medium",
+        source: "ai",
+        created_at: "2026-05-10T00:00:00Z",
+        telemetry: { workflow: "diagnostic_onboarding", status: "completed", duration_ms: 20, trace_id: "AWE-4" },
+      }),
+    } as Response));
+
+    const response = await generateDiagnosticOnboarding(
+      {
+        learner_id: "LRN-001",
+        country: "Nigeria",
+        learner_role: "Student",
+        prior_coding_background: "beginner",
+        prior_ai_background: "none",
+        learning_goals: ["Build AI applications"],
+        project_interest: "A farm advisory assistant",
+        preferred_pace: "steady",
+        diagnostic_answers: [
+          { question_id: "concepts", answer: "I know prompts" },
+        ],
+      },
+      "learner",
+      "LRN-001",
+      { env: { NEXT_PUBLIC_AI_SERVICES_URL: "https://ai.example.com" }, fetcher },
+    );
+
+    expect(response.source).toBe("ai");
+    expect(fetcher).toHaveBeenCalledWith(
+      "https://ai.example.com/ai/onboarding/diagnostic",
+      expect.objectContaining({
+        method: "POST",
+        headers: expect.objectContaining({
+          "Content-Type": "application/json",
+          "x-user-role": "learner",
+          "x-user-id": "LRN-001",
+        }),
+        body: JSON.stringify({
+          learner_id: "LRN-001",
+          country: "Nigeria",
+          learner_role: "Student",
+          prior_coding_background: "beginner",
+          prior_ai_background: "none",
+          learning_goals: ["Build AI applications"],
+          project_interest: "A farm advisory assistant",
+          preferred_pace: "steady",
+          diagnostic_answers: [
+            { question_id: "concepts", answer: "I know prompts" },
+          ],
         }),
       }),
     );

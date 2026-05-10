@@ -159,6 +159,37 @@ export interface AiAgentTelemetry {
   [key: string]: unknown;
 }
 
+export interface DiagnosticAnswer {
+  question_id: string;
+  answer: string;
+}
+
+export interface DiagnosticOnboardingRequest {
+  learner_id: string;
+  country?: string | null;
+  learner_role?: string | null;
+  prior_coding_background?: string | null;
+  prior_ai_background?: string | null;
+  learning_goals: string[];
+  project_interest?: string | null;
+  preferred_pace?: string | null;
+  diagnostic_answers: DiagnosticAnswer[];
+}
+
+export interface DiagnosticOnboardingResponse {
+  learner_id: string;
+  starting_level: string;
+  recommended_track: string;
+  recommended_path: string;
+  weak_area_tags: string[];
+  rationale: string;
+  focus_areas: string[];
+  confidence: AiConfidence | string;
+  source: "ai" | "fallback";
+  created_at: string;
+  telemetry: AiAgentTelemetry;
+}
+
 export interface TutorLessonRequest {
   learner_id: string;
   module_id: string;
@@ -462,6 +493,21 @@ export async function deliverTutorLesson(
     userRole,
     userId,
     { endpointName: "tutor.lesson", ...options },
+  );
+}
+
+export async function generateDiagnosticOnboarding(
+  params: DiagnosticOnboardingRequest,
+  userRole = "learner",
+  userId = params.learner_id,
+  options?: AgentRequestOptions,
+): Promise<DiagnosticOnboardingResponse> {
+  return agentFetch<DiagnosticOnboardingResponse>(
+    "/ai/onboarding/diagnostic",
+    params,
+    userRole,
+    userId,
+    { endpointName: "onboarding.diagnostic", timeoutMs: 20_000, maxRetries: 0, ...options },
   );
 }
 

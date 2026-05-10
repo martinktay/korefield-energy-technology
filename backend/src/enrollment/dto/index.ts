@@ -4,6 +4,7 @@
  */
 export { RegisterLearnerDto } from './register-learner.dto';
 export { OnboardLearnerDto } from './onboard-learner.dto';
+export { CreateDiagnosticResultDto } from './create-diagnostic-result.dto';
 export { CompleteFoundationModuleDto } from './complete-foundation-module.dto';
 export { EnrollTrackDto } from './enroll-track.dto';
 export { JoinWaitlistDto } from './join-waitlist.dto';

@@ -33,6 +33,7 @@ import { AssignPodDto } from './dto/assign-pod.dto';
 import { ActivatePodDto } from './dto/activate-pod.dto';
 import { EvaluateGateDto } from './dto/evaluate-gate.dto';
 import { UpdateLearnerDto } from './dto/update-learner.dto';
+import { CreateDiagnosticResultDto } from './dto/create-diagnostic-result.dto';
 
 const FOUNDATION_MODULES = [
   'AI Literacy',
@@ -245,6 +246,73 @@ export class EnrollmentService {
       id: updated.id,
       user_id: updated.user_id,
       project_interest: updated.project_interest,
+    };
+  }
+
+  /**
+   * Persist an advisory diagnostic onboarding result for later personalization.
+   * This does not decide certification, enrollment, or assessment outcomes.
+   */
+  async recordDiagnosticResult(dto: CreateDiagnosticResultDto) {
+    const learner = await this.prisma.learner.findUnique({
+      where: { id: dto.learner_id },
+    });
+
+    if (!learner) {
+      throw new NotFoundException(`Learner ${dto.learner_id} not found`);
+    }
+
+    const diagnosticId = generateId('DGN');
+    const profileSignals = {
+      country: dto.country,
+      learner_role: dto.learner_role,
+      prior_coding_background: dto.prior_coding_background,
+      prior_ai_background: dto.prior_ai_background,
+      learning_goals: dto.learning_goals ?? [],
+      project_interest: dto.project_interest,
+      preferred_pace: dto.preferred_pace,
+    };
+
+    const result = await (this.prisma as any).learnerDiagnosticResult.create({
+      data: {
+        id: diagnosticId,
+        learner_id: dto.learner_id,
+        country: dto.country,
+        learner_role: dto.learner_role,
+        prior_coding_background: dto.prior_coding_background,
+        prior_ai_background: dto.prior_ai_background,
+        learning_goals: dto.learning_goals ?? [],
+        project_interest: dto.project_interest,
+        preferred_pace: dto.preferred_pace,
+        diagnostic_answers: dto.diagnostic_answers ?? [],
+        starting_level: dto.starting_level,
+        recommended_track: dto.recommended_track,
+        recommended_path: dto.recommended_path,
+        weak_area_tags: dto.weak_area_tags ?? [],
+        rationale: dto.rationale,
+        focus_areas: dto.focus_areas ?? [],
+        confidence: dto.confidence,
+        source: dto.source,
+        telemetry: dto.telemetry ?? {},
+        override_active: false,
+        profile_signals: profileSignals,
+      },
+    });
+
+    this.logger.log(
+      `Diagnostic onboarding result recorded for learner: ${dto.learner_id} (${dto.source})`,
+    );
+
+    return {
+      id: result.id,
+      learner_id: result.learner_id,
+      starting_level: result.starting_level,
+      recommended_track: result.recommended_track,
+      recommended_path: result.recommended_path,
+      weak_area_tags: result.weak_area_tags,
+      confidence: result.confidence,
+      source: result.source,
+      created_at: result.created_at,
     };
   }
 

@@ -42,6 +42,7 @@ export const ENTITY_PREFIXES = [
   'AWE', // Agent Workflow Execution
   'AQR', // Agent Query
   'PMV', // Prompt Version
+  'DGN', // Learner Diagnostic Result
   'DRS', // Dropout Risk Score
   'SES', // Session
   'ROL', // Role

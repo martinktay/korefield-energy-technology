@@ -27,6 +27,7 @@ const mockEmailService = {
 const mockPrisma = {
   user: { findUnique: jest.fn() },
   learner: { findUnique: jest.fn(), create: jest.fn(), update: jest.fn() },
+  learnerDiagnosticResult: { create: jest.fn(), findMany: jest.fn() },
   foundationProgress: { create: jest.fn(), findUnique: jest.fn(), update: jest.fn() },
   track: { findMany: jest.fn(), findUnique: jest.fn() },
   enrollment: { findFirst: jest.fn(), create: jest.fn(), findMany: jest.fn() },
@@ -286,6 +287,76 @@ describe('EnrollmentService', () => {
       expect(mockPrisma.learner.update).toHaveBeenCalledWith({
         where: { id: 'LRN-abc123' },
         data: {},
+      });
+    });
+  });
+
+  describe('recordDiagnosticResult', () => {
+    it('should persist an AI diagnostic onboarding result for future personalization', async () => {
+      mockPrisma.learner.findUnique.mockResolvedValue({ id: 'LRN-abc123' });
+      mockPrisma.learnerDiagnosticResult.create.mockImplementation(({ data }) => data);
+
+      const result = await service.recordDiagnosticResult({
+        learner_id: 'LRN-abc123',
+        country: 'Nigeria',
+        learner_role: 'Student',
+        prior_coding_background: 'beginner',
+        prior_ai_background: 'none',
+        learning_goals: ['Build AI applications'],
+        project_interest: 'A farm advisory assistant',
+        preferred_pace: 'steady',
+        diagnostic_answers: [{ question_id: 'concepts', answer: 'prompt' }],
+        starting_level: 'beginner',
+        recommended_track: 'AI Engineering and Intelligent Systems',
+        recommended_path: 'AI Foundation School',
+        weak_area_tags: ['ai_vocabulary'],
+        rationale: 'Foundation first.',
+        focus_areas: ['AI basics'],
+        confidence: 'medium',
+        source: 'ai',
+        telemetry: { trace_id: 'AWE-1234' },
+      });
+
+      expect(result.id).toMatch(/^DGN-[a-f0-9]{6}$/);
+      expect(result.learner_id).toBe('LRN-abc123');
+      expect(result.source).toBe('ai');
+      expect(mockPrisma.learnerDiagnosticResult.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          learner_id: 'LRN-abc123',
+          source: 'ai',
+          weak_area_tags: ['ai_vocabulary'],
+          override_active: false,
+          profile_signals: expect.objectContaining({ country: 'Nigeria' }),
+          diagnostic_answers: [{ question_id: 'concepts', answer: 'prompt' }],
+          telemetry: { trace_id: 'AWE-1234' },
+        }),
+      });
+    });
+
+    it('should persist fallback diagnostic results and keep onboarding non-blocking for AI failures', async () => {
+      mockPrisma.learner.findUnique.mockResolvedValue({ id: 'LRN-abc123' });
+      mockPrisma.learnerDiagnosticResult.create.mockImplementation(({ data }) => data);
+
+      const result = await service.recordDiagnosticResult({
+        learner_id: 'LRN-abc123',
+        learning_goals: ['General AI literacy'],
+        diagnostic_answers: [],
+        starting_level: 'foundation',
+        recommended_track: 'AI Foundation School',
+        recommended_path: 'AI Foundation School',
+        weak_area_tags: ['ai_basics'],
+        rationale: 'Fallback recommendation.',
+        focus_areas: ['AI basics'],
+        confidence: 'medium',
+        source: 'fallback',
+      });
+
+      expect(result.source).toBe('fallback');
+      expect(mockPrisma.learnerDiagnosticResult.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          source: 'fallback',
+          telemetry: {},
+        }),
       });
     });
   });

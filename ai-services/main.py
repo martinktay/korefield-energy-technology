@@ -27,6 +27,7 @@ from agents.faculty import (
 )
 from agents.learner import (
     career_router,
+    diagnostic_router,
     dropout_router,
     feedback_router,
     tutor_router,
@@ -64,6 +65,7 @@ app.add_middleware(
 
 
 # Register learner-side agent routers
+app.include_router(diagnostic_router)
 app.include_router(tutor_router)
 app.include_router(feedback_router)
 app.include_router(dropout_router)
