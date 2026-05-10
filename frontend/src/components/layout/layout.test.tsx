@@ -1,17 +1,42 @@
+/* eslint-disable @next/next/no-img-element */
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen, cleanup, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { TopBar } from "./top-bar";
 import { NavigationShell } from "./navigation-shell";
+import { SiteFooter } from "./site-footer";
 import { useUIStore } from "@/stores/ui-store";
+
+const navigationMock = vi.hoisted(() => ({
+  pathname: "/learner",
+}));
 
 // Mock next/navigation for Sidebar's usePathname
 vi.mock("next/navigation", () => ({
-  usePathname: () => "/learner",
+  usePathname: () => navigationMock.pathname,
+}));
+
+vi.mock("next/image", () => ({
+  default: ({
+    alt,
+    src,
+    priority: _priority,
+    unoptimized: _unoptimized,
+    fill: _fill,
+    ...props
+  }: {
+    alt: string;
+    src: string;
+    priority?: boolean;
+    unoptimized?: boolean;
+    fill?: boolean;
+    [key: string]: unknown;
+  }) => <img alt={alt} src={src} {...props} />,
 }));
 
 afterEach(() => {
   cleanup();
+  navigationMock.pathname = "/learner";
   // Reset zustand store between tests
   useUIStore.setState({ sidebarOpen: false, sidebarCollapsed: false });
 });
@@ -93,5 +118,18 @@ describe("NavigationShell", () => {
     await userEvent.click(hamburger);
     expect(sidebar.className).toContain("translate-x-0");
     expect(sidebar.className).not.toContain("-translate-x-full");
+  });
+});
+
+describe("SiteFooter", () => {
+  it("uses the official KoreField logo asset on public pages", () => {
+    navigationMock.pathname = "/pricing";
+
+    render(<SiteFooter />);
+
+    expect(screen.getByAltText("KoreField Logo")).toHaveAttribute(
+      "src",
+      "/images/korefield-logo.png"
+    );
   });
 });
