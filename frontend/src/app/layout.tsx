@@ -33,10 +33,6 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: "/logo.svg",
-        type: "image/svg+xml",
-      },
-      {
         url: "/images/korefield-logo.png",
         type: "image/png",
         sizes: "32x32",

@@ -66,9 +66,8 @@ export function ComingSoonWaitlistForm() {
         className="hidden"
         aria-hidden="true"
       />
-      <input type="hidden" name="area_of_interest" value="KoreField Academy" />
-      <input type="hidden" name="source" value="korefield-academy-coming-soon" />
-      <input type="hidden" name="_subject" value="KoreField Academy Waitlist Signup" />
+      <input type="hidden" name="source" value="korefield-academy-interest-list" />
+      <input type="hidden" name="_subject" value="KoreField Academy Program Interest" />
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="space-y-2">
           <span className="text-body-sm font-medium text-surface-700">Your full name</span>
@@ -93,6 +92,21 @@ export function ComingSoonWaitlistForm() {
           />
         </label>
       </div>
+      <label className="space-y-2 block">
+        <span className="text-body-sm font-medium text-surface-700">Program interest</span>
+        <select
+          name="area_of_interest"
+          required
+          className="h-11 w-full rounded-lg border border-surface-300 bg-white px-3 text-body-sm text-surface-900 shadow-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+          defaultValue=""
+        >
+          <option value="" disabled>Select a pathway</option>
+          <option value="Corporate AI Training Nigeria">Corporate AI Training Nigeria</option>
+          <option value="NYSC AI Acceleration Program">NYSC AI Acceleration Program</option>
+          <option value="Professional and Sector AI Tracks">Professional and sector AI tracks</option>
+          <option value="Student AI Bootcamp Nigeria">Student AI Bootcamp Nigeria</option>
+        </select>
+      </label>
       <div className="flex flex-col items-center gap-3 sm:flex-row sm:items-center">
         <Button
           type="submit"
@@ -104,17 +118,17 @@ export function ComingSoonWaitlistForm() {
           )}
         >
           <ArrowRight className="size-4" />
-          {isSubmitting ? "Joining..." : "Join the waitlist"}
+          {isSubmitting ? "Registering..." : "Register interest"}
         </Button>
         <p className="text-caption text-surface-500">
-          No spam. We will only contact you about enrollment updates.
+          No spam. We will only contact you about relevant Academy programs.
         </p>
       </div>
       {isSuccess && (
         <p className="text-body-sm font-medium text-status-success" role="status">
           <span className="inline-flex items-center gap-2">
             <CheckCircle2 className="size-4" />
-            You are on the waitlist. We will keep you posted on enrollment updates.
+            You are on the interest list. We will keep you posted on relevant Academy updates.
           </span>
         </p>
       )}
