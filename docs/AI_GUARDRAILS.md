@@ -249,6 +249,79 @@ The diagnostic is a single bounded request at onboarding completion. The AI serv
 
 Phase 3A alone supports an "AI-assisted diagnostic onboarding" claim only where the flag is live and verified. The Academy still must ship contextual lesson tutor help, AI-assisted submission feedback, adaptive next-step recommendations, instructor intelligence, cohort intelligence, cost dashboards, human override workflows, and production low-bandwidth validation before claiming a fully AI-native learner experience.
 
+### Phase 3A Deployment Readiness Checklist
+
+Before enabling `NEXT_PUBLIC_FEATURE_AI_DIAGNOSTIC_ONBOARDING` outside local development:
+
+1. Keep the flag off during deploy and migration.
+2. Confirm the backend environment has `DATABASE_URL` set.
+3. Regenerate the Prisma client from `backend/`:
+
+```bash
+corepack pnpm exec prisma generate
+```
+
+4. Validate the Prisma schema from `backend/`:
+
+```bash
+DATABASE_URL="$DATABASE_URL" corepack pnpm exec prisma validate
+```
+
+5. Apply the diagnostic migration in staging only:
+
+```bash
+psql "$DATABASE_URL" -f ../db/migrations/0018_learner_diagnostic_results.sql
+```
+
+6. Verify the table, indexes, and defaults after migration:
+
+```sql
+SELECT to_regclass('public.learner_diagnostic_results') AS diagnostic_table;
+SELECT indexname FROM pg_indexes WHERE tablename = 'learner_diagnostic_results';
+SELECT column_name, column_default, is_nullable
+FROM information_schema.columns
+WHERE table_name = 'learner_diagnostic_results'
+ORDER BY ordinal_position;
+```
+
+7. Run backend validation from `backend/`:
+
+```bash
+corepack pnpm test -- enrollment.service.spec.ts
+corepack pnpm build
+```
+
+8. Run frontend validation from `frontend/`:
+
+```bash
+corepack pnpm vitest --run --testNamePattern OnboardingPage
+corepack pnpm test
+corepack pnpm build
+```
+
+9. Run AI-service validation from `ai-services/` with a writable local cache:
+
+```bash
+UV_CACHE_DIR=.uv-cache uv sync --group dev
+UV_CACHE_DIR=.uv-cache uv run pytest tests/test_learner_agents.py -q
+```
+
+10. Smoke test flag behavior in staging:
+    - Flag off: existing rule-based onboarding appears and completes.
+    - Flag on with AI available: diagnostic flow appears, result persists with `source = ai`, and the learner sees a recommendation.
+    - Flag on with AI unavailable: fallback result appears, result persists with `source = fallback`, and onboarding completion is not blocked.
+    - Mobile: complete the flow at 360px width without horizontal scrolling or heavy assets.
+
+### Phase 3A Rollback Notes
+
+If diagnostic onboarding causes errors or cost anomalies, immediately set `NEXT_PUBLIC_FEATURE_AI_DIAGNOSTIC_ONBOARDING=false` and redeploy the frontend configuration. The existing rule-based onboarding path remains available. The `learner_diagnostic_results` table is additive and can remain in place while the feature is disabled. If the migration itself must be reversed before production data depends on it, take a database backup first, then drop the additive table:
+
+```sql
+DROP TABLE IF EXISTS learner_diagnostic_results;
+```
+
+Do not drop the table after learners have active diagnostic records unless retention, analytics, and downstream personalization dependencies have been reviewed.
+
 
 ## Unit Economics Safeguards (Cohort-Based)
 

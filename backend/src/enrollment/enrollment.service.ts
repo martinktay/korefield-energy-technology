@@ -23,7 +23,7 @@ import { PrismaService } from '@common/prisma/prisma.service';
 import { CacheService } from '@common/cache/cache.service';
 import { EmailService } from '@email/email.service';
 import { generateId } from '@common/utils/generate-id';
-import { PodMemberRole } from '@prisma/client';
+import { PodMemberRole, Prisma } from '@prisma/client';
 import { RegisterLearnerDto } from './dto/register-learner.dto';
 import { OnboardLearnerDto } from './dto/onboard-learner.dto';
 import { CompleteFoundationModuleDto } from './dto/complete-foundation-module.dto';
@@ -273,7 +273,7 @@ export class EnrollmentService {
       preferred_pace: dto.preferred_pace,
     };
 
-    const result = await (this.prisma as any).learnerDiagnosticResult.create({
+    const result = await this.prisma.learnerDiagnosticResult.create({
       data: {
         id: diagnosticId,
         learner_id: dto.learner_id,
@@ -284,7 +284,7 @@ export class EnrollmentService {
         learning_goals: dto.learning_goals ?? [],
         project_interest: dto.project_interest,
         preferred_pace: dto.preferred_pace,
-        diagnostic_answers: dto.diagnostic_answers ?? [],
+        diagnostic_answers: (dto.diagnostic_answers ?? []) as Prisma.InputJsonValue,
         starting_level: dto.starting_level,
         recommended_track: dto.recommended_track,
         recommended_path: dto.recommended_path,
@@ -293,9 +293,9 @@ export class EnrollmentService {
         focus_areas: dto.focus_areas ?? [],
         confidence: dto.confidence,
         source: dto.source,
-        telemetry: dto.telemetry ?? {},
+        telemetry: (dto.telemetry ?? {}) as Prisma.InputJsonValue,
         override_active: false,
-        profile_signals: profileSignals,
+        profile_signals: profileSignals as Prisma.InputJsonValue,
       },
     });
 
