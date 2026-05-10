@@ -95,7 +95,9 @@ jobs:
   deploy-staging:
     name: Deploy to Staging
     runs-on: ubuntu-latest
-    needs: [build, deploy-dev]
+    # Manual workflow_dispatch staging deploys must not depend on deploy-dev,
+    # because deploy-dev intentionally runs only on push events.
+    needs: build
     if: github.event.inputs.target_environment == 'staging' || github.event.inputs.target_environment == 'production'
     environment:
       name: staging

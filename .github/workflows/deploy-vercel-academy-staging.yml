@@ -1,0 +1,80 @@
+# Deploys `frontend/` to a separate Vercel staging project.
+#
+# This workflow is intentionally manual and disabled by default. It must use
+# staging-specific Vercel credentials and a separate staging Vercel project.
+# It must not reuse the production Vercel project or production secrets.
+
+name: Deploy Academy Staging - Vercel
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_staging_deploy:
+        description: "Type true to deploy the separate Vercel staging project"
+        required: true
+        default: "false"
+
+concurrency:
+  group: vercel-academy-staging-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Vercel staging
+    runs-on: ubuntu-latest
+    if: ${{ vars.STAGING_VERCEL_DEPLOY_ENABLED == 'true' && github.event.inputs.confirm_staging_deploy == 'true' }}
+    environment:
+      name: staging
+      url: ${{ vars.STAGING_FRONTEND_URL }}
+    env:
+      VERCEL_ORG_ID: ${{ secrets.STAGING_VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.STAGING_VERCEL_PROJECT_ID }}
+      VERCEL_TOKEN: ${{ secrets.STAGING_VERCEL_TOKEN }}
+      NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
+      NEXT_PUBLIC_AI_SERVICES_URL: ${{ vars.NEXT_PUBLIC_AI_SERVICES_URL }}
+      NEXT_PUBLIC_FEATURE_AI_DIAGNOSTIC_ONBOARDING: "false"
+      NEXT_PUBLIC_FEATURE_AI_LESSON_TUTOR: "false"
+      NEXT_PUBLIC_FEATURE_AI_SUBMISSION_FEEDBACK: "false"
+      NEXT_PUBLIC_FEATURE_AI_ADAPTIVE_RECOMMENDATIONS: "false"
+      NEXT_PUBLIC_FEATURE_AI_INSTRUCTOR_INSIGHTS: "false"
+      NEXT_PUBLIC_FEATURE_AI_CORPORATE_COHORT_INSIGHTS: "false"
+      NEXT_PUBLIC_FEATURE_LOW_DATA_MODE: "false"
+      NEXT_PUBLIC_FEATURE_OFFLINE_PROGRESS_SYNC: "false"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify staging Vercel configuration
+        shell: bash
+        run: |
+          missing=0
+          for name in VERCEL_ORG_ID VERCEL_PROJECT_ID VERCEL_TOKEN NEXT_PUBLIC_API_URL NEXT_PUBLIC_AI_SERVICES_URL; do
+            if [ -z "${!name}" ]; then
+              echo "::error::$name is required for the separate Vercel staging project"
+              missing=1
+            fi
+          done
+
+          if [ "${NEXT_PUBLIC_FEATURE_AI_DIAGNOSTIC_ONBOARDING}" != "false" ]; then
+            echo "::error::Diagnostic onboarding must remain disabled by default in staging deploys"
+            missing=1
+          fi
+
+          exit "$missing"
+
+      - name: Deploy to Vercel staging project
+        working-directory: frontend
+        run: |
+          npx vercel@latest deploy --yes --token "$VERCEL_TOKEN" \
+            --build-env NEXT_PUBLIC_API_URL="$NEXT_PUBLIC_API_URL" \
+            --build-env NEXT_PUBLIC_AI_SERVICES_URL="$NEXT_PUBLIC_AI_SERVICES_URL" \
+            --build-env NEXT_PUBLIC_FEATURE_AI_DIAGNOSTIC_ONBOARDING=false \
+            --build-env NEXT_PUBLIC_FEATURE_AI_LESSON_TUTOR=false \
+            --build-env NEXT_PUBLIC_FEATURE_AI_SUBMISSION_FEEDBACK=false \
+            --build-env NEXT_PUBLIC_FEATURE_AI_ADAPTIVE_RECOMMENDATIONS=false \
+            --build-env NEXT_PUBLIC_FEATURE_AI_INSTRUCTOR_INSIGHTS=false \
+            --build-env NEXT_PUBLIC_FEATURE_AI_CORPORATE_COHORT_INSIGHTS=false \
+            --build-env NEXT_PUBLIC_FEATURE_LOW_DATA_MODE=false \
+            --build-env NEXT_PUBLIC_FEATURE_OFFLINE_PROGRESS_SYNC=false
