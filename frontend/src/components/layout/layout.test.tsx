@@ -129,7 +129,7 @@ describe("SiteFooter", () => {
 
     expect(screen.getByAltText("KoreField Logo")).toHaveAttribute(
       "src",
-      "/images/korefield-logo.png"
+      "/logo.svg"
     );
   });
 });

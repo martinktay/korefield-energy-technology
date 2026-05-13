@@ -33,12 +33,12 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: "/images/korefield-logo.png",
-        type: "image/png",
+        url: "/logo.svg",
+        type: "image/svg+xml",
         sizes: "32x32",
       },
     ],
-    apple: "/images/korefield-logo.png",
+    apple: "/logo.svg",
   },
   openGraph: {
     type: "website",

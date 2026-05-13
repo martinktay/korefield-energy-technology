@@ -208,7 +208,7 @@ export default function LandingPage() {
             className="inline-flex min-w-0 items-center gap-2 font-sans text-[#003d37] sm:gap-3"
           >
             <Image
-              src="/images/korefield-logo.png"
+              src="/logo.svg"
               alt="KoreField Logo"
               width={64}
               height={64}
@@ -217,10 +217,7 @@ export default function LandingPage() {
               unoptimized
             />
             <span className="flex min-w-0 flex-col leading-none">
-              <span className="text-lg font-black tracking-tight sm:text-xl md:text-2xl">KoreField</span>
-              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#4c616c] sm:text-[11px]">
-                Energy &amp; Technology
-              </span>
+              <span className="text-lg font-black tracking-tight sm:text-xl md:text-2xl">KoreField Academy</span>
             </span>
           </a>
 
@@ -647,10 +644,9 @@ export default function LandingPage() {
           <div className="mb-12 grid grid-cols-1 gap-10 text-center md:grid-cols-12 md:text-left">
             <div className="md:col-span-5">
               <Link href="/" className="mx-auto mb-5 inline-flex items-center justify-center gap-3 md:mx-0 md:justify-start">
-                <Image src="/images/korefield-logo.png" alt="KoreField Logo" width={72} height={72} className="h-14 w-auto sm:h-16" />
+                <Image src="/logo.svg" alt="KoreField Logo" width={72} height={72} className="h-14 w-auto sm:h-16" />
                 <span className="flex flex-col leading-none">
-                  <span className="text-xl font-extrabold tracking-tight text-[#003d37]">KoreField</span>
-                  <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#4c616c]">Energy &amp; Technology Ltd</span>
+                  <span className="text-xl font-extrabold tracking-tight text-[#003d37]">KoreField Academy</span>
                 </span>
               </Link>
               <p className="mx-auto max-w-sm text-sm leading-relaxed text-[#4c616c] md:mx-0">

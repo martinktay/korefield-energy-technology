@@ -25,10 +25,9 @@ export function SiteFooter() {
         <div className="mb-12 grid grid-cols-1 gap-10 md:grid-cols-12">
           <div className="md:col-span-5">
             <Link href="/" className="mb-4 inline-flex items-center gap-3">
-              <Image src="/images/korefield-logo.png" alt="KoreField Logo" width={72} height={72} className="h-14 w-auto sm:h-16" />
+              <Image src="/logo.svg" alt="KoreField Logo" width={72} height={72} className="h-14 w-auto sm:h-16" />
               <span className="flex flex-col leading-none">
-                <span className="text-xl font-extrabold tracking-tight text-brand-700">KoreField</span>
-                <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-surface-500">Energy &amp; Technology Ltd</span>
+                <span className="text-xl font-extrabold tracking-tight text-brand-700">KoreField Academy</span>
               </span>
             </Link>
             <p className="max-w-sm text-body-sm leading-relaxed text-surface-600">
